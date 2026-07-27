@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="北粮南运综合态势、一粮一图数字护照与多式联运协同交互演示">
+    <meta name="description" content="北粮南运综合态势、一粮一图联运凭证与多式联运协同交互演示">
     <title>北粮南运数字化协同平台</title>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/js/china.js"></script>
     <style>
         :root {
+            --topbar-height: 76px;
             --page: #eef3f5;
             --panel: #ffffff;
             --ink: #182127;
@@ -45,47 +46,135 @@
         button, a { font: inherit; }
 
         .topbar {
-            height: 64px;
-            padding: 10px 18px;
-            display: grid;
-            grid-template-columns: minmax(280px, 1fr) auto auto;
+            height: var(--topbar-height);
+            padding: 9px 24px;
+            display: flex;
             align-items: center;
-            gap: 18px;
-            background: rgba(255, 255, 255, 0.94);
+            justify-content: center;
+            background:
+                linear-gradient(90deg, rgba(22, 131, 95, 0.025), rgba(22, 118, 168, 0.065) 50%, rgba(22, 131, 95, 0.025)),
+                rgba(255, 255, 255, 0.96);
             border-bottom: 1px solid var(--line);
             box-shadow: 0 3px 16px rgba(34, 58, 66, 0.05);
             position: relative;
             z-index: 20;
         }
 
-        .title-block h1 {
-            margin: 0;
-            font-size: 23px;
+        .topbar::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -1px;
+            width: min(520px, 34vw);
+            height: 2px;
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, transparent, rgba(22, 118, 168, 0.72), transparent);
+            pointer-events: none;
+        }
+
+        .platform-nav {
+            width: min(1420px, 100%);
+            display: grid;
+            grid-template-columns: minmax(112px, 0.78fr) minmax(112px, 0.78fr) minmax(370px, 2.1fr) minmax(132px, 0.9fr) minmax(132px, 0.9fr);
+            align-items: center;
+            gap: clamp(8px, 1.1vw, 18px);
+        }
+
+        .platform-tab {
+            min-width: 0;
+            height: 44px;
+            padding: 0 14px;
+            border: 1px solid #d8e5e9;
+            border-radius: 7px;
+            color: #47616b;
+            background: rgba(241, 246, 248, 0.9);
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 700;
             letter-spacing: 0.04em;
-            line-height: 1.25;
-        }
-
-        .title-block p {
-            margin: 4px 0 0;
-            color: var(--muted);
-            font-size: 11px;
-            letter-spacing: 0.08em;
-        }
-
-        .year-chip {
-            padding: 5px 8px;
-            border: 1px solid var(--line);
-            border-radius: 6px;
-            background: #fff;
-            text-align: right;
             white-space: nowrap;
+            transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
         }
 
-        .year-chip strong { display: block; font-size: 12px; }
-        .year-chip span { color: var(--muted); font-size: 8px; }
+        .platform-tab:hover,
+        .platform-tab:focus-visible {
+            color: var(--water);
+            border-color: #a9c9d6;
+            background: #fff;
+            box-shadow: 0 5px 14px rgba(25, 71, 89, 0.08);
+            outline: none;
+            transform: translateY(-1px);
+        }
+
+        .platform-tab.active {
+            color: #fff;
+            border-color: transparent;
+            background: linear-gradient(135deg, #1676a8, #1c657f);
+            box-shadow: 0 6px 16px rgba(22, 118, 168, 0.2);
+        }
+
+        .platform-tab.primary {
+            height: 58px;
+            padding: 0 48px;
+            position: relative;
+            overflow: hidden;
+            color: #1a596f;
+            border-color: #8fbecf;
+            border-radius: 5px;
+            background: linear-gradient(180deg, #f6fbfc, #e8f2f5);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.72), 0 5px 18px rgba(28, 79, 96, 0.09);
+        }
+
+        .platform-tab.primary::before,
+        .platform-tab.primary::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 31px;
+            height: 31px;
+            transform: translateY(-50%) rotate(45deg);
+            border: 1px solid rgba(22, 118, 168, 0.34);
+            background: rgba(255,255,255,0.52);
+        }
+
+        .platform-tab.primary::before { left: -18px; }
+        .platform-tab.primary::after { right: -18px; }
+
+        .platform-tab.primary strong,
+        .platform-tab.primary span {
+            display: block;
+            position: relative;
+            z-index: 1;
+        }
+
+        .platform-tab.primary strong {
+            font-size: clamp(18px, 1.35vw, 23px);
+            letter-spacing: 0.06em;
+        }
+
+        .platform-tab.primary span {
+            margin-top: 2px;
+            color: #64818b;
+            font-size: 8px;
+            font-weight: 600;
+            letter-spacing: 0.18em;
+        }
+
+        .platform-tab.primary.active {
+            color: #fff;
+            border-color: #157aa2;
+            background: linear-gradient(135deg, #116c51 0%, #1676a8 72%, #1b607c 100%);
+            box-shadow: 0 7px 20px rgba(22, 118, 168, 0.23);
+        }
+
+        .platform-tab.primary.active span { color: rgba(255,255,255,0.7); }
+
+        .empty-app {
+            height: calc(100vh - var(--topbar-height));
+        }
 
         .dashboard {
-            height: calc(100vh - 64px);
+            height: calc(100vh - var(--topbar-height));
             padding: 12px;
             display: grid;
             grid-template-columns: minmax(286px, 318px) minmax(500px, 1fr) minmax(306px, 342px);
@@ -502,41 +591,8 @@
 
         .hidden { display: none !important; }
 
-        .mode-switch {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            padding: 3px;
-            border: 1px solid var(--line);
-            border-radius: 9px;
-            background: #f5f8f9;
-        }
-
-        .mode-tab {
-            padding: 7px 13px;
-            border: 0;
-            border-radius: 7px;
-            color: var(--muted);
-            background: transparent;
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s ease;
-        }
-
-        .mode-tab:hover { color: var(--water); }
-        .mode-tab.active {
-            color: #fff;
-            background: linear-gradient(135deg, #116c51, #1676a8);
-            box-shadow: 0 3px 10px rgba(22, 118, 168, 0.18);
-        }
-
         .top-actions {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 8px;
-            min-width: 0;
+            display: none;
         }
 
         .global-search {
@@ -587,11 +643,11 @@
         }
 
         .passport-app {
-            height: calc(100vh - 64px);
+            height: calc(100vh - var(--topbar-height));
             padding: 12px;
             display: grid;
             grid-template-columns: minmax(302px, 330px) minmax(560px, 1fr) minmax(330px, 372px);
-            grid-template-rows: calc(100vh - 88px) auto;
+            grid-template-rows: calc(100vh - var(--topbar-height) - 24px) auto;
             align-items: start;
             gap: 12px;
             overflow-x: hidden;
@@ -1267,6 +1323,8 @@
         }
         .extension-open-btn span { overflow: hidden; font-size: 8px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
 
+        body > .extension-app { display: none; }
+
         .extension-app {
             grid-column: 1 / -1;
             width: 100%;
@@ -1686,15 +1744,17 @@
         .verify-row span { color: var(--prod); font-size: 7px; font-weight: 700; text-align: right; }
 
         .intermodal-app {
-            height: calc(100vh - 64px);
+            --intermodal: #16788f;
+            height: calc(100vh - var(--topbar-height));
             padding: 12px;
             display: grid;
             grid-template-columns: 286px minmax(680px, 1fr) 318px;
             gap: 12px;
             overflow: hidden;
             background:
-                radial-gradient(circle at 52% 5%, rgba(118, 86, 165, 0.11), transparent 30%),
-                linear-gradient(180deg, #edf3f5, #eaf0f2);
+                radial-gradient(circle at 50% 0, rgba(22, 118, 168, 0.11), transparent 32%),
+                radial-gradient(circle at 100% 100%, rgba(22, 131, 95, 0.07), transparent 24%),
+                linear-gradient(180deg, #eef5f7, #e8f0f2);
         }
 
         .intermodal-sidebar,
@@ -1718,7 +1778,8 @@
             padding: 14px;
             color: #fff;
             background:
-                linear-gradient(135deg, rgba(44, 77, 98, 0.97), rgba(118, 86, 165, 0.95)),
+                radial-gradient(circle at 100% 0, rgba(95, 202, 212, 0.22), transparent 38%),
+                linear-gradient(135deg, #174f67, #167b79),
                 #516879;
         }
 
@@ -1798,41 +1859,47 @@
 
         .intermodal-nav-btn {
             width: 100%;
-            padding: 7px;
+            padding: 9px;
             display: grid;
-            grid-template-columns: 25px minmax(0, 1fr) auto;
-            gap: 7px;
+            grid-template-columns: 28px minmax(0, 1fr) auto;
+            gap: 9px;
             align-items: center;
-            border: 1px solid #e0e9ec;
-            border-radius: 7px;
+            border: 1px solid #dce8eb;
+            border-radius: 9px;
             color: #34454d;
-            background: #fff;
+            background: linear-gradient(135deg, #fff, #f8fbfc);
             text-align: left;
             cursor: pointer;
-            transition: 0.18s ease;
+            transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
         }
 
-        .intermodal-nav-btn:hover { border-color: #a49ac4; background: #f8f6fb; transform: translateX(2px); }
+        .intermodal-nav-btn:hover {
+            border-color: #83b9c8;
+            background: #f5fbfc;
+            box-shadow: 0 6px 15px rgba(29, 97, 117, 0.09);
+            transform: translateX(3px);
+        }
+
         .intermodal-nav-btn.active {
             color: #fff;
-            border-color: #6c5298;
-            background: linear-gradient(135deg, #465f70, #7656a5);
-            box-shadow: 0 5px 13px rgba(88, 72, 125, 0.18);
+            border-color: #16758b;
+            background: linear-gradient(135deg, #176982, #167d76);
+            box-shadow: 0 7px 17px rgba(24, 105, 121, 0.2);
         }
 
         .intermodal-nav-btn b {
-            width: 25px;
-            height: 25px;
+            width: 28px;
+            height: 28px;
             display: grid;
             place-items: center;
-            border-radius: 6px;
-            color: #6c5298;
-            background: #f0ecf7;
+            border-radius: 7px;
+            color: #176e88;
+            background: #e6f2f5;
             font-size: 8px;
         }
 
         .intermodal-nav-btn.active b { color: #fff; background: rgba(255,255,255,0.16); }
-        .intermodal-nav-btn strong { overflow: hidden; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+        .intermodal-nav-btn strong { overflow: hidden; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
         .intermodal-nav-btn i { color: #9aabb2; font-size: 11px; font-style: normal; }
         .intermodal-nav-btn.active i { color: rgba(255,255,255,0.7); }
 
@@ -1846,7 +1913,7 @@
             padding: 13px 15px 11px;
             border-bottom: 1px solid var(--line);
             background:
-                linear-gradient(90deg, rgba(118,86,165,0.06), transparent 45%),
+                linear-gradient(90deg, rgba(22,118,168,0.07), transparent 48%),
                 #fff;
         }
 
@@ -1932,11 +1999,11 @@
             border: 0;
             border-radius: 7px;
             color: #fff;
-            background: linear-gradient(135deg, #536d7d, #7656a5);
+            background: linear-gradient(135deg, #176c88, #168166);
             font-size: 8px;
             font-weight: 800;
             cursor: pointer;
-            box-shadow: 0 5px 12px rgba(86,70,123,0.17);
+            box-shadow: 0 5px 12px rgba(25, 112, 122, 0.18);
         }
 
         .intermodal-module-metrics {
@@ -2084,7 +2151,7 @@
             place-items: center;
             border-radius: 6px;
             color: #fff;
-            background: #7656a5;
+            background: #16788f;
             font-size: 8px;
         }
 
@@ -2187,7 +2254,7 @@
         .intermodal-resource-row span { color: #43565f; font-size: 8px; }
         .intermodal-resource-row b { color: #263940; font-size: 8px; text-align: right; }
         .intermodal-resource-track { height: 7px; overflow: hidden; border-radius: 999px; background: #e7edef; }
-        .intermodal-resource-track i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #536d7d, #7656a5); }
+        .intermodal-resource-track i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #176c88, #168166); }
 
         .intermodal-agent-network {
             min-height: 260px;
@@ -2250,7 +2317,7 @@
             padding: 12px;
             color: #fff;
             border-radius: 9px;
-            background: linear-gradient(135deg, #435f70, #7656a5);
+            background: linear-gradient(135deg, #175c76, #177b72);
         }
 
         .intermodal-copilot-head span { color: rgba(255,255,255,0.68); font-size: 8px; font-weight: 800; letter-spacing: 0.1em; }
@@ -2312,7 +2379,7 @@
             cursor: pointer;
         }
 
-        .intermodal-ai-actions button.primary { color: #fff; border-color: #7656a5; background: #7656a5; }
+        .intermodal-ai-actions button.primary { color: #fff; border-color: #16788f; background: #16788f; }
         .intermodal-feed { margin-top: 7px; display: flex; flex-direction: column; gap: 7px; }
         .intermodal-feed-item { padding-left: 12px; border-left: 2px solid #b7c8ce; }
         .intermodal-feed-item.warn { border-left-color: #d39a46; }
@@ -2320,20 +2387,660 @@
         .intermodal-feed-item span { display: block; margin-top: 3px; color: var(--muted); font-size: 7px; line-height: 1.45; }
         .intermodal-feed-item time { display: block; margin-top: 3px; color: #9aa8ad; font-size: 7px; }
 
+        .intermodal-home {
+            grid-column: 1 / -1;
+            min-width: 0;
+            min-height: 0;
+            padding: clamp(30px, 5vh, 58px) clamp(24px, 4vw, 64px);
+            overflow: auto;
+            border: 1px solid rgba(198, 215, 221, 0.86);
+            border-radius: 11px;
+            background: linear-gradient(180deg, #f8fbfc, #f1f6f8);
+            box-shadow: 0 7px 22px rgba(32, 68, 82, 0.055);
+            scrollbar-width: thin;
+            scrollbar-color: #b9cdd5 transparent;
+        }
+
+        .intermodal-domain-grid {
+            width: min(1040px, 100%);
+            min-height: 100%;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(220px, 280px));
+            grid-template-rows: repeat(2, 205px);
+            justify-content: center;
+            align-content: center;
+            column-gap: clamp(34px, 5vw, 72px);
+            row-gap: clamp(28px, 5vh, 50px);
+        }
+
+        .intermodal-domain-card {
+            --domain-accent: #176f91;
+            --domain-soft: rgba(23, 111, 145, 0.1);
+            min-width: 0;
+            min-height: 0;
+            padding: 15px 16px 13px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
+            border: 1px solid rgba(184, 207, 216, 0.9);
+            border-radius: 9px;
+            color: #203c47;
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 4px 13px rgba(34, 72, 87, 0.05);
+            text-align: left;
+            cursor: pointer;
+            transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
+        }
+
+        .intermodal-domain-card:nth-child(n+2) {
+            --domain-accent: #2b7189;
+            --domain-soft: rgba(43, 113, 137, 0.085);
+        }
+
+        .intermodal-domain-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: -1;
+            height: 2px;
+            background: var(--domain-accent);
+        }
+
+        .intermodal-domain-card::after { display: none; }
+
+        .intermodal-domain-card:hover {
+            border-color: color-mix(in srgb, var(--domain-accent) 48%, #bfd3da);
+            box-shadow: 0 9px 21px rgba(31, 81, 100, 0.11);
+            transform: translateY(-2px);
+        }
+
+        .intermodal-domain-card:focus-visible {
+            border-color: var(--domain-accent);
+            box-shadow: 0 0 0 3px var(--domain-soft), 0 9px 21px rgba(31, 81, 100, 0.11);
+            outline: none;
+        }
+
+        .intermodal-domain-card.ready {
+            color: #fff;
+            border-color: #176f86;
+            background:
+                linear-gradient(135deg, #175870, #1b7488);
+            box-shadow: 0 8px 19px rgba(21, 91, 111, 0.17);
+        }
+
+        .intermodal-domain-card.ready::before { background: #6bc7d2; }
+
+        .intermodal-domain-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .intermodal-domain-number {
+            width: 34px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            border: 1px solid color-mix(in srgb, var(--domain-accent) 18%, transparent);
+            border-radius: 8px;
+            color: var(--domain-accent);
+            background: var(--domain-soft);
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 0.04em;
+        }
+
+        .intermodal-domain-card.ready .intermodal-domain-number {
+            color: #fff;
+            border-color: rgba(255,255,255,0.17);
+            background: rgba(255,255,255,0.13);
+        }
+
+        .intermodal-domain-count {
+            padding: 4px 7px;
+            border: 1px solid rgba(179, 201, 209, 0.5);
+            border-radius: 999px;
+            color: #657c85;
+            background: rgba(241,247,249,0.9);
+            font-size: 7px;
+            font-weight: 800;
+        }
+
+        .intermodal-domain-card.ready .intermodal-domain-count {
+            color: rgba(255,255,255,0.9);
+            border-color: rgba(255,255,255,0.13);
+            background: rgba(255,255,255,0.14);
+        }
+
+        .intermodal-domain-card h3 {
+            margin: 11px 0 5px;
+            font-size: 16px;
+            letter-spacing: 0.02em;
+        }
+
+        .intermodal-domain-card p {
+            margin: 0;
+            max-width: 100%;
+            color: #71838a;
+            font-size: 8px;
+            line-height: 1.5;
+        }
+
+        .intermodal-domain-card.ready p { color: rgba(255,255,255,0.74); }
+
+        .intermodal-domain-modules {
+            margin-top: 9px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .intermodal-domain-modules span {
+            padding: 3px 6px;
+            border: 1px solid rgba(184, 204, 211, 0.52);
+            border-radius: 4px;
+            color: #546b74;
+            background: rgba(232,241,244,0.78);
+            font-size: 7px;
+            line-height: 1.2;
+        }
+
+        .intermodal-domain-card.ready .intermodal-domain-modules span {
+            color: rgba(255,255,255,0.88);
+            border-color: rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.11);
+        }
+
+        .intermodal-domain-entry {
+            margin-top: auto;
+            padding: 8px 1px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--domain-accent);
+            border-top: 1px solid rgba(190, 209, 216, 0.58);
+            font-size: 8px;
+            font-weight: 800;
+        }
+
+        .intermodal-domain-card.ready .intermodal-domain-entry {
+            color: #fff;
+            border-top-color: rgba(255,255,255,0.14);
+        }
+
+        .intermodal-domain-entry i {
+            width: 21px;
+            height: 21px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--domain-soft);
+            font-size: 12px;
+            font-style: normal;
+            transition: transform 0.2s ease;
+        }
+
+        .intermodal-domain-card.ready .intermodal-domain-entry i { background: rgba(255,255,255,0.13); }
+        .intermodal-domain-card:hover .intermodal-domain-entry i { transform: translateX(3px); }
+
+        .intermodal-back-home {
+            margin: 10px 10px 0;
+            padding: 8px 10px;
+            border: 1px solid rgba(255,255,255,0.22);
+            border-radius: 7px;
+            color: #fff;
+            background: linear-gradient(135deg, #175b74, #177b71);
+            font-size: 8px;
+            font-weight: 800;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .intermodal-planning-overview { display: flex; flex-direction: column; gap: 11px; }
+
+        .intermodal-domain-detail-head {
+            padding: 16px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            border-radius: 10px;
+            color: #fff;
+            background:
+                radial-gradient(circle at 92% 12%, rgba(94,202,222,0.3), transparent 28%),
+                linear-gradient(135deg, #174f67, #246f8a);
+            box-shadow: 0 10px 24px rgba(28,86,107,0.18);
+        }
+
+        .intermodal-domain-detail-head span { color: rgba(255,255,255,0.68); font-size: 8px; font-weight: 800; letter-spacing: 0.12em; }
+        .intermodal-domain-detail-head h3 { margin: 5px 0 4px; font-size: 20px; }
+        .intermodal-domain-detail-head p { margin: 0; max-width: 680px; color: rgba(255,255,255,0.76); font-size: 8px; line-height: 1.6; }
+        .intermodal-domain-detail-head strong { flex: 0 0 auto; font-size: 28px; }
+
+        .intermodal-planning-flow {
+            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            border: 1px solid #dce7ea;
+            border-radius: 9px;
+            background: #fff;
+        }
+
+        .intermodal-planning-flow div {
+            padding: 9px;
+            border-radius: 7px;
+            color: #52666f;
+            background: #f2f6f8;
+            position: relative;
+        }
+
+        .intermodal-planning-flow div:not(:last-child)::after {
+            content: "›";
+            position: absolute;
+            top: 50%;
+            right: -9px;
+            z-index: 2;
+            color: #6f93a2;
+            font-size: 16px;
+            transform: translateY(-50%);
+        }
+
+        .intermodal-planning-flow b { display: block; color: #176a87; font-size: 8px; }
+        .intermodal-planning-flow span { display: block; margin-top: 4px; font-size: 8px; font-weight: 700; }
+
+        .intermodal-function-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .intermodal-function-card {
+            min-width: 0;
+            min-height: 148px;
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 42px minmax(0, 1fr);
+            gap: 12px;
+            border: 1px solid #d8e5e9;
+            border-radius: 11px;
+            color: #30444d;
+            background: linear-gradient(145deg, #fff, #f7fbfc);
+            box-shadow: 0 7px 18px rgba(32,68,82,0.06);
+            text-align: left;
+            cursor: pointer;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+
+        .intermodal-function-card:hover {
+            border-color: #68a9ba;
+            background: #f8fcfd;
+            box-shadow: 0 12px 24px rgba(25, 94, 114, 0.12);
+            transform: translateY(-3px);
+        }
+
+        .intermodal-function-card > b {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            color: #fff;
+            background: linear-gradient(135deg, #176b87, #16806c);
+            box-shadow: 0 6px 14px rgba(24, 111, 123, 0.18);
+            font-size: 10px;
+        }
+
+        .intermodal-function-card h4 { margin: 1px 0 5px; font-size: 12px; }
+        .intermodal-function-card p { margin: 0; color: #718188; font-size: 8px; line-height: 1.55; }
+
+        .intermodal-function-meta {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            color: #627780;
+            font-size: 7px;
+        }
+
+        .intermodal-function-meta em { color: #1d708c; font-style: normal; font-weight: 800; }
+
+        .intermodal-detail-breadcrumb {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #839198;
+            font-size: 7px;
+        }
+
+        .intermodal-detail-breadcrumb button {
+            padding: 0;
+            border: 0;
+            color: #266f89;
+            background: transparent;
+            font-size: inherit;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        /* 计划组织：左侧二级菜单 + 右侧业务内容 */
+        .intermodal-app.detail-mode {
+            grid-template-columns: 268px minmax(0, 1fr);
+        }
+
+        .intermodal-app.detail-mode .intermodal-sidebar {
+            border-color: #cfdee3;
+            border-radius: 10px;
+            background: #f8fbfc;
+            box-shadow: 0 7px 22px rgba(29, 65, 78, 0.07);
+        }
+
+        .intermodal-app.detail-mode .intermodal-workspace {
+            border-color: #cfdee3;
+            border-radius: 10px;
+            background: #f4f8fa;
+            box-shadow: 0 7px 22px rgba(29, 65, 78, 0.07);
+        }
+
+        .intermodal-app.detail-mode .intermodal-brand {
+            padding: 16px 15px 14px;
+            background:
+                radial-gradient(circle at 100% 0, rgba(105, 207, 213, 0.18), transparent 38%),
+                linear-gradient(135deg, #174f67, #176f78);
+        }
+
+        .intermodal-app.detail-mode .intermodal-brand h2 { font-size: 18px; }
+        .intermodal-app.detail-mode .intermodal-brand p { font-size: 8px; line-height: 1.55; }
+
+        .intermodal-app.detail-mode .intermodal-back-home {
+            margin: 10px 10px 0;
+            padding: 9px 10px;
+            border-color: #d4e2e7;
+            color: #1d6178;
+            background: #fff;
+            box-shadow: 0 3px 9px rgba(36, 79, 95, 0.05);
+        }
+
+        .intermodal-app.detail-mode .intermodal-back-home:hover { border-color: #83b5c4; background: #f4fafb; }
+
+        .intermodal-app.detail-mode .intermodal-order {
+            margin: 9px 10px 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background: #eef5f7;
+        }
+
+        .intermodal-app.detail-mode .intermodal-order select { border-color: #cddde2; }
+
+        .intermodal-app.detail-mode .intermodal-order-meta div {
+            border: 1px solid #e0eaed;
+            background: rgba(255,255,255,0.9);
+        }
+
+        .intermodal-app.detail-mode .intermodal-nav-heading { padding: 2px 13px 5px; }
+
+        .intermodal-app.detail-mode .intermodal-module-nav {
+            padding: 0 9px 12px;
+            gap: 5px;
+        }
+
+        .intermodal-app.detail-mode .intermodal-group-label {
+            padding: 8px 5px 2px;
+            color: #83939a;
+            font-size: 7px;
+            letter-spacing: 0.1em;
+        }
+
+        .intermodal-app.detail-mode .intermodal-nav-btn {
+            grid-template-columns: 28px minmax(0, 1fr) auto;
+            padding: 8px;
+        }
+
+        .intermodal-nav-btn > span { min-width: 0; }
+        .intermodal-nav-btn > span strong { display: block; }
+        .intermodal-nav-btn > span small {
+            display: block;
+            margin-top: 3px;
+            overflow: hidden;
+            color: #84939a;
+            font-size: 7px;
+            font-weight: 500;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .intermodal-nav-btn.active > span small { color: rgba(255,255,255,0.7); }
+
+        .intermodal-app.detail-mode .intermodal-task-head {
+            padding: 12px 16px 10px;
+            background: #fff;
+        }
+
+        .intermodal-app.detail-mode .intermodal-task-title h2 { font-size: 16px; }
+        .intermodal-app.detail-mode .intermodal-task-title p { max-width: 880px; }
+        .intermodal-app.detail-mode .intermodal-kpis { margin-top: 9px; }
+        .intermodal-app.detail-mode .intermodal-kpi { padding: 8px 10px; }
+
+        .intermodal-app.detail-mode .intermodal-content {
+            padding: 13px;
+            overflow-y: auto;
+            background: #f4f8fa;
+        }
+
+        .planning-page { display: flex; flex-direction: column; gap: 10px; }
+
+        .planning-page .intermodal-detail-breadcrumb {
+            margin: 0;
+            padding: 0 2px;
+            font-size: 8px;
+        }
+
+        .planning-page .intermodal-module-head {
+            margin: 0;
+            padding: 13px 15px;
+            border-radius: 8px;
+            box-shadow: none;
+        }
+
+        .planning-page .intermodal-module-head h3 { font-size: 17px; }
+        .planning-page .intermodal-module-head p { max-width: 820px; }
+
+        .planning-business-flow {
+            padding: 11px 13px;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 8px;
+            border: 1px solid #d8e5e9;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .planning-business-step {
+            min-width: 0;
+            padding: 8px 9px;
+            display: grid;
+            grid-template-columns: 25px minmax(0, 1fr);
+            gap: 7px;
+            align-items: center;
+            position: relative;
+            border: 1px solid #e1e9ec;
+            border-radius: 7px;
+            color: #52666e;
+            background: #f7fafb;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .planning-business-step:not(:last-child)::after {
+            content: "›";
+            position: absolute;
+            right: -7px;
+            z-index: 2;
+            color: #8ca0a8;
+            font-size: 14px;
+        }
+
+        .planning-business-step b {
+            width: 25px;
+            height: 25px;
+            display: grid;
+            place-items: center;
+            border-radius: 6px;
+            color: #267189;
+            background: #e4f0f4;
+            font-size: 7px;
+        }
+
+        .planning-business-step strong { display: block; overflow: hidden; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+        .planning-business-step span { display: block; margin-top: 2px; overflow: hidden; color: #8a989e; font-size: 6.5px; text-overflow: ellipsis; white-space: nowrap; }
+
+        .planning-business-step.done { border-color: #bddbd2; background: #f0f8f5; }
+        .planning-business-step.done b { color: #147354; background: #dcefe8; }
+        .planning-business-step.active { color: #fff; border-color: #17778b; background: linear-gradient(135deg, #176b84, #177d72); }
+        .planning-business-step.active b { color: #fff; background: rgba(255,255,255,0.16); }
+        .planning-business-step.active span { color: rgba(255,255,255,0.68); }
+
+        .planning-filter-panel {
+            padding: 11px 13px;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(120px, 1fr)) auto;
+            gap: 9px;
+            align-items: end;
+            border: 1px solid #dbe6e9;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .planning-filter-field label { display: block; margin-bottom: 5px; color: #61747c; font-size: 7px; }
+        .planning-filter-field input,
+        .planning-filter-field select {
+            width: 100%;
+            height: 31px;
+            padding: 0 8px;
+            border: 1px solid #d7e2e6;
+            border-radius: 6px;
+            outline: 0;
+            color: #33474f;
+            background: #fff;
+            font-size: 8px;
+        }
+
+        .planning-filter-field input:focus,
+        .planning-filter-field select:focus { border-color: #6daabd; box-shadow: 0 0 0 2px rgba(22,118,168,0.08); }
+
+        .planning-filter-actions { display: flex; gap: 6px; }
+        .planning-filter-actions button {
+            height: 31px;
+            padding: 0 12px;
+            border: 1px solid #ccdade;
+            border-radius: 6px;
+            color: #52666e;
+            background: #fff;
+            font-size: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .planning-filter-actions button.primary { color: #fff; border-color: #197891; background: #197891; }
+
+        .planning-content-grid {
+            min-height: 280px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 270px;
+            gap: 10px;
+        }
+
+        .planning-main-card,
+        .planning-side-card {
+            min-width: 0;
+            padding: 12px;
+            border: 1px solid #dbe6e9;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .planning-main-card { overflow-x: auto; }
+        .planning-side-stack { display: flex; flex-direction: column; gap: 10px; }
+        .planning-side-card h4 { margin: 0; font-size: 10px; }
+        .planning-side-card > p { margin: 5px 0 0; color: #71838a; font-size: 7px; line-height: 1.55; }
+
+        .planning-handoff-row {
+            margin-top: 9px;
+            padding: 8px;
+            border-radius: 6px;
+            background: #f3f7f8;
+        }
+
+        .planning-handoff-row label { display: block; color: #829198; font-size: 6.5px; }
+        .planning-handoff-row strong { display: block; margin-top: 3px; color: #334b55; font-size: 8px; line-height: 1.45; }
+        .planning-handoff-row.output { border-left: 3px solid #1c8091; background: #eef7f7; }
+
+        .planning-next-action {
+            width: 100%;
+            margin-top: 9px;
+            padding: 8px;
+            border: 0;
+            border-radius: 6px;
+            color: #fff;
+            background: linear-gradient(135deg, #176c86, #177d70);
+            font-size: 8px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .planning-side-card .intermodal-insights { margin-top: 9px; }
+        .planning-side-card .intermodal-insight { background: #f7fafb; }
+
+        .planning-overview-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 280px;
+            gap: 10px;
+        }
+
+        .planning-overview-layout .intermodal-function-grid { gap: 8px; }
+        .planning-overview-layout .intermodal-function-card { min-height: 126px; padding: 12px; box-shadow: none; }
+
+        .planning-status-list { margin-top: 10px; display: flex; flex-direction: column; gap: 7px; }
+        .planning-status-item { padding: 8px; display: flex; justify-content: space-between; gap: 8px; border-radius: 6px; background: #f3f7f8; }
+        .planning-status-item span { color: #72838a; font-size: 7px; }
+        .planning-status-item strong { color: #285468; font-size: 8px; text-align: right; }
+
         @media (max-width: 1260px) {
-            .topbar { grid-template-columns: minmax(260px, 1fr) auto auto; gap: 10px; }
+            .intermodal-app.detail-mode { grid-template-columns: 246px minmax(0, 1fr); }
+            .planning-content-grid { grid-template-columns: minmax(0, 1fr) 240px; }
+            .planning-filter-panel { grid-template-columns: repeat(2, minmax(130px, 1fr)) auto; }
+            .planning-filter-actions { grid-column: 3; grid-row: 1 / span 2; }
+        }
+
+        @media (max-width: 1260px) {
+            .topbar { padding-inline: 14px; }
+            .platform-nav { grid-template-columns: 104px 104px minmax(330px, 1.8fr) 120px 120px; gap: 8px; }
+            .platform-tab { padding-inline: 9px; font-size: 13px; }
+            .platform-tab.primary { padding-inline: 30px; }
             .dashboard { grid-template-columns: 282px minmax(460px, 1fr) 304px; gap: 9px; padding: 9px; }
             .passport-app { grid-template-columns: 294px minmax(500px, 1fr) 330px; gap: 9px; padding: 9px; }
             .extension-app { grid-template-columns: 238px minmax(660px, 1fr); gap: 9px; padding: 9px; }
             .intermodal-app { grid-template-columns: 250px minmax(610px, 1fr) 282px; gap: 9px; padding: 9px; }
-            .global-search { width: 250px; }
+            .intermodal-domain-grid { gap: 11px; }
         }
 
         @media (max-width: 980px) {
             body { overflow: auto; }
-            .topbar { height: auto; grid-template-columns: 1fr; gap: 9px; }
-            .top-actions { justify-content: stretch; flex-wrap: wrap; }
-            .global-search { width: min(100%, 420px); flex: 1; }
+            :root { --topbar-height: auto; }
+            .topbar { height: auto; min-height: 76px; padding: 10px 12px; }
+            .platform-nav { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+            .platform-tab { height: 38px; font-size: 12px; }
+            .platform-tab.primary { grid-column: 1 / -1; grid-row: 1; height: 52px; }
+            .platform-tab.primary strong { font-size: 18px; }
+            .empty-app { min-height: calc(100vh - 128px); }
             .dashboard { height: auto; grid-template-columns: 1fr; }
             .side-panel { overflow: visible; }
             .map-shell { min-height: 720px; order: -1; }
@@ -2344,14 +3051,36 @@
             .extension-sidebar, .extension-workspace { min-height: 0; }
             .extension-workspace { min-height: 780px; }
             .intermodal-app { height: auto; grid-template-columns: 1fr; overflow: visible; }
+            .intermodal-app.detail-mode { grid-template-columns: 1fr; }
+            .intermodal-home { padding: 22px 15px; }
+            .intermodal-domain-grid {
+                width: min(420px, 100%);
+                min-height: 0;
+                grid-template-columns: 1fr;
+                grid-template-rows: none;
+                grid-auto-rows: 190px;
+                align-content: start;
+                row-gap: 14px;
+            }
             .intermodal-sidebar, .intermodal-workspace, .intermodal-copilot { min-height: 0; overflow: visible; }
             .intermodal-module-nav { max-height: 520px; }
             .intermodal-workspace { min-height: 780px; }
             .intermodal-module-grid, .intermodal-data-strip { grid-template-columns: 1fr; }
+            .intermodal-function-grid { grid-template-columns: 1fr; }
+            .planning-business-flow { grid-template-columns: 1fr 1fr; }
+            .planning-filter-panel { grid-template-columns: 1fr 1fr; }
+            .planning-filter-actions { grid-column: 1 / -1; grid-row: auto; }
+            .planning-content-grid, .planning-overview-layout { grid-template-columns: 1fr; }
             .module-card.span-8, .module-card.span-7, .module-card.span-6, .module-card.span-5, .module-card.span-4 { grid-column: span 12; }
             .permission-row { grid-template-columns: 1fr 1fr; }
             .knowledge-graph-shell { grid-template-columns: 1fr; }
             .knowledge-node-detail { border-left: 0; border-top: 1px solid #173541; }
+        }
+
+        @media (max-width: 560px) {
+            .platform-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .platform-tab.primary { grid-column: 1 / -1; }
+            .platform-tab { white-space: normal; }
         }
 
         @media (max-width: 680px) {
@@ -2371,25 +3100,27 @@
 </head>
 <body>
     <header class="topbar">
-        <div class="title-block">
-            <h1>北粮南运一粮一图数字护照</h1>
-            <p>CHANNEL OVERVIEW · ONE BATCH, ONE PASSPORT</p>
-        </div>
-        <div class="mode-switch" role="tablist" aria-label="页面模式">
-            <button type="button" class="mode-tab" data-view="overview" role="tab" aria-selected="false">综合态势</button>
-            <button type="button" class="mode-tab active" data-view="passport" role="tab" aria-selected="true">一粮一图</button>
-            <button type="button" class="mode-tab" data-view="intermodal" role="tab" aria-selected="false">多式联运</button>
-        </div>
-        <div class="top-actions">
+        <nav class="platform-nav" role="tablist" aria-label="北粮南运平台导航">
+            <button type="button" class="platform-tab mode-tab" data-view="trusted" role="tab" aria-selected="false">可信空间</button>
+            <button type="button" class="platform-tab mode-tab" data-view="elements" role="tab" aria-selected="false">数据要素</button>
+            <button type="button" class="platform-tab primary mode-tab active" data-view="overview" role="tab" aria-selected="true">
+                <strong>北粮南运通道综合驾驶舱</strong>
+                <span>NORTH–SOUTH GRAIN CORRIDOR</span>
+            </button>
+            <button type="button" class="platform-tab mode-tab" data-view="intermodal" role="tab" aria-selected="false">多式联运</button>
+            <button type="button" class="platform-tab mode-tab" data-view="passport" role="tab" aria-selected="false">一粮一图</button>
+        </nav>
+        <div class="top-actions" aria-hidden="true">
             <div class="global-search">
-                <input id="global-passport-search" type="search" placeholder="护照号 / 批次 / 合同 / 运单 / 箱号">
-                <button id="global-search-action" class="search-action" type="button">查询护照</button>
+                <input id="global-passport-search" type="search" placeholder="凭证号 / 批次 / 合同 / 运单 / 箱号" tabindex="-1">
+                <button id="global-search-action" class="search-action" type="button" tabindex="-1">查询凭证</button>
             </div>
-            <div class="year-chip"><strong>2026 年度</strong><span>数量单位：万吨</span></div>
         </div>
     </header>
 
-    <main id="overview-dashboard" class="dashboard hidden">
+    <main id="empty-dashboard" class="empty-app hidden" aria-label="待建设功能"></main>
+
+    <main id="overview-dashboard" class="dashboard">
         <aside class="side-panel producer-panel" aria-label="主产区数据">
             <div class="panel-heading">
                 <div class="eyebrow">ORIGIN · SUPPLY</div>
@@ -2545,18 +3276,18 @@
         </aside>
     </main>
 
-    <main id="passport-dashboard" class="passport-app" aria-label="一粮一图数字护照">
+    <main id="passport-dashboard" class="passport-app hidden" aria-label="一粮一图联运凭证">
         <aside class="passport-column">
-            <section id="passport-hero" class="passport-hero" aria-label="数字护照身份卡">
+            <section id="passport-hero" class="passport-hero" aria-label="联运凭证身份卡">
                 <div class="passport-hero-top">
                     <div>
-                        <span class="passport-label">ONE BATCH · ONE PASSPORT</span>
-                        <h2 id="passport-title">玉米数字护照</h2>
+                        <span class="passport-label">ONE BATCH · ONE CREDENTIAL</span>
+                        <h2 id="passport-title">玉米联运凭证</h2>
                     </div>
                     <span id="passport-risk" class="risk-pill low">低风险</span>
                 </div>
                 <div class="passport-id">
-                    <span>数字护照号</span>
+                    <span>联运凭证号</span>
                     <strong id="passport-number">BLNY-2026-CORN-0001</strong>
                 </div>
                 <div class="passport-kpis">
@@ -2695,21 +3426,26 @@
                     <button type="button" class="extension-open-btn" data-open-extension="graph"><b>11</b><span>知识图谱节点关系</span></button>
                     <button type="button" class="extension-open-btn" data-open-extension="authorization"><b>12</b><span>可信授权溯源</span></button>
                     <button type="button" class="extension-open-btn" data-open-extension="finance"><b>13</b><span>金融服务辅助</span></button>
-                    <button type="button" class="extension-open-btn wide" data-open-extension="verify"><b>14</b><span>护照验真与分享</span></button>
+                    <button type="button" class="extension-open-btn wide" data-open-extension="verify"><b>14</b><span>凭证验真与分享</span></button>
                 </div>
             </section>
         </aside>
     </main>
 
     <main id="intermodal-dashboard" class="intermodal-app hidden" aria-label="北粮南运多式联运协同平台">
-        <aside class="intermodal-sidebar">
+        <section id="intermodal-home" class="intermodal-home" aria-label="多式联运功能总菜单">
+            <div id="intermodal-domain-grid" class="intermodal-domain-grid"></div>
+        </section>
+
+        <aside class="intermodal-sidebar hidden">
             <div class="intermodal-brand">
-                <span>MULTIMODAL · JOINT OPERATIONS</span>
-                <h2>多式联运协同</h2>
-                <p>贯通贸易企业、粮库、公路、铁路、港口与船公司，实现“一次委托、联合调度、全程可视、一次结算”。</p>
+                <span>PLAN ORGANIZATION</span>
+                <h2>计划组织</h2>
+                <p>从运输需求开始，依次完成路径比选、货源归集与运力锁定，形成可执行联运计划。</p>
             </div>
+            <button id="intermodal-back-home" type="button" class="intermodal-back-home">← 返回多式联运首页</button>
             <div class="intermodal-order">
-                <label for="intermodal-order-select">当前联运任务</label>
+                <label for="intermodal-order-select">当前计划任务</label>
                 <select id="intermodal-order-select">
                     <option value="LT-2026-0724-006">LT-2026-0724-006 · 绥化—广州</option>
                     <option value="LT-2026-0724-011">LT-2026-0724-011 · 四平—太仓</option>
@@ -2722,38 +3458,22 @@
                     <div><span>当前风险</span><strong id="intermodal-order-risk">2 项待协同</strong></div>
                 </div>
             </div>
-            <div class="intermodal-nav-heading"><strong>17项功能模块</strong><span>点击切换工作区</span></div>
+            <div class="intermodal-nav-heading"><strong>业务办理</strong><span>4个环节</span></div>
             <nav id="intermodal-module-nav" class="intermodal-module-nav" aria-label="多式联运功能模块">
-                <div class="intermodal-group-label">计划组织</div>
-                <button type="button" class="intermodal-nav-btn active" data-intermodal-module="demand"><b>01</b><strong>多式联运需求管理</strong><i>›</i></button>
-                <button type="button" class="intermodal-nav-btn" data-intermodal-module="route"><b>02</b><strong>联运产品与路径智能比选</strong><i>›</i></button>
-                <button type="button" class="intermodal-nav-btn" data-intermodal-module="supply"><b>03</b><strong>货源归集与发运计划</strong><i>›</i></button>
-                <button type="button" class="intermodal-nav-btn" data-intermodal-module="resources"><b>04</b><strong>运力、箱源与仓容资源池</strong><i>›</i></button>
-                <div class="intermodal-group-label">协同执行</div>
-                <button type="button" class="intermodal-nav-btn" data-intermodal-module="agents"><b>05</b><strong>多主体协同调度智能体</strong><i>›</i></button>
-                <button type="button" class="intermodal-nav-btn" data-intermodal-module="schedule"><b>06</b><strong>港铁航联合排程</strong><i>›</i></button>
-                <button type="button" class="intermodal-nav-btn" data-intermodal-module="transfer"><b>07</b><strong>节点预约与换装协同</strong><i>›</i></button>
-                <div class="intermodal-group-label">一单一箱与在途</div>
-                <button type="button" class="intermodal-nav-btn" data-intermodal-module="onebill"><b>08</b><strong>“一单制”联运管理</strong><i>›</i></button>
-                <button type="button" class="intermodal-nav-btn" data-intermodal-module="onebox"><b>09</b><strong>“一箱制”与运载单元管理</strong><i>›</i></button>
-                <button type="button" class="intermodal-nav-btn" data-intermodal-module="visibility"><b>10</b><strong>全链路可视化与ETA</strong><i>›</i></button>
-                <div class="intermodal-group-label">风险、成本与结算</div>
-                <button type="button" class="intermodal-nav-btn" data-intermodal-module="reroute"><b>11</b><strong>异常预警与动态改线</strong><i>›</i></button>
-                <button type="button" class="intermodal-nav-btn" data-intermodal-module="quality"><b>12</b><strong>粮食质量与储运减损</strong><i>›</i></button>
-                <button type="button" class="intermodal-nav-btn" data-intermodal-module="cost"><b>13</b><strong>全链路成本与“一口价”</strong><i>›</i></button>
-                <button type="button" class="intermodal-nav-btn" data-intermodal-module="settlement"><b>14</b><strong>自动计费、对账与结算</strong><i>›</i></button>
-                <button type="button" class="intermodal-nav-btn" data-intermodal-module="claims"><b>15</b><strong>联运责任划分与智能索赔</strong><i>›</i></button>
-                <button type="button" class="intermodal-nav-btn" data-intermodal-module="data"><b>16</b><strong>数据协同与可信授权</strong><i>›</i></button>
-                <div class="intermodal-group-label">运营决策</div>
-                <button type="button" class="intermodal-nav-btn" data-intermodal-module="operations"><b>17</b><strong>通道运营分析与保供调度</strong><i>›</i></button>
+                <span class="intermodal-group-label">需求与方案</span>
+                <button type="button" class="intermodal-nav-btn" data-intermodal-module="demand"><b>01</b><span><strong>运输需求受理</strong><small>需求归集与约束校验</small></span><i>›</i></button>
+                <button type="button" class="intermodal-nav-btn" data-intermodal-module="route"><b>02</b><span><strong>联运路径比选</strong><small>产品组合与方案锁定</small></span><i>›</i></button>
+                <span class="intermodal-group-label">执行准备</span>
+                <button type="button" class="intermodal-nav-btn" data-intermodal-module="supply"><b>03</b><span><strong>货源归集计划</strong><small>批次拼组与出库排程</small></span><i>›</i></button>
+                <button type="button" class="intermodal-nav-btn" data-intermodal-module="resources"><b>04</b><span><strong>运力资源锁定</strong><small>车皮、舱位与仓容协同</small></span><i>›</i></button>
             </nav>
         </aside>
 
-        <section class="intermodal-workspace">
+        <section class="intermodal-workspace hidden">
             <div class="intermodal-task-head">
                 <div class="intermodal-task-title">
                     <div>
-                        <span>ACTIVE INTERMODAL TASK</span>
+                        <span>计划组织 / 当前联运任务</span>
                         <h2 id="intermodal-task-title">绥化粮库—广州粮库 · 公铁水联运任务</h2>
                         <p id="intermodal-task-subtitle">联运单 LT-2026-0724-006 · 贸易企业：北方粮贸有限公司 · 多式联运经营人：北粮通道联运有限公司</p>
                     </div>
@@ -2769,7 +3489,7 @@
             <div id="intermodal-content" class="intermodal-content"></div>
         </section>
 
-        <aside class="intermodal-copilot">
+        <aside class="intermodal-copilot hidden">
             <div class="intermodal-copilot-head">
                 <span>AI · MULTI-AGENT COORDINATION</span>
                 <h3>多主体协同调度智能体</h3>
@@ -2805,9 +3525,9 @@
     <section id="extension-dashboard" class="extension-app" aria-label="一粮一图扩展能力工作台">
         <aside class="extension-sidebar">
             <div class="extension-heading">
-                <span>PASSPORT · TRUSTED APPLICATIONS</span>
+                <span>CREDENTIAL · TRUSTED APPLICATIONS</span>
                 <h2>一粮一图可信应用</h2>
-                <p>沿用上方同一批次、同一护照和同一证据链，继续穿透节点作业、货权责任、异常、数据、金融及外部验真。</p>
+                <p>沿用上方同一批次、同一联运凭证和同一证据链，继续穿透节点作业、货权责任、异常、数据、金融及外部验真。</p>
             </div>
             <div class="extension-batch">
                 <label for="extension-batch-select">当前分析批次</label>
@@ -2839,7 +3559,7 @@
                     <b>13</b><span><strong>金融服务辅助</strong><span>真实性与融资条件</span></span><i>›</i>
                 </button>
                 <button type="button" class="extension-nav-btn" data-extension-module="verify">
-                    <b>14</b><span><strong>护照验真与分享</strong><span>授权链接、二维码与验真</span></span><i>›</i>
+                    <b>14</b><span><strong>凭证验真与分享</strong><span>授权链接、二维码与验真</span></span><i>›</i>
                 </button>
             </nav>
         </aside>
@@ -2852,7 +3572,7 @@
                     <p id="extension-subtitle">按节点查看作业时间、操作主体、数量质量变化、交接人员和关联凭证。</p>
                 </div>
                 <div class="workspace-actions">
-                    <button id="extension-back-passport" type="button" class="workspace-btn">回到护照概览</button>
+                    <button id="extension-back-passport" type="button" class="workspace-btn">回到凭证概览</button>
                     <button id="extension-export" type="button" class="workspace-btn primary">导出当前摘要</button>
                 </div>
             </div>
@@ -2991,9 +3711,12 @@
 
             const yingkouExit = [coord['营口港'],[121.45,39.70],[121.08,39.00],[121.55,38.35],[122.70,37.40]];
             const dalianExit = [coord['大连港'],[122.15,38.45],[122.70,37.40]];
+            const dalianToYellowSea = [...dalianExit,[123.40,35.40]];
+            const yellowSeaToTaicang = [[123.40,35.40],[123.15,34.50],[122.85,33.20],[122.20,31.90],coord['太仓港']];
 
             const waterRoutes = [
                 { name: '营口港—太仓港', coords: [...yingkouExit, [123.05,35.00],[122.85,33.20],[122.20,31.90],coord['太仓港']] },
+                { name: '大连港—太仓港', coords: [...dalianToYellowSea,...yellowSeaToTaicang.slice(1)] },
                 { name: '大连港—舟山港', coords: [...dalianExit, ...bezier(dalianExit[dalianExit.length-1],[123.70,34.60],[123.00,30.10],coord['舟山港'])] },
                 { name: '营口港—福州港', coords: [...yingkouExit, [123.50,34.60],[123.20,31.00],[122.30,28.20],[120.70,26.20],coord['福州港']] },
                 { name: '营口港—广州港', coords: [...yingkouExit, [123.50,34.50],[123.10,31.00],[122.00,28.00],[120.30,25.20],[118.20,23.00],[115.60,21.60],[114.20,21.70],coord['广州港']] },
@@ -3023,6 +3746,52 @@
                 { name: '辽宁集疏运', coords: [coord['辽宁'],coord['沈阳'],coord['营口港']] },
                 { name: '辽宁至大连港集疏运', coords: [coord['辽宁'],coord['沈阳'],coord['大连港']] }
             ];
+
+            const waterRouteCoords = name => waterRoutes.find(route => route.name === name).coords;
+            window.CORRIDOR_ROUTE_GEOMETRY = {
+                segments: {
+                    '哈尔滨铁路站>营口港': {
+                        mode: 'rail',
+                        coords: [coord['哈尔滨'],coord['长春'],coord['沈阳'],coord['营口港']]
+                    },
+                    '四平仓储库>大连港': {
+                        mode: 'road',
+                        coords: [[124.10,43.30],coord['沈阳'],[122.55,40.25],coord['大连港']]
+                    },
+                    '大连港>黄海航段': {
+                        mode: 'water',
+                        coords: dalianToYellowSea
+                    },
+                    '黄海航段>太仓港': {
+                        mode: 'water',
+                        coords: yellowSeaToTaicang
+                    },
+                    '营口港>广州港': {
+                        mode: 'water',
+                        coords: waterRouteCoords('营口港—广州港')
+                    },
+                    '营口港>钦州港': {
+                        mode: 'water',
+                        coords: waterRouteCoords('营口港—钦州港')
+                    },
+                    '佳木斯粮库>哈尔滨铁路站': {
+                        mode: 'rail',
+                        coords: [[130.10,46.65],[129.55,46.30],[128.83,45.85],[127.40,45.75],coord['哈尔滨']]
+                    },
+                    '哈尔滨铁路站>沈阳铁路枢纽': {
+                        mode: 'rail',
+                        coords: [coord['哈尔滨'],coord['长春'],coord['沈阳']]
+                    },
+                    '沈阳铁路枢纽>济南铁路站': {
+                        mode: 'rail',
+                        coords: [coord['沈阳'],coord['锦州'],coord['山海关'],coord['北京'],[117.12,36.65]]
+                    },
+                    '济南铁路站>南京粮库': {
+                        mode: 'rail',
+                        coords: [[117.12,36.65],[117.20,34.26],[118.80,32.06]]
+                    }
+                }
+            };
 
             const regions = [
                 { name: '黑龙江', itemStyle: { areaColor: 'rgba(22,131,95,0.24)' } },
@@ -3253,8 +4022,8 @@
                         { name: '绥化粮源基地', coord: [126.98, 46.64], status: 'done', time: '07-20 08:30', stage: '粮源锁定', actor: '绥化市丰源合作社', detail: '完成批次组货与产地信息绑定，形成唯一批次号。', evidence: '粮源清单、地块信息、组货确认单' },
                         { name: '产区粮库', coord: [126.50, 46.20], status: 'done', time: '07-20 16:10', stage: '质检入库', actor: '绥化直属粮库', detail: '完成扦样、检验、检斤和货位绑定。', evidence: '检验报告、入库单、地磅记录' },
                         { name: '哈尔滨铁路站', coord: [126.64, 45.76], status: 'done', time: '07-21 09:20', stage: '铁路发运', actor: '哈尔滨铁路物流中心', detail: '铁路请车受理完成，集装箱封签后发车。', evidence: '铁路运单、箱号与铅封、发车记录' },
-                        { name: '营口港', coord: [122.18, 40.65], status: 'current', time: '07-24 14:20', stage: '集港装船', actor: '营口港粮食码头', detail: '已完成进港理货，等待装船窗口，预计不影响到港时间。', evidence: '进港记录、理货单、装船计划' },
-                        { name: '广州港', coord: [113.55, 22.75], status: 'planned', time: '07-27 08:00', stage: '到港接卸', actor: '广州港粮食码头', detail: '计划靠泊后完成卸船、理货和交接。', evidence: '到港计划、接卸预约' },
+                        { name: '营口港', coord: [122.10, 40.30], status: 'current', time: '07-24 14:20', stage: '集港装船', actor: '营口港粮食码头', detail: '已完成进港理货，等待装船窗口，预计不影响到港时间。', evidence: '进港记录、理货单、装船计划' },
+                        { name: '广州港', coord: [113.60, 22.80], status: 'planned', time: '07-27 08:00', stage: '到港接卸', actor: '广州港粮食码头', detail: '计划靠泊后完成卸船、理货和交接。', evidence: '到港计划、接卸预约' },
                         { name: '广州粮库', coord: [113.26, 23.13], status: 'planned', time: '07-27 16:30', stage: '验收入库', actor: '广州南方储运粮库', detail: '计划复检、检斤、签收并完成业务闭环。', evidence: '预约入库单、验收方案' }
                     ],
                     documents: [
@@ -3315,9 +4084,9 @@
                     nodes: [
                         { name: '四平粮源基地', coord: [124.35, 43.17], status: 'done', time: '07-19 07:40', stage: '粮源锁定', actor: '四平市金谷合作社', detail: '完成大豆批次组货和身份绑定。', evidence: '粮源清单、批次确认单' },
                         { name: '四平仓储库', coord: [124.10, 43.30], status: 'done', time: '07-19 15:20', stage: '检验出库', actor: '四平丰储粮库', detail: '完成质量检验、检斤和出库。', evidence: '质检报告、出库单' },
-                        { name: '大连港', coord: [121.65, 38.92], status: 'done', time: '07-22 19:30', stage: '港口装船', actor: '大连港散粮码头', detail: '装船完成并形成理货交接凭证。', evidence: '理货单、装船清单、交接单' },
+                        { name: '大连港', coord: [121.78, 38.92], status: 'done', time: '07-22 19:30', stage: '港口装船', actor: '大连港散粮码头', detail: '装船完成并形成理货交接凭证。', evidence: '理货单、装船清单、交接单' },
                         { name: '黄海航段', coord: [123.40, 35.40], status: 'current', risk: true, time: '07-24 10:18', stage: '海运在途', actor: '辽海航运有限公司', detail: '受局部大雾影响，航速下降，预计延后约 2.5 小时。', evidence: 'AIS 轨迹、气象预警、ETA 计算结果' },
-                        { name: '太仓港', coord: [121.13, 31.46], status: 'planned', time: '07-26 06:20', stage: '到港接卸', actor: '太仓港粮食码头', detail: '泊位和接卸资源已预约。', evidence: '靠泊计划、接卸预约单' },
+                        { name: '太仓港', coord: [121.20, 31.70], status: 'planned', time: '07-26 06:20', stage: '到港接卸', actor: '太仓港粮食码头', detail: '泊位和接卸资源已预约。', evidence: '靠泊计划、接卸预约单' },
                         { name: '苏州粮库', coord: [120.62, 31.30], status: 'planned', time: '07-26 11:40', stage: '验收入库', actor: '苏州禾丰粮库', detail: '计划到库复检并完成签收。', evidence: '入库预约、验收标准' }
                     ],
                     documents: [
@@ -3442,8 +4211,8 @@
                         { name: '通辽粮源基地', coord: [122.24, 43.62], status: 'done', time: '07-21 06:50', stage: '粮源锁定', actor: '通辽丰谷合作社', detail: '完成玉米批次组货和交易锁定。', evidence: '粮源清单、合同订单' },
                         { name: '通辽粮库', coord: [122.05, 43.50], status: 'done', time: '07-22 07:30', stage: '检验出库', actor: '通辽通粮仓储有限公司', detail: '完成检验、检斤和分车装运。', evidence: '检验报告、出库单、公路运单' },
                         { name: '丹锡高速路段', coord: [120.30, 42.20], status: 'current', risk: true, time: '07-24 10:05', stage: '公路集疏运', actor: '北方联运车队', detail: '部分车辆受临时管制影响，预计晚到约 1 小时。', evidence: '车辆轨迹、道路管制信息、ETA 预测' },
-                        { name: '营口港', coord: [122.18, 40.65], status: 'current', time: '07-24 11:00', stage: '港口集港', actor: '营口港粮食码头', detail: '已到港 1,280 吨，正在理货和堆场归集。', evidence: '进港记录、地磅净重、理货进度' },
-                        { name: '钦州港', coord: [108.62, 21.95], status: 'planned', time: '07-29 09:00', stage: '到港接卸', actor: '北部湾港钦州码头', detail: '计划靠泊并完成卸船交接。', evidence: '靠泊计划、接卸预约' },
+                        { name: '营口港', coord: [122.10, 40.30], status: 'current', time: '07-24 11:00', stage: '港口集港', actor: '营口港粮食码头', detail: '已到港 1,280 吨，正在理货和堆场归集。', evidence: '进港记录、地磅净重、理货进度' },
+                        { name: '钦州港', coord: [108.80, 21.70], status: 'planned', time: '07-29 09:00', stage: '到港接卸', actor: '北部湾港钦州码头', detail: '计划靠泊并完成卸船交接。', evidence: '靠泊计划、接卸预约' },
                         { name: '南宁粮库', coord: [108.32, 22.82], status: 'planned', time: '07-29 18:00', stage: '验收入库', actor: '南宁粮食储运中心', detail: '计划完成到货复检和签收。', evidence: '入库预约、验收方案' }
                     ],
                     documents: [
@@ -3459,10 +4228,9 @@
             const overview = document.getElementById('overview-dashboard');
             const passportView = document.getElementById('passport-dashboard');
             const intermodalView = document.getElementById('intermodal-dashboard');
+            const emptyView = document.getElementById('empty-dashboard');
             const extensionView = document.getElementById('extension-dashboard');
             const globalSearch = document.querySelector('.global-search');
-            const pageTitle = document.querySelector('.title-block h1');
-            const pageSubtitle = document.querySelector('.title-block p');
             passportView.appendChild(extensionView);
             const modeTabs = Array.from(document.querySelectorAll('.mode-tab'));
             const passportMapElement = document.getElementById('passport-map');
@@ -3475,6 +4243,7 @@
             let knowledgeGraphChart = null;
             let playbackTimer = null;
             let toastTimer = null;
+            let passportRefreshVersion = 0;
             let extensionModule = 'operations';
 
             function escapeHtml(value) {
@@ -3486,33 +4255,71 @@
                     .replaceAll("'", '&#039;');
             }
 
+            function disposePassportMap() {
+                passportRefreshVersion += 1;
+                if (window.echarts) {
+                    const mountedChart = echarts.getInstanceByDom(passportMapElement);
+                    if (mountedChart) mountedChart.dispose();
+                }
+                passportChart = null;
+                passportMapElement.replaceChildren();
+            }
+
+            function refreshPassportCharts(attempt = 0, refreshVersion = passportRefreshVersion) {
+                if (refreshVersion !== passportRefreshVersion || passportView.classList.contains('hidden')) return;
+
+                const { width, height } = passportMapElement.getBoundingClientRect();
+                if ((width < 120 || height < 160) && attempt < 30) {
+                    window.setTimeout(() => refreshPassportCharts(attempt + 1, refreshVersion), 40);
+                    return;
+                }
+
+                if (width < 120 || height < 160) return;
+
+                const mountedChart = window.echarts ? echarts.getInstanceByDom(passportMapElement) : null;
+                if (mountedChart && (mountedChart.getWidth() < 2 || mountedChart.getHeight() < 2)) {
+                    mountedChart.dispose();
+                    passportChart = null;
+                    passportMapElement.replaceChildren();
+                }
+
+                renderPassportMap(selectedBatch);
+                if (passportChart) passportChart.resize();
+                if (qualityChart) qualityChart.resize();
+            }
+
+            function schedulePassportChartsRefresh() {
+                const refreshVersion = ++passportRefreshVersion;
+                window.requestAnimationFrame(() => {
+                    window.requestAnimationFrame(() => refreshPassportCharts(0, refreshVersion));
+                });
+                window.setTimeout(() => refreshPassportCharts(0, refreshVersion), 160);
+            }
+
             function switchView(view) {
                 const isPassport = view === 'passport';
                 const isOverview = view === 'overview';
                 const isIntermodal = view === 'intermodal';
+                const isEmpty = view === 'trusted' || view === 'elements';
+                if (!isPassport) disposePassportMap();
                 overview.classList.toggle('hidden', !isOverview);
                 passportView.classList.toggle('hidden', !isPassport);
                 intermodalView.classList.toggle('hidden', !isIntermodal);
+                emptyView.classList.toggle('hidden', !isEmpty);
                 globalSearch.classList.toggle('hidden', !isPassport);
-                const titles = {
-                    overview: ['北粮南运通道综合态势', 'CHANNEL OVERVIEW · NORTH-TO-SOUTH GRAIN CORRIDOR'],
-                    passport: ['北粮南运一粮一图数字护照', 'CHANNEL OVERVIEW · ONE BATCH, ONE PASSPORT'],
-                    intermodal: ['北粮南运多式联运协同平台', 'MULTIMODAL TRANSPORT · JOINT OPERATIONS']
-                };
-                pageTitle.textContent = titles[view][0];
-                pageSubtitle.textContent = titles[view][1];
                 modeTabs.forEach(tab => {
                     const active = tab.dataset.view === view;
                     tab.classList.toggle('active', active);
                     tab.setAttribute('aria-selected', String(active));
                 });
+                if (isPassport) {
+                    passportView.scrollTop = 0;
+                    window.scrollTo({ top: 0, behavior: 'auto' });
+                    renderExtension();
+                    schedulePassportChartsRefresh();
+                }
                 window.setTimeout(() => {
-                    if (isPassport) {
-                        if (passportChart) passportChart.resize();
-                        if (qualityChart) qualityChart.resize();
-                    }
-                    if (isPassport) renderExtension();
-                    if (isIntermodal && window.IntermodalApp) window.IntermodalApp.render();
+                    if (isIntermodal && window.IntermodalApp) window.IntermodalApp.home();
                     window.dispatchEvent(new Event('resize'));
                 }, 60);
             }
@@ -3554,7 +4361,7 @@
                 },
                 verify: {
                     kicker: 'MODULE 14 · VERIFY & SHARE',
-                    title: '护照验真与分享',
+                    title: '凭证验真与分享',
                     subtitle: '按授权范围生成二维码或链接，供收货、金融、保险和监管主体核验。'
                 }
             };
@@ -3720,6 +4527,28 @@
                 return state === 'warn';
             }
 
+            function inferRouteMode(fromNode, toNode) {
+                const routeText = `${fromNode.name} ${fromNode.stage} ${toNode.name} ${toNode.stage}`;
+                if (/海运|航段/.test(routeText)) return 'water';
+                if (/铁路|编组/.test(routeText)) return 'rail';
+                return 'road';
+            }
+
+            function routeGeometry(fromNode, toNode) {
+                const key = `${fromNode.name}>${toNode.name}`;
+                const sharedRoute = window.CORRIDOR_ROUTE_GEOMETRY?.segments?.[key];
+                if (sharedRoute) {
+                    return {
+                        mode: sharedRoute.mode,
+                        coords: sharedRoute.coords.map(point => [...point])
+                    };
+                }
+                return {
+                    mode: inferRouteMode(fromNode, toNode),
+                    coords: [fromNode.coord, toNode.coord]
+                };
+            }
+
             function renderPassportMap(batch, playingIndex) {
                 const focusNode = playingIndex !== null && playingIndex !== undefined ? batch.nodes[playingIndex] : currentNode(batch);
                 document.getElementById('current-node-name').textContent = `${focusNode.name} · ${focusNode.stage}`;
@@ -3729,15 +4558,19 @@
                     passportFallback.style.display = 'grid';
                     return;
                 }
+
+                const mapRect = passportMapElement.getBoundingClientRect();
+                if (passportView.classList.contains('hidden') || mapRect.width < 120 || mapRect.height < 160) return;
+
                 passportFallback.style.display = 'none';
-                if (!passportChart) {
-                    passportChart = echarts.init(passportMapElement);
-                    passportChart.on('click', params => {
-                        if ((params.seriesName === '路径节点' || params.seriesName === '当前节点') && params.data?.value) {
-                            openNodeOperation(selectedBatch, Number(params.data.value[2]));
-                        }
-                    });
-                }
+                const mountedChart = echarts.getInstanceByDom(passportMapElement);
+                passportChart = mountedChart || echarts.init(passportMapElement);
+                passportChart.off('click');
+                passportChart.on('click', params => {
+                    if ((params.seriesName === '路径节点' || params.seriesName === '当前节点') && params.data?.value) {
+                        openNodeOperation(selectedBatch, Number(params.data.value[2]));
+                    }
+                });
 
                 const styles = {
                     done: { color: '#16835f', type: 'solid', width: 3 },
@@ -3745,14 +4578,27 @@
                     planned: { color: '#9aa8ae', type: 'dashed', width: 2 },
                     warn: { color: '#b87818', type: 'solid', width: 4 }
                 };
-                const segments = { done: [], current: [], planned: [], warn: [] };
+                const modeStyles = {
+                    water: { label: '沿海水运', type: 'solid' },
+                    rail: { label: '铁路运输', type: 'dashed' },
+                    road: { label: '公路运输', type: 'dotted' }
+                };
+                const segmentGroups = {};
                 for (let i = 1; i < batch.nodes.length; i += 1) {
                     const state = segmentState(batch.nodes[i], i, playingIndex);
                     if (pathVisible(state)) {
-                        segments[state].push({
-                            coords: [batch.nodes[i - 1].coord, batch.nodes[i].coord],
-                            fromName: batch.nodes[i - 1].name,
-                            toName: batch.nodes[i].name
+                        const fromNode = batch.nodes[i - 1];
+                        const toNode = batch.nodes[i];
+                        const geometry = routeGeometry(fromNode, toNode);
+                        const groupKey = `${state}-${geometry.mode}`;
+                        if (!segmentGroups[groupKey]) {
+                            segmentGroups[groupKey] = { state, mode: geometry.mode, data: [] };
+                        }
+                        segmentGroups[groupKey].data.push({
+                            coords: geometry.coords,
+                            fromName: fromNode.name,
+                            toName: toNode.name,
+                            routeMode: modeStyles[geometry.mode].label
                         });
                     }
                 }
@@ -3772,14 +4618,27 @@
                 }).filter(item => pathVisible(item.state));
 
                 const activePoints = scatterData.filter(item => item.state === 'current' || item.state === 'warn');
-                const lineSeries = Object.keys(segments).filter(key => segments[key].length).map(key => ({
-                    name: key,
+                const lineSeries = Object.values(segmentGroups).map(group => ({
+                    name: `${group.state} · ${modeStyles[group.mode].label}`,
                     type: 'lines',
                     coordinateSystem: 'geo',
-                    zlevel: key === 'current' || key === 'warn' ? 4 : 2,
-                    effect: { show: key === 'current' || key === 'warn', period: 4, trailLength: 0.15, symbolSize: 5, color: styles[key].color },
-                    lineStyle: { color: styles[key].color, width: styles[key].width, type: styles[key].type, opacity: 0.92, curveness: 0.08 },
-                    data: segments[key]
+                    polyline: true,
+                    zlevel: group.state === 'current' || group.state === 'warn' ? 4 : 2,
+                    effect: {
+                        show: group.state === 'current' || group.state === 'warn',
+                        period: 4,
+                        trailLength: 0.15,
+                        symbol: 'arrow',
+                        symbolSize: 5,
+                        color: styles[group.state].color
+                    },
+                    lineStyle: {
+                        color: styles[group.state].color,
+                        width: styles[group.state].width,
+                        type: modeStyles[group.mode].type,
+                        opacity: 0.92
+                    },
+                    data: group.data
                 }));
 
                 passportChart.setOption({
@@ -3790,7 +4649,10 @@
                         confine: true,
                         formatter: params => {
                             const data = params.data || {};
-                            if (!data.stage) return `${escapeHtml(data.fromName || '')} → ${escapeHtml(data.toName || '')}`;
+                            if (!data.stage) {
+                                const routeMode = data.routeMode ? `<br>${escapeHtml(data.routeMode)}` : '';
+                                return `${escapeHtml(data.fromName || '')} → ${escapeHtml(data.toName || '')}${routeMode}`;
+                            }
                             return `<strong>${escapeHtml(data.name)}</strong><br>${escapeHtml(data.stage)} · ${escapeHtml(data.time)}<br>${escapeHtml(data.actor)}<br><span style="color:#66777e">${escapeHtml(data.detail)}</span>`;
                         }
                     },
@@ -3848,7 +4710,7 @@
                     playbackTimer = null;
                     document.getElementById('route-play').textContent = '▶ 路径回放';
                 }
-                document.getElementById('passport-title').textContent = `${batch.grain}数字护照`;
+                document.getElementById('passport-title').textContent = `${batch.grain}联运凭证`;
                 document.getElementById('passport-number').textContent = batch.passport;
                 document.getElementById('passport-risk').textContent = batch.riskLabel;
                 document.getElementById('passport-risk').className = `risk-pill ${batch.risk}`;
@@ -3863,7 +4725,7 @@
                 renderAI(batch);
                 renderQuality(batch);
                 renderDocuments(batch);
-                renderPassportMap(batch);
+                if (!passportView.classList.contains('hidden')) renderPassportMap(batch);
                 if (!extensionView.classList.contains('hidden')) renderExtension();
             }
 
@@ -3885,7 +4747,7 @@
                     ['事件时间', node.time],
                     ['状态', node.status === 'done' ? '已完成' : node.status === 'current' ? '当前节点' : '待执行'],
                     ['数据生产方', node.actor],
-                    ['关联护照', batch.passport],
+                    ['关联凭证', batch.passport],
                     ['证据材料', node.evidence],
                     ['风险标识', node.risk ? '需关注' : '正常']
                 ], node.detail);
@@ -4134,7 +4996,7 @@
                 panel.innerHTML = `
                     <span>${node.center ? 'CENTER NODE' : 'RELATION NODE'}</span>
                     <h4>${escapeHtml(node.display)}</h4>
-                    <p>${escapeHtml(node.type)} · 与当前数字护照形成“${escapeHtml(node.relation)}”关系。</p>
+                    <p>${escapeHtml(node.type)} · 与当前联运凭证形成“${escapeHtml(node.relation)}”关系。</p>
                     <div class="knowledge-node-fields">
                         <div class="knowledge-node-field"><label>节点类型</label><strong>${escapeHtml(node.type)}</strong></div>
                         <div class="knowledge-node-field"><label>节点数据</label><strong>${escapeHtml(node.valueText)}</strong></div>
@@ -4343,9 +5205,9 @@
                 return `
                     <div class="module-grid">
                         <section class="module-card span-7">
-                            <div class="module-card-head"><h3>护照分享与授权范围</h3><span>二维码为交互演示，不包含真实外链</span></div>
+                            <div class="module-card-head"><h3>凭证分享与授权范围</h3><span>二维码为交互演示，不包含真实外链</span></div>
                             <div class="passport-share">
-                                <div><div class="qr-demo" aria-label="护照分享二维码演示">${qrCells(batch)}</div><p style="margin:7px 0 0;color:var(--muted);font-size:7px;text-align:center">${escapeHtml(batch.passport)}</p></div>
+                                <div><div class="qr-demo" aria-label="凭证分享二维码演示">${qrCells(batch)}</div><p style="margin:7px 0 0;color:var(--muted);font-size:7px;text-align:center">${escapeHtml(batch.passport)}</p></div>
                                 <div class="share-settings">
                                     <label class="share-option"><span><strong>基础身份与货权摘要</strong><span>批次、品种、数量、货权状态</span></span><input type="checkbox" checked></label>
                                     <label class="share-option"><span><strong>质量数字档案</strong><span>质量指标、报告编号与结论</span></span><input type="checkbox" checked></label>
@@ -4358,11 +5220,11 @@
                         <section class="module-card span-5">
                             <div class="module-card-head"><h3>实时验真结果</h3><span>数据更新于 ${escapeHtml(updated)}</span></div>
                             <div class="trace-list">
-                                <div class="trace-row"><strong>护照编号</strong><span>${escapeHtml(batch.passport)} · 有效</span></div>
+                                <div class="trace-row"><strong>凭证编号</strong><span>${escapeHtml(batch.passport)} · 有效</span></div>
                                 <div class="trace-row"><strong>批次一致性</strong><span>合同、质检、运单、节点事件关联一致</span></div>
                                 <div class="trace-row"><strong>签章与时间戳</strong><span>${batch.documents.filter(doc => doc[4].includes('核验') || doc[4].includes('签章')).length} 项核心凭证已核验</span></div>
                                 <div class="trace-row"><strong>授权有效期</strong><span>生成后 72 小时，可提前撤销</span></div>
-                                <div class="trace-row"><strong>总体结论</strong><span style="color:var(--prod);font-weight:700">护照真实有效，未发现篡改</span></div>
+                                <div class="trace-row"><strong>总体结论</strong><span style="color:var(--prod);font-weight:700">联运凭证真实有效，未发现篡改</span></div>
                             </div>
                         </section>
                         <section class="module-card span-12">
@@ -4442,7 +5304,7 @@
                     button.addEventListener('click', () => {
                         const values = financeValues(selectedBatch);
                         openModal('金融服务辅助', button.dataset.product, [
-                            ['关联护照', selectedBatch.passport],
+                            ['关联凭证', selectedBatch.passport],
                             ['参考货值', `${values.value} 万元`],
                             ['参考融资额', `${values.limit} 万元`],
                             ['货权状态', '清晰、未质押'],
@@ -4454,8 +5316,8 @@
                 const shareButton = document.getElementById('generate-share');
                 if (shareButton) {
                     shareButton.addEventListener('click', () => {
-                        openModal('护照验真与分享', '授权分享链接已生成', [
-                            ['护照编号', selectedBatch.passport],
+                        openModal('凭证验真与分享', '授权分享链接已生成', [
+                            ['凭证编号', selectedBatch.passport],
                             ['授权对象', '收货企业 / 指定核验方'],
                             ['有效期', '72 小时'],
                             ['授权范围', '按当前勾选字段'],
@@ -4469,9 +5331,9 @@
             function exportExtensionSummary() {
                 const meta = extensionModules[extensionModule];
                 const content = [
-                    '北粮南运一粮一图数字护照',
+                    '北粮南运一粮一图联运凭证',
                     `模块：${meta.title}`,
-                    `护照号：${selectedBatch.passport}`,
+                    `联运凭证号：${selectedBatch.passport}`,
                     `批次ID：${selectedBatch.id}`,
                     `品种与数量：${selectedBatch.grain} · ${selectedBatch.quantity}`,
                     `贸易企业：${selectedBatch.owner}`,
@@ -4500,7 +5362,7 @@
                 const input = document.getElementById('global-passport-search');
                 const keyword = input.value.trim().toLowerCase();
                 if (!keyword) {
-                    showToast('请输入护照号、批次、合同、运单或箱号');
+                    showToast('请输入凭证号、批次、合同、运单或箱号');
                     input.focus();
                     return;
                 }
@@ -4510,7 +5372,7 @@
                         .join(' ').toLowerCase().includes(keyword);
                 });
                 if (!matched) {
-                    showToast('未找到匹配批次，请尝试示例护照号 BLNY-2026-CORN-0001');
+                    showToast('未找到匹配批次，请尝试示例凭证号 BLNY-2026-CORN-0001');
                     return;
                 }
                 switchView('passport');
@@ -4613,7 +5475,7 @@
             });
 
             selectBatch(selectedBatch.id);
-            switchView('passport');
+            switchView('overview');
         })();
     </script>
     <script>
@@ -4969,10 +5831,129 @@
                 }
             };
 
+            const domainGroups = [
+                {
+                    id: 'planning',
+                    number: '01',
+                    title: '计划组织',
+                    subtitle: '从运输需求进入，完成路径比选、货源归集和运力资源锁定。',
+                    modules: ['demand', 'route', 'supply', 'resources'],
+                    ready: true
+                },
+                {
+                    id: 'coordination',
+                    number: '02',
+                    title: '协同执行',
+                    subtitle: '面向多主体智能协商、港铁航联合排程和节点预约换装。',
+                    modules: ['agents', 'schedule', 'transfer'],
+                    ready: false
+                },
+                {
+                    id: 'intransit',
+                    number: '03',
+                    title: '一单一箱与在途',
+                    subtitle: '围绕一单制、一箱制、在途可视化和动态ETA统一管理。',
+                    modules: ['onebill', 'onebox', 'visibility'],
+                    ready: false
+                },
+                {
+                    id: 'risk',
+                    number: '04',
+                    title: '风险管理',
+                    subtitle: '识别异常、动态改线并管控粮食质量与储运减损风险。',
+                    modules: ['reroute', 'quality'],
+                    ready: false
+                },
+                {
+                    id: 'settlement',
+                    number: '05',
+                    title: '成本与结算',
+                    subtitle: '贯通全链路成本、一口价、自动结算和责任索赔。',
+                    modules: ['cost', 'settlement', 'claims'],
+                    ready: false
+                },
+                {
+                    id: 'operations',
+                    number: '06',
+                    title: '运营决策',
+                    subtitle: '基于可信数据协同开展通道运营分析与保供调度。',
+                    modules: ['data', 'operations'],
+                    ready: false
+                }
+            ];
+
+            const intermodalDashboard = document.getElementById('intermodal-dashboard');
+            const intermodalHome = document.getElementById('intermodal-home');
+            const domainGrid = document.getElementById('intermodal-domain-grid');
+            const intermodalSidebar = document.querySelector('.intermodal-sidebar');
+            const intermodalWorkspace = document.querySelector('.intermodal-workspace');
+            const intermodalCopilot = document.querySelector('.intermodal-copilot');
             const content = document.getElementById('intermodal-content');
             const orderSelect = document.getElementById('intermodal-order-select');
             const navButtons = Array.from(document.querySelectorAll('.intermodal-nav-btn'));
-            let activeModule = 'demand';
+            let activeDomain = null;
+            let activeModule = null;
+
+            const planningSequence = [
+                { id: 'demand', short: '需求受理', output: '联运委托' },
+                { id: 'route', short: '路径比选', output: '推荐方案' },
+                { id: 'supply', short: '货源归集', output: '发运计划' },
+                { id: 'resources', short: '资源锁定', output: '执行计划包' }
+            ];
+
+            const planningFilters = {
+                demand: [
+                    ['需求单号', '输入需求单号', 'input'],
+                    ['粮食品种', '全部品种', 'select', ['玉米', '大豆', '稻谷']],
+                    ['起讫区域', '输入启运地或到达地', 'input'],
+                    ['受理状态', '全部状态', 'select', ['待受理', '方案生成中', '已确认']]
+                ],
+                route: [
+                    ['联运任务', '输入任务编号', 'input'],
+                    ['运输组合', '全部组合', 'select', ['公铁水联运', '铁路直达', '公水联运']],
+                    ['成本范围', '输入成本上限', 'input'],
+                    ['推荐状态', '全部状态', 'select', ['首选', '备选', '待评估']]
+                ],
+                supply: [
+                    ['库点或批次', '输入库点或批次', 'input'],
+                    ['粮食品种', '全部品种', 'select', ['玉米', '大豆', '稻谷']],
+                    ['计划日期', '选择计划日期', 'input'],
+                    ['执行状态', '全部状态', 'select', ['备货完成', '质检完成', '待出库确认']]
+                ],
+                resources: [
+                    ['资源类型', '全部资源', 'select', ['铁路车皮', '集装箱', '沿海舱位', '仓容']],
+                    ['所属节点', '输入港口、场站或粮库', 'input'],
+                    ['可用日期', '选择可用日期', 'input'],
+                    ['资源状态', '全部状态', 'select', ['可预订', '可预留', '窗口紧张']]
+                ]
+            };
+
+            const planningHandoffs = {
+                demand: {
+                    input: '贸易合同、发运申请、质量要求、交付时间窗',
+                    output: '已确认的联运委托与运输约束清单',
+                    next: 'route',
+                    nextLabel: '进入路径比选'
+                },
+                route: {
+                    input: '联运委托、成本上限、时效要求与节点能力',
+                    output: '推荐路径A、备选路径及各区段计划',
+                    next: 'supply',
+                    nextLabel: '进入货源归集'
+                },
+                supply: {
+                    input: '已锁定路径、库存批次、质量等级与出库能力',
+                    output: '分批发运计划、装车排程与到港节奏',
+                    next: 'resources',
+                    nextLabel: '进入资源锁定'
+                },
+                resources: {
+                    input: '发运计划、节点时间窗与各区段资源需求',
+                    output: '车皮、舱位、仓容锁定清单和可执行计划包',
+                    next: null,
+                    nextLabel: '提交协同执行'
+                }
+            };
 
             function escapeText(value) {
                 return String(value)
@@ -4981,6 +5962,221 @@
                     .replaceAll('>', '&gt;')
                     .replaceAll('"', '&quot;')
                     .replaceAll("'", '&#039;');
+            }
+
+            function setIntermodalShellVisible(visible) {
+                intermodalDashboard.classList.toggle('detail-mode', visible);
+                intermodalHome.classList.toggle('hidden', visible);
+                intermodalSidebar.classList.toggle('hidden', !visible);
+                intermodalWorkspace.classList.toggle('hidden', !visible);
+                intermodalCopilot.classList.add('hidden');
+            }
+
+            function renderDomainHome() {
+                setIntermodalShellVisible(false);
+                domainGrid.innerHTML = domainGroups.map(domain => `
+                    <button type="button" class="intermodal-domain-card ${domain.ready ? 'ready' : 'planned'}" data-intermodal-domain="${domain.id}">
+                        <span class="intermodal-domain-top">
+                            <b class="intermodal-domain-number">${domain.number}</b>
+                            <span class="intermodal-domain-count">${domain.modules.length} 项功能</span>
+                        </span>
+                        <h3>${escapeText(domain.title)}</h3>
+                        <p>${escapeText(domain.subtitle)}</p>
+                        <span class="intermodal-domain-modules">
+                            ${domain.modules.map(moduleId => `<span>${escapeText(modules[moduleId].title)}</span>`).join('')}
+                        </span>
+                        <span class="intermodal-domain-entry">
+                            <span>${domain.ready ? '进入业务域' : '规划中'}</span>
+                            <i>→</i>
+                        </span>
+                    </button>
+                `).join('');
+
+                domainGrid.querySelectorAll('[data-intermodal-domain]').forEach(button => {
+                    button.addEventListener('click', () => openDomain(button.dataset.intermodalDomain));
+                });
+            }
+
+            function showDomainHome() {
+                activeDomain = null;
+                activeModule = null;
+                navButtons.forEach(button => button.classList.remove('active'));
+                renderDomainHome();
+            }
+
+            function openDomain(domainId) {
+                const domain = domainGroups.find(item => item.id === domainId);
+                if (!domain) return;
+                if (!domain.ready) {
+                    showIntermodalToast(`“${domain.title}”将在确认“计划组织”样式后继续展开`);
+                    return;
+                }
+                activeDomain = domainId;
+                activeModule = null;
+                setIntermodalShellVisible(true);
+                renderDomainOverview(domainId);
+            }
+
+            function openModule(moduleId) {
+                if (!modules[moduleId]) return;
+                activeModule = moduleId;
+                render();
+                content.scrollTop = 0;
+            }
+
+            function renderPlanningWorkflow(currentModule) {
+                const activeIndex = planningSequence.findIndex(item => item.id === currentModule);
+                return `
+                    <div class="planning-business-flow" aria-label="计划组织全流程">
+                        ${planningSequence.map((item, index) => {
+                            const state = activeIndex === -1 ? '' : index < activeIndex ? 'done' : index === activeIndex ? 'active' : '';
+                            return `
+                                <button type="button" class="planning-business-step ${state}" data-im-workflow-module="${item.id}">
+                                    <b>${String(index + 1).padStart(2, '0')}</b>
+                                    <span><strong>${escapeText(item.short)}</strong><span>输出：${escapeText(item.output)}</span></span>
+                                </button>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }
+
+            function renderPlanningFilters(moduleId) {
+                const filters = planningFilters[moduleId] || [];
+                return `
+                    <form class="planning-filter-panel" data-im-filter-form>
+                        ${filters.map((filter, index) => `
+                            <div class="planning-filter-field">
+                                <label for="planning-filter-${moduleId}-${index}">${escapeText(filter[0])}</label>
+                                ${filter[2] === 'select' ? `
+                                    <select id="planning-filter-${moduleId}-${index}">
+                                        <option>${escapeText(filter[1])}</option>
+                                        ${(filter[3] || []).map(option => `<option>${escapeText(option)}</option>`).join('')}
+                                    </select>
+                                ` : `<input id="planning-filter-${moduleId}-${index}" type="text" placeholder="${escapeText(filter[1])}">`}
+                            </div>
+                        `).join('')}
+                        <div class="planning-filter-actions">
+                            <button type="reset" data-im-filter-reset>重置</button>
+                            <button type="submit" class="primary" data-im-filter-search>查询</button>
+                        </div>
+                    </form>
+                `;
+            }
+
+            function renderPlanningHandoff(moduleId, module) {
+                const handoff = planningHandoffs[moduleId];
+                return `
+                    <section class="planning-side-card">
+                        <h4>业务衔接</h4>
+                        <p>本环节的结果将自动成为下一环节的办理依据。</p>
+                        <div class="planning-handoff-row">
+                            <label>上游输入</label>
+                            <strong>${escapeText(handoff.input)}</strong>
+                        </div>
+                        <div class="planning-handoff-row output">
+                            <label>本环节输出</label>
+                            <strong>${escapeText(handoff.output)}</strong>
+                        </div>
+                        <button type="button" class="planning-next-action" data-im-next-module="${handoff.next || ''}">${escapeText(handoff.nextLabel)} →</button>
+                    </section>
+                    <section class="planning-side-card">
+                        <h4>协同提示</h4>
+                        <p>基于当前任务、上下游计划和各主体授权数据动态生成。</p>
+                        <div class="intermodal-insights">
+                            ${module.insights.map((item, index) => `
+                                <div class="intermodal-insight"><b>${index + 1}</b><div><strong>${escapeText(item[0])}</strong><span>${escapeText(item[1])}</span></div></div>
+                            `).join('')}
+                        </div>
+                    </section>
+                `;
+            }
+
+            function renderDomainOverview(domainId) {
+                const domain = domainGroups.find(item => item.id === domainId);
+                if (!domain) {
+                    showDomainHome();
+                    return;
+                }
+                navButtons.forEach(button => button.classList.remove('active'));
+                document.getElementById('intermodal-ai-advice').textContent = '建议先确认运输需求和约束边界，再依次完成路径比选、货源归集及资源锁定，形成可执行的联运计划包。';
+                content.innerHTML = `
+                    <div class="planning-page intermodal-planning-overview">
+                        <div class="intermodal-detail-breadcrumb">
+                            <button type="button" data-im-back-multimodal>多式联运首页</button>
+                            <span>›</span>
+                            <span>计划组织</span>
+                        </div>
+                        <section class="intermodal-domain-detail-head">
+                            <div>
+                                <span>BUSINESS DOMAIN 01 · PLAN ORGANIZATION</span>
+                                <h3>计划组织</h3>
+                                <p>围绕“运什么、从哪里运、怎么运、用什么资源运”形成统一计划。四个环节共享同一联运任务，上一步输出自动进入下一步。</p>
+                            </div>
+                            <strong>01–04</strong>
+                        </section>
+                        ${renderPlanningWorkflow(null)}
+                        <div class="planning-overview-layout">
+                            <section class="planning-main-card">
+                                <div class="intermodal-panel-head"><h4>计划组织办理环节</h4><span>点击环节进入业务工作台</span></div>
+                                <div class="intermodal-function-grid">
+                                    ${domain.modules.map(moduleId => {
+                                        const module = modules[moduleId];
+                                        const firstMetric = module.metrics[0];
+                                        return `
+                                            <button type="button" class="intermodal-function-card" data-im-open-module="${moduleId}">
+                                                <b>${module.number}</b>
+                                                <span>
+                                                    <h4>${escapeText(module.title)}</h4>
+                                                    <p>${escapeText(module.subtitle)}</p>
+                                                    <span class="intermodal-function-meta">
+                                                        <em>${escapeText(firstMetric[0])} ${escapeText(firstMetric[1])}${escapeText(firstMetric[2])}</em>
+                                                        <span>进入办理 →</span>
+                                                    </span>
+                                                </span>
+                                            </button>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </section>
+                            <aside class="planning-side-stack">
+                                <section class="planning-side-card">
+                                    <h4>当前计划包</h4>
+                                    <p>${escapeText(orderSelect.value)} 的组织进度与关键产出。</p>
+                                    <div class="planning-status-list">
+                                        <div class="planning-status-item"><span>需求受理</span><strong>约束完整率 96.8%</strong></div>
+                                        <div class="planning-status-item"><span>路径方案</span><strong>6条候选 · 待锁定</strong></div>
+                                        <div class="planning-status-item"><span>货源归集</span><strong>已归集 79.5%</strong></div>
+                                        <div class="planning-status-item"><span>资源准备</span><strong>锁定率 92%</strong></div>
+                                    </div>
+                                </section>
+                                <section class="planning-side-card">
+                                    <h4>业务串联规则</h4>
+                                    <p>联运委托确定运输边界，推荐路径确定节点与区段，发运计划确定批次节奏，资源锁定后生成执行计划包并进入协同执行。</p>
+                                </section>
+                            </aside>
+                        </div>
+                    </div>
+                `;
+                content.querySelectorAll('[data-im-open-module], [data-im-workflow-module]').forEach(button => {
+                    const moduleId = button.dataset.imOpenModule || button.dataset.imWorkflowModule;
+                    button.addEventListener('click', () => openModule(moduleId));
+                });
+                const backButton = content.querySelector('[data-im-back-multimodal]');
+                if (backButton) backButton.addEventListener('click', showDomainHome);
+                content.scrollTop = 0;
+            }
+
+            function renderIntermodalApp() {
+                if (!activeDomain) {
+                    renderDomainHome();
+                } else if (!activeModule) {
+                    setIntermodalShellVisible(true);
+                    renderDomainOverview(activeDomain);
+                } else {
+                    setIntermodalShellVisible(true);
+                    render();
+                }
             }
 
             function statusClass(value) {
@@ -5065,45 +6261,51 @@
                 navButtons.forEach(button => button.classList.toggle('active', button.dataset.intermodalModule === activeModule));
                 document.getElementById('intermodal-ai-advice').textContent = module.insights[0][1];
                 content.innerHTML = `
-                    <section class="intermodal-module-head">
-                        <div>
-                            <span>MODULE ${module.number} · ${escapeText(module.kicker)}</span>
-                            <h3>${escapeText(module.title)}</h3>
-                            <p>${escapeText(module.subtitle)}</p>
+                    <div class="planning-page">
+                        <div class="intermodal-detail-breadcrumb">
+                            <button type="button" data-im-back-multimodal>多式联运首页</button>
+                            <span>›</span>
+                            <button type="button" data-im-domain-overview>计划组织</button>
+                            <span>›</span>
+                            <span>${escapeText(module.title)}</span>
                         </div>
-                        <button type="button" class="intermodal-primary-action" data-im-primary>${escapeText(module.action)}</button>
-                    </section>
-                    <div class="intermodal-module-metrics">
-                        ${module.metrics.map(metric => `
-                            <div class="intermodal-module-metric">
-                                <label>${escapeText(metric[0])}</label>
-                                <strong>${escapeText(metric[1])}<em>${escapeText(metric[2])}</em></strong>
-                                <span class="${/风险|异常|待|偏差|冲突/.test(metric[3]) ? 'warn' : ''}">${escapeText(metric[3])}</span>
+                        <section class="intermodal-module-head">
+                            <div>
+                                <span>环节 ${module.number} · ${escapeText(module.kicker)}</span>
+                                <h3>${escapeText(module.title)}</h3>
+                                <p>${escapeText(module.subtitle)}</p>
                             </div>
-                        `).join('')}
-                    </div>
-                    <div class="intermodal-process">
-                        ${module.steps.map((step, index) => `<div class="intermodal-process-step"><b>0${index + 1}</b><span>${escapeText(step)}</span></div>`).join('')}
-                    </div>
-                    <div class="intermodal-module-grid">
-                        <section class="intermodal-panel">
-                            <div class="intermodal-panel-head"><h4>${module.special ? '实时业务图谱' : '实时业务看板'}</h4><span>联运任务数据 · 动态更新</span></div>
-                            ${renderPrimaryVisual(module)}
-                            ${module.special ? `<div style="margin-top:10px">${renderTable(module)}</div>` : ''}
+                            <button type="button" class="intermodal-primary-action" data-im-primary>${escapeText(module.action)}</button>
                         </section>
-                        <section class="intermodal-panel">
-                            <div class="intermodal-panel-head"><h4>AI分析与协同建议</h4><span>基于当前任务</span></div>
-                            <div class="intermodal-insights">
-                                ${module.insights.map((item, index) => `
-                                    <div class="intermodal-insight"><b>${index + 1}</b><div><strong>${escapeText(item[0])}</strong><span>${escapeText(item[1])}</span></div></div>
-                                `).join('')}
-                            </div>
+                        ${renderPlanningWorkflow(activeModule)}
+                        <div class="intermodal-module-metrics">
+                            ${module.metrics.map(metric => `
+                                <div class="intermodal-module-metric">
+                                    <label>${escapeText(metric[0])}</label>
+                                    <strong>${escapeText(metric[1])}<em>${escapeText(metric[2])}</em></strong>
+                                    <span class="${/风险|异常|待|偏差|冲突/.test(metric[3]) ? 'warn' : ''}">${escapeText(metric[3])}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        ${renderPlanningFilters(activeModule)}
+                        <div class="planning-content-grid">
+                            <section class="planning-main-card">
+                                <div class="intermodal-panel-head">
+                                    <h4>${module.special ? '资源可用情况' : '业务办理清单'}</h4>
+                                    <span>${escapeText(orderSelect.value)} · 动态更新</span>
+                                </div>
+                                ${renderPrimaryVisual(module)}
+                                ${module.special ? `<div style="margin-top:10px">${renderTable(module)}</div>` : ''}
+                            </section>
+                            <aside class="planning-side-stack">
+                                ${renderPlanningHandoff(activeModule, module)}
+                            </aside>
+                        </div>
+                        <section class="intermodal-data-strip">
+                            <div class="intermodal-chip-group"><strong>办理依据</strong><div class="intermodal-chips">${module.data.map(item => `<span class="intermodal-chip">${escapeText(item)}</span>`).join('')}</div></div>
+                            <div class="intermodal-chip-group"><strong>协同主体</strong><div class="intermodal-chips">${module.actors.map(item => `<span class="intermodal-chip actor">${escapeText(item)}</span>`).join('')}</div></div>
                         </section>
                     </div>
-                    <section class="intermodal-data-strip">
-                        <div class="intermodal-chip-group"><strong>模块关联数据</strong><div class="intermodal-chips">${module.data.map(item => `<span class="intermodal-chip">${escapeText(item)}</span>`).join('')}</div></div>
-                        <div class="intermodal-chip-group"><strong>协同参与主体</strong><div class="intermodal-chips">${module.actors.map(item => `<span class="intermodal-chip actor">${escapeText(item)}</span>`).join('')}</div></div>
-                    </section>
                 `;
                 bindContentInteractions();
             }
@@ -5120,7 +6322,7 @@
                 document.getElementById('intermodal-kpi-capacity').innerHTML = `${profile.capacity}<em>%</em>`;
                 document.getElementById('intermodal-kpi-time').innerHTML = `${profile.time}<em>天</em>`;
                 document.getElementById('intermodal-kpi-issues').innerHTML = `${profile.issues}<em>项</em>`;
-                render();
+                renderIntermodalApp();
                 showIntermodalToast(`已切换联运任务：${orderSelect.value}`);
             }
 
@@ -5144,6 +6346,58 @@
             }
 
             function bindContentInteractions() {
+                const backMultimodalButton = content.querySelector('[data-im-back-multimodal]');
+                if (backMultimodalButton) backMultimodalButton.addEventListener('click', showDomainHome);
+
+                const domainOverviewButton = content.querySelector('[data-im-domain-overview]');
+                if (domainOverviewButton) {
+                    domainOverviewButton.addEventListener('click', () => {
+                        activeModule = null;
+                        renderDomainOverview(activeDomain);
+                    });
+                }
+
+                content.querySelectorAll('[data-im-workflow-module]').forEach(button => {
+                    button.addEventListener('click', () => openModule(button.dataset.imWorkflowModule));
+                });
+
+                const filterForm = content.querySelector('[data-im-filter-form]');
+                if (filterForm) {
+                    filterForm.addEventListener('submit', event => {
+                        event.preventDefault();
+                        showIntermodalToast(`已按当前条件刷新“${modules[activeModule].title}”办理清单`);
+                    });
+                    filterForm.addEventListener('reset', () => {
+                        window.setTimeout(() => showIntermodalToast('筛选条件已重置'), 0);
+                    });
+                }
+
+                const nextButton = content.querySelector('[data-im-next-module]');
+                if (nextButton) {
+                    nextButton.addEventListener('click', () => {
+                        const nextModule = nextButton.dataset.imNextModule;
+                        if (nextModule) {
+                            openModule(nextModule);
+                            showIntermodalToast(`已进入下一环节：${modules[nextModule].title}`);
+                            return;
+                        }
+                        const profile = orderProfiles[orderSelect.value];
+                        openIntermodalModal(
+                            '计划组织 · 执行计划包',
+                            '计划组织已完成',
+                            [
+                                ['联运任务', orderSelect.value],
+                                ['运输货物', profile.cargo],
+                                ['推荐方式', profile.mode],
+                                ['计划到达', profile.eta],
+                                ['运力锁定率', `${profile.capacity}%`],
+                                ['下一业务域', '协同执行']
+                            ],
+                            '需求、路径、货源和资源已串联形成统一计划包，可提交铁路、港口、船公司和粮库开展联合排程。'
+                        );
+                    });
+                }
+
                 const primary = content.querySelector('[data-im-primary]');
                 if (primary) {
                     primary.addEventListener('click', () => {
@@ -5179,12 +6433,11 @@
 
             navButtons.forEach(button => {
                 button.addEventListener('click', () => {
-                    activeModule = button.dataset.intermodalModule;
-                    render();
-                    document.querySelector('.intermodal-workspace').scrollTop = 0;
+                    openModule(button.dataset.intermodalModule);
                 });
             });
 
+            document.getElementById('intermodal-back-home').addEventListener('click', showDomainHome);
             orderSelect.addEventListener('change', updateOrder);
             document.querySelectorAll('[data-im-action]').forEach(button => {
                 button.addEventListener('click', () => {
@@ -5208,8 +6461,11 @@
                 });
             });
 
-            window.IntermodalApp = { render };
-            render();
+            window.IntermodalApp = {
+                render: renderIntermodalApp,
+                home: showDomainHome
+            };
+            showDomainHome();
         })();
     </script>
 </body>
