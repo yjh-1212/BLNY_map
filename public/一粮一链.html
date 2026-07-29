@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="北粮南运一粮一链单屏业务工作台">
+  <title>一粮一链业务工作台</title>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/js/china.js"></script>
+  <style>
+    :root{
+      --bg:#f2f5f7;
+      --panel:#fff;
+      --ink:#17242c;
+      --muted:#6d7c85;
+      --line:#e1e8eb;
+      --green:#0d7c5b;
+      --green-soft:#e9f6f1;
+      --blue:#1376a6;
+      --blue-soft:#eaf4f9;
+      --orange:#c98320;
+      --orange-soft:#fff4df;
+      --red:#c24c43;
+      --red-soft:#fff0ee;
+      --slate:#405363;
+      --shadow:0 8px 26px rgba(35,61,72,.07);
+    }
+    *{box-sizing:border-box}
+    html,body{width:100%;height:100%;margin:0}
+    body{
+      overflow:hidden;
+      color:var(--ink);
+      background:var(--bg);
+      font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",Arial,sans-serif;
+      font-variant-numeric:tabular-nums;
+    }
+    button,input,select{font:inherit}
+    button{cursor:pointer}
+    /*
+      本页面仅提供“一粮一链”业务内容区。
+      嵌入已有系统时，让外层内容容器具有明确高度，本区域会自动填满剩余空间。
+    */
+    .app{width:100%;height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+    .topbar{
+      height:62px;
+      flex:0 0 62px;
+      padding:0 16px;
+      display:flex;
+      align-items:center;
+      gap:16px;
+      color:#fff;
+      background:linear-gradient(110deg,#0c654f 0%,#0d7458 42%,#126f91 100%);
+      box-shadow:0 5px 18px rgba(16,79,76,.18);
+      z-index:20;
+    }
+    .brand{display:flex;align-items:center;gap:11px;min-width:275px}
+    .brand-mark{
+      width:38px;height:38px;display:grid;place-items:center;
+      border:1px solid rgba(255,255,255,.28);border-radius:11px;
+      background:rgba(255,255,255,.12)
+    }
+    .brand-mark svg{width:24px;height:24px}
+    .brand-copy strong{display:block;font-size:17px;letter-spacing:.05em}
+    .brand-copy span{display:block;margin-top:3px;color:rgba(255,255,255,.7);font-size:10px}
+    .global-search{
+      width:min(410px,31vw);height:36px;padding:0 11px;display:flex;align-items:center;gap:8px;
+      border:1px solid rgba(255,255,255,.22);border-radius:8px;background:rgba(255,255,255,.12)
+    }
+    .global-search svg{width:16px;height:16px;opacity:.75;flex:none}
+    .global-search input{width:100%;border:0;outline:0;color:#fff;background:transparent;font-size:12px}
+    .global-search input::placeholder{color:rgba(255,255,255,.64)}
+    .top-spacer{flex:1}
+    .sync-state{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.82)}
+    .sync-dot{width:7px;height:7px;border-radius:50%;background:#8ee6bd;box-shadow:0 0 0 4px rgba(142,230,189,.14)}
+    .top-action{
+      height:34px;padding:0 12px;border:1px solid rgba(255,255,255,.25);
+      border-radius:7px;color:#fff;background:rgba(255,255,255,.1);font-size:11px
+    }
+    .top-action.primary{border-color:#fff;color:#0a694f;background:#fff;font-weight:700}
+    .module-nav{
+      height:44px;flex:0 0 44px;padding:0 16px;display:flex;align-items:center;gap:3px;
+      border-bottom:1px solid var(--line);background:#fff
+    }
+    .module-nav button{
+      height:43px;padding:0 15px;position:relative;border:0;color:#687780;background:transparent;font-size:12px
+    }
+    .module-nav button:hover{color:var(--green)}
+    .module-nav button.active{color:var(--green);font-weight:700}
+    .module-nav button.active::after{
+      content:"";position:absolute;left:14px;right:14px;bottom:0;height:3px;border-radius:3px 3px 0 0;background:var(--green)
+    }
+    .nav-summary{margin-left:auto;display:flex;align-items:center;gap:15px;color:var(--muted);font-size:10px}
+    .nav-summary b{color:var(--ink);font-size:11px}
+    .workspace{
+      width:100%;height:100%;min-height:0;flex:1;padding:0;display:grid;
+      grid-template-columns:306px minmax(580px,1fr) 360px;gap:12px;overflow:hidden
+    }
+    .column{min-width:0;min-height:0;display:flex;flex-direction:column;gap:10px}
+    .panel{
+      min-width:0;min-height:0;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+      box-shadow:var(--shadow);overflow:hidden
+    }
+    .panel-head{height:44px;padding:0 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+    .panel-head strong{font-size:12px}
+    .panel-head span{color:var(--muted);font-size:9px}
+    .mini-btn{height:26px;padding:0 8px;border:1px solid var(--line);border-radius:6px;color:#52636c;background:#fff;font-size:9px}
+    .mini-btn:hover{border-color:#8bb7a9;color:var(--green)}
+    .chain-list-panel{order:2;flex:1;display:flex;flex-direction:column}
+    .panel-actions{display:flex;align-items:center;gap:5px}
+    .chain-toolbar{padding:9px;display:grid;grid-template-columns:1fr 88px;gap:7px;border-bottom:1px solid var(--line)}
+    .chain-toolbar input,.chain-toolbar select{
+      min-width:0;height:30px;padding:0 8px;border:1px solid var(--line);border-radius:6px;
+      outline:0;color:#4a5b64;background:#fff;font-size:9px
+    }
+    .chain-list{min-height:0;flex:1;padding:8px;display:flex;flex-direction:column;gap:7px;overflow:auto}
+    .chain-card{
+      width:100%;min-height:68px;padding:10px;border:1px solid var(--line);border-radius:8px;background:#fff;text-align:left;transition:.18s
+    }
+    .chain-card:hover{transform:translateY(-1px);border-color:#99c4b6}
+    .chain-card.active{border-color:#66a993;background:#f1faf6;box-shadow:0 5px 14px rgba(13,124,91,.08)}
+    .chain-card-top,.chain-card-meta{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .chain-card-top strong{overflow:hidden;font-size:11px;text-overflow:ellipsis;white-space:nowrap}
+    .chain-card-code{margin:5px 0 7px;color:var(--muted);font-size:8px}
+    .chain-card-meta{color:#71818a;font-size:8px}
+    .chain-card-meta b{color:#354750;font-size:9px}
+    .risk{padding:3px 6px;border-radius:999px;color:var(--green);background:var(--green-soft);font-size:8px;font-weight:700;white-space:nowrap}
+    .risk.medium{color:#956310;background:var(--orange-soft)}
+    .risk.high{color:var(--red);background:var(--red-soft)}
+    .identity-panel{order:1;flex:0 0 auto}
+    .identity-hero{padding:12px;color:#fff;background:linear-gradient(135deg,#0d7558,#167da0)}
+    .identity-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+    .identity-top small{display:block;color:rgba(255,255,255,.68);font-size:8px;letter-spacing:.08em}
+    .identity-top h2{margin:4px 0 0;font-size:16px}
+    .identity-code{margin-top:8px;color:rgba(255,255,255,.77);font-size:9px}
+    .identity-kpis{margin-top:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+    .identity-kpis div{padding:7px;border:1px solid rgba(255,255,255,.16);border-radius:6px;background:rgba(255,255,255,.09)}
+    .identity-kpis span{display:block;color:rgba(255,255,255,.66);font-size:7px}
+    .identity-kpis b{display:block;margin-top:3px;font-size:9px}
+    .identity-grid{padding:10px 12px 7px;display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
+    .identity-grid label{display:block;color:var(--muted);font-size:8px}
+    .identity-grid strong{display:block;margin-top:3px;overflow:hidden;font-size:9px;text-overflow:ellipsis;white-space:nowrap}
+    .identity-actions{padding:0 12px 10px;display:grid;grid-template-columns:1fr 1fr;gap:7px}
+    .identity-actions button{
+      height:28px;border:1px solid #8cb9ab;border-radius:6px;color:var(--green);background:#fff;font-size:8px
+    }
+    .identity-actions button.primary{color:#fff;background:var(--green)}
+    .center{display:grid;grid-template-rows:minmax(360px,1fr) 220px;gap:10px}
+    .map-panel{position:relative}
+    .map-head{height:54px;padding:0 13px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+    .map-title strong{display:block;font-size:13px}
+    .map-title span{display:block;margin-top:4px;color:var(--muted);font-size:9px}
+    .map-controls{display:flex;align-items:center;gap:5px}
+    .map-controls button{
+      height:28px;padding:0 9px;border:1px solid var(--line);border-radius:6px;color:#5b6c74;background:#fff;font-size:9px
+    }
+    .map-controls button.active{border-color:#7cae9e;color:var(--green);background:var(--green-soft)}
+    .map-stage{position:absolute;inset:54px 0 0;background:linear-gradient(180deg,#f5fafc,#eef5f7)}
+    #chain-map{position:absolute;inset:0;z-index:2}
+    .map-fallback{position:absolute;inset:0;z-index:1;width:100%;height:100%}
+    .map-fallback text{font-family:"Microsoft YaHei",sans-serif}
+    .map-overlay{
+      position:absolute;left:12px;top:12px;z-index:4;width:202px;padding:10px;
+      border:1px solid rgba(215,228,232,.9);border-radius:8px;background:rgba(255,255,255,.92);box-shadow:0 6px 18px rgba(46,73,84,.08)
+    }
+    .map-overlay small{color:var(--muted);font-size:8px}
+    .map-overlay strong{display:block;margin:4px 0 7px;font-size:11px}
+    .progress-line{height:5px;border-radius:5px;background:#e6edef;overflow:hidden}
+    .progress-line i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--green),var(--blue))}
+    .map-overlay-foot{margin-top:7px;display:flex;justify-content:space-between;color:var(--muted);font-size:8px}
+    .legend{
+      position:absolute;right:12px;bottom:10px;z-index:4;padding:7px 9px;display:flex;align-items:center;gap:10px;
+      border:1px solid rgba(215,228,232,.9);border-radius:7px;background:rgba(255,255,255,.91);color:#61727a;font-size:8px
+    }
+    .legend span{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+    .legend svg{width:14px;height:14px;flex:none}
+    .timeline-panel{display:flex;flex-direction:column}
+    .timeline-head{height:42px;padding:0 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+    .timeline-head strong{font-size:12px}
+    .timeline-head span{color:var(--muted);font-size:8px}
+    .timeline-wrap{min-height:0;flex:1;padding:14px 10px 8px;overflow-x:auto;overflow-y:hidden}
+    .timeline{height:100%;min-width:760px;display:grid;grid-template-columns:repeat(8,1fr);position:relative}
+    .timeline::before{content:"";position:absolute;left:6%;right:6%;top:34px;height:2px;background:#dce5e8}
+    .event{
+      min-width:0;padding:0 5px;position:relative;border:0;background:transparent;text-align:center
+    }
+    .event-dot{
+      width:20px;height:20px;margin:24px auto 9px;position:relative;z-index:2;display:grid;place-items:center;
+      border:4px solid #fff;border-radius:50%;color:#fff;background:#aebbc1;box-shadow:0 0 0 2px #d5dfe3;font-size:7px
+    }
+    .event.done .event-dot{background:var(--green);box-shadow:0 0 0 2px #8bc6b1}
+    .event.current .event-dot{background:var(--orange);box-shadow:0 0 0 3px #f6d99f;animation:pulse 1.8s infinite}
+    .event.warn .event-dot{background:var(--red);box-shadow:0 0 0 3px #f3c5c1}
+    @keyframes pulse{50%{box-shadow:0 0 0 7px rgba(201,131,32,.12)}}
+    .event strong{display:block;overflow:hidden;color:#34464f;font-size:9px;text-overflow:ellipsis;white-space:nowrap}
+    .event span{display:block;margin-top:4px;color:var(--muted);font-size:7px}
+    .event em{display:inline-block;margin-top:6px;padding:2px 5px;border-radius:4px;color:#718089;background:#f1f4f5;font-size:7px;font-style:normal}
+    .event.current em{color:#956310;background:var(--orange-soft)}
+    .right-summary{flex:0 0 132px;padding:12px}
+    .summary-top{display:flex;align-items:flex-start;justify-content:space-between}
+    .summary-top small{display:block;color:var(--muted);font-size:8px}
+    .summary-top strong{display:block;margin-top:4px;font-size:13px}
+    .trust-ring{width:48px;height:48px;display:grid;place-items:center;border-radius:50%;background:conic-gradient(var(--green) 0 96%,#e8edef 96%)}
+    .trust-ring span{width:38px;height:38px;display:grid;place-items:center;border-radius:50%;background:#fff;color:var(--green);font-size:11px;font-weight:800}
+    .summary-kpis{margin-top:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+    .summary-kpis div{padding:7px;border-radius:7px;background:#f5f8f9}
+    .summary-kpis span{display:block;color:var(--muted);font-size:7px}
+    .summary-kpis strong{display:block;margin-top:4px;font-size:10px}
+    .detail-panel{min-height:0;flex:1;display:flex;flex-direction:column}
+    .detail-tabs{height:42px;display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--line)}
+    .detail-tabs button{position:relative;border:0;color:#718088;background:#fff;font-size:9px}
+    .detail-tabs button.active{color:var(--green);font-weight:700}
+    .detail-tabs button.active::after{content:"";position:absolute;left:18%;right:18%;bottom:0;height:2px;background:var(--green)}
+    .tab-content{min-height:0;flex:1;padding:10px;overflow:auto}
+    .quality-grade{padding:10px;display:flex;align-items:center;gap:10px;border-radius:8px;background:linear-gradient(110deg,#eef9f4,#eef7fb)}
+    .quality-grade b{width:38px;height:38px;display:grid;place-items:center;border-radius:50%;color:#fff;background:var(--green);font-size:15px}
+    .quality-grade strong{display:block;font-size:11px}
+    .quality-grade span{display:block;margin-top:4px;color:var(--muted);font-size:8px}
+    .metric-list{margin-top:9px;display:grid;grid-template-columns:1fr 1fr;gap:7px}
+    .metric{padding:8px;border:1px solid var(--line);border-radius:7px}
+    .metric-head{display:flex;justify-content:space-between;color:var(--muted);font-size:8px}
+    .metric-head b{color:#34464f;font-size:9px}
+    .bar{height:4px;margin-top:6px;border-radius:4px;background:#e9eef0;overflow:hidden}
+    .bar i{display:block;height:100%;border-radius:4px;background:var(--green)}
+    .quantity-box{margin-top:9px;padding:9px;border:1px solid var(--line);border-radius:8px}
+    .subhead{display:flex;align-items:center;justify-content:space-between}
+    .subhead strong{font-size:9px}
+    .subhead span{color:var(--muted);font-size:7px}
+    .quantity-flow{margin-top:8px;display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:5px;text-align:center}
+    .quantity-flow div{padding:6px 3px;border-radius:6px;background:#f4f7f8}
+    .quantity-flow span{display:block;color:var(--muted);font-size:7px}
+    .quantity-flow b{display:block;margin-top:3px;font-size:9px}
+    .quantity-flow i{color:#9aabb2;font-size:10px;font-style:normal}
+    .lineage-btn{width:100%;height:30px;margin-top:8px;border:1px dashed #8fbbae;border-radius:7px;color:var(--green);background:#f2faf7;font-size:9px}
+    .alert-card{margin-bottom:7px;padding:9px;border:1px solid var(--line);border-radius:8px}
+    .alert-card.medium{border-left:3px solid var(--orange)}
+    .alert-card.high{border-left:3px solid var(--red)}
+    .alert-top{display:flex;align-items:center;justify-content:space-between}
+    .alert-top strong{font-size:9px}
+    .alert-top span{font-size:7px;color:var(--muted)}
+    .alert-card p{margin:5px 0 7px;color:#65757d;font-size:8px;line-height:1.55}
+    .alert-card button{height:24px;padding:0 7px;border:1px solid var(--line);border-radius:5px;color:#596a72;background:#fff;font-size:8px}
+    .responsibility{margin-top:8px;padding:9px;border-radius:8px;background:#f5f8f9}
+    .responsibility-row{padding:6px 0;display:grid;grid-template-columns:70px 1fr auto;gap:6px;border-bottom:1px dashed #dce5e8;font-size:8px}
+    .responsibility-row:last-child{border:0}
+    .responsibility-row span{color:var(--muted)}
+    .responsibility-row b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .responsibility-row em{color:var(--green);font-style:normal}
+    .verify-result{padding:10px;border-radius:8px;color:#22644f;background:var(--green-soft)}
+    .verify-result strong{display:block;font-size:11px}
+    .verify-result span{display:block;margin-top:4px;font-size:8px;line-height:1.5}
+    .doc-list{margin-top:8px}
+    .doc-row{padding:7px 0;display:grid;grid-template-columns:1fr auto;gap:8px;border-bottom:1px dashed var(--line)}
+    .doc-row strong{display:block;font-size:8px}
+    .doc-row span{display:block;margin-top:3px;color:var(--muted);font-size:7px}
+    .doc-row em{align-self:center;color:var(--green);font-size:7px;font-style:normal}
+    .verify-actions{margin-top:9px;display:grid;grid-template-columns:1fr 1fr;gap:7px}
+    .verify-actions button{height:30px;border:1px solid #87b6a7;border-radius:6px;color:var(--green);background:#fff;font-size:8px}
+    .verify-actions button.primary{color:#fff;background:var(--green)}
+    .ai-panel{
+      flex:0 0 156px;padding:11px 12px;border-color:#ded7ed;
+      background:linear-gradient(135deg,#fbf9ff 0%,#f4f8ff 100%)
+    }
+    .ai-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+    .ai-title{display:flex;align-items:center;gap:8px}
+    .ai-badge{
+      width:27px;height:27px;display:grid;place-items:center;border-radius:7px;color:#fff;
+      background:linear-gradient(135deg,#7352a6,#4e76bc);font-size:9px;font-weight:800
+    }
+    .ai-title strong{display:block;font-size:11px}
+    .ai-title span{display:block;margin-top:3px;color:#837893;font-size:8px}
+    .ai-level{padding:3px 6px;border-radius:999px;color:#5e4390;background:#ece5fa;font-size:7px;font-weight:700}
+    .ai-level.medium{color:#936010;background:#fff0d2}
+    .ai-level.high{color:#a33c36;background:#ffe6e3}
+    .ai-message{
+      margin:8px 0 9px;color:#5f6473;font-size:8px;line-height:1.55;
+      display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden
+    }
+    .ai-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+    .ai-fact{padding:7px;border:1px solid rgba(218,212,232,.9);border-radius:6px;background:rgba(255,255,255,.7)}
+    .ai-fact span{display:block;color:#8a8196;font-size:7px}
+    .ai-fact strong{display:block;margin-top:3px;font-size:9px}
+    .modal{
+      position:fixed;inset:0;z-index:100;padding:28px;display:none;align-items:center;justify-content:center;
+      background:rgba(18,32,40,.48);backdrop-filter:blur(3px)
+    }
+    .modal.open{display:flex}
+    .modal-card{width:min(650px,92vw);max-height:84vh;border-radius:12px;background:#fff;box-shadow:0 24px 70px rgba(16,35,45,.24);overflow:hidden}
+    .modal-head{height:54px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+    .modal-head small{display:block;color:var(--green);font-size:8px;font-weight:700;letter-spacing:.08em}
+    .modal-head h3{margin:3px 0 0;font-size:14px}
+    .modal-close{width:30px;height:30px;border:0;border-radius:7px;color:#718088;background:#f2f5f6;font-size:17px}
+    .modal-body{max-height:calc(84vh - 108px);padding:15px;overflow:auto}
+    .modal-foot{height:54px;padding:0 15px;display:flex;align-items:center;justify-content:flex-end;gap:7px;border-top:1px solid var(--line)}
+    .dialog-btn{height:32px;padding:0 13px;border:1px solid var(--line);border-radius:6px;color:#52636c;background:#fff;font-size:9px}
+    .dialog-btn.primary{border-color:var(--green);color:#fff;background:var(--green)}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+    .info-item{padding:9px;border:1px solid var(--line);border-radius:7px}
+    .info-item label{display:block;color:var(--muted);font-size:8px}
+    .info-item strong{display:block;margin-top:4px;font-size:10px}
+    .modal-note{margin:12px 0 0;padding:10px;border-radius:7px;color:#5d6e76;background:#f4f7f8;font-size:9px;line-height:1.6}
+    .lineage-tree{padding:8px}
+    .tree-node{width:100%;max-width:230px;margin:0 auto;padding:10px;border:1px solid #91bdaf;border-radius:8px;background:#f2faf7;text-align:center}
+    .tree-node strong{display:block;font-size:10px}
+    .tree-node span{display:block;margin-top:4px;color:var(--muted);font-size:8px}
+    .tree-line{width:2px;height:18px;margin:auto;background:#b9c9cf}
+    .tree-children{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .tree-children::before{content:"";position:absolute;left:25%;right:25%;top:-9px;height:1px;background:#b9c9cf}
+    .tree-children .tree-node{position:relative}
+    .tree-children .tree-node::before{content:"";position:absolute;left:50%;top:-10px;width:1px;height:9px;background:#b9c9cf}
+    .qr-box{display:flex;align-items:center;gap:18px}
+    .qr{
+      width:132px;height:132px;flex:none;padding:8px;display:grid;grid-template-columns:repeat(11,1fr);gap:2px;
+      border:1px solid var(--line);border-radius:8px;background:#fff
+    }
+    .qr i{border-radius:1px;background:#fff}
+    .qr i.on{background:#173f35}
+    .share-copy strong{display:block;font-size:13px}
+    .share-copy p{margin:7px 0;color:var(--muted);font-size:9px;line-height:1.6}
+    .share-scope{margin-top:8px;display:flex;flex-wrap:wrap;gap:5px}
+    .share-scope span{padding:4px 6px;border-radius:5px;color:var(--green);background:var(--green-soft);font-size:8px}
+    .toast{
+      position:fixed;left:50%;bottom:22px;z-index:200;padding:9px 14px;transform:translate(-50%,15px);
+      border-radius:7px;color:#fff;background:rgba(25,43,52,.92);font-size:10px;opacity:0;pointer-events:none;transition:.22s
+    }
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    @media(max-width:1250px){
+      .workspace{grid-template-columns:270px minmax(520px,1fr) 326px}
+      .global-search{width:300px}
+      .module-nav button{padding:0 10px}
+    }
+    @media(max-height:780px){
+      .topbar{height:56px;flex-basis:56px}
+      .module-nav{height:40px;flex-basis:40px}
+      .module-nav button{height:39px}
+      .workspace{padding:0;gap:9px}
+      .center{grid-template-rows:minmax(330px,1fr) 192px;gap:9px}
+      .identity-panel{flex-basis:auto}
+      .identity-grid{padding:8px 10px;gap:6px 10px}
+      .right-summary{flex-basis:116px;padding:9px}
+      .ai-panel{flex-basis:138px;padding:9px 10px}
+      .ai-message{margin:6px 0}
+      .ai-fact{padding:5px}
+      .summary-kpis{margin-top:6px}
+      .timeline-wrap{padding-top:5px}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <main class="workspace">
+    <aside class="column">
+      <section class="panel chain-list-panel">
+        <div class="panel-head">
+          <div><strong>粮链查询</strong> <span>共 28 条运行粮链</span></div>
+          <div class="panel-actions">
+            <button id="new-chain" class="mini-btn" type="button">新建粮链</button>
+            <button id="refresh-list" class="mini-btn" type="button">刷新</button>
+          </div>
+        </div>
+        <div class="chain-toolbar">
+          <input id="chain-filter" type="search" placeholder="批次/企业">
+          <select id="risk-filter"><option value="all">全部风险</option><option value="low">低风险</option><option value="medium">中风险</option><option value="high">高风险</option></select>
+        </div>
+        <div id="chain-list" class="chain-list"></div>
+      </section>
+
+      <section class="panel identity-panel">
+        <div class="identity-hero">
+          <div class="identity-top">
+            <div><small>GRAIN CHAIN PASSPORT</small><h2 id="identity-title">玉米粮链档案</h2></div>
+            <span id="identity-risk" class="risk">低风险</span>
+          </div>
+          <div id="identity-code" class="identity-code">粮链编码：LC-2026-CORN-000128</div>
+          <div class="identity-kpis">
+            <div><span>当前状态</span><b id="identity-status">港口待装船</b></div>
+            <div><span>当前数量</span><b id="identity-quantity">1,198.6 吨</b></div>
+            <div><span>预计到达</span><b id="identity-eta">07-27 16:30</b></div>
+          </div>
+        </div>
+        <div class="identity-grid">
+          <div><label>粮食品种/等级</label><strong id="field-grain">玉米 · 二等</strong></div>
+          <div><label>粮食性质</label><strong id="field-nature">市场贸易粮</strong></div>
+          <div><label>粮源地</label><strong id="field-origin">黑龙江绥化</strong></div>
+          <div><label>收货单位</label><strong id="field-receiver">东莞某饲料企业</strong></div>
+          <div><label>贸易合同</label><strong id="field-contract">HT-2026-0712</strong></div>
+          <div><label>链路完整度</label><strong id="field-complete">96%</strong></div>
+        </div>
+        <div class="identity-actions">
+          <button id="archive-open" type="button">查看完整档案</button>
+          <button id="export-chain" class="primary" type="button">导出可信档案</button>
+        </div>
+      </section>
+    </aside>
+
+    <section class="column center">
+      <section id="tracking-panel" class="panel map-panel">
+        <div class="map-head">
+          <div class="map-title"><strong id="map-title">粮链全程追踪</strong><span id="map-subtitle">绥化粮库 → 哈尔滨站 → 营口港 → 广州港 → 东莞加工厂</span></div>
+          <div class="map-controls">
+            <button class="route-mode active" data-mode="actual" type="button">实际路径</button>
+            <button class="route-mode" data-mode="plan" type="button">计划路径</button>
+            <button id="route-play" type="button">▶ 路径回放</button>
+          </div>
+        </div>
+        <div class="map-stage">
+          <div id="chain-map"></div>
+          <svg class="map-fallback" viewBox="0 0 1000 560" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M244 76 310 46 383 66 435 116 491 102 543 137 596 151 615 198 661 216 684 267 733 292 711 338 747 374 703 410 664 454 599 481 544 464 493 494 428 471 376 427 325 420 287 375 238 359 205 313 166 270 178 217 150 174 190 132Z" fill="#e9f1f3" stroke="#cbdde2" stroke-width="2"/>
+            <path d="M410 116 C404 144 394 172 366 198" fill="none" stroke="#c98320" stroke-width="6" stroke-linecap="round"/>
+            <path d="M366 198 C343 244 322 270 300 300" fill="none" stroke="#0d7c5b" stroke-width="6" stroke-linecap="round"/>
+            <path d="M300 300 C360 328 437 360 531 391 C594 414 625 446 594 473" fill="none" stroke="#1376a6" stroke-width="7" stroke-linecap="round" stroke-dasharray="11 8"/>
+            <path d="M594 473 C612 482 630 489 651 492" fill="none" stroke="#c98320" stroke-width="6" stroke-linecap="round"/>
+            <g fill="#fff" stroke="#0d7c5b" stroke-width="5"><circle cx="410" cy="116" r="9"/><circle cx="366" cy="198" r="9"/><circle cx="300" cy="300" r="9"/></g>
+            <g fill="#fff" stroke="#aebbc1" stroke-width="5"><circle cx="594" cy="473" r="9"/><circle cx="651" cy="492" r="9"/></g>
+            <g fill="#536871" font-size="18"><text x="423" y="108">绥化粮库</text><text x="379" y="191">哈尔滨站</text><text x="239" y="325">营口港</text><text x="604" y="469">广州港</text><text x="660" y="513">东莞</text></g>
+          </svg>
+          <div class="map-overlay">
+            <small>当前执行进度</small>
+            <strong id="current-node">营口港 · 待装船</strong>
+            <div class="progress-line"><i id="progress-bar" style="width:62%"></i></div>
+            <div class="map-overlay-foot"><span id="progress-text">完成 5/8 个节点</span><span id="map-eta">预计 2天18小时</span></div>
+          </div>
+          <div class="legend">
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" stroke="#c98320" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7" cy="18" r="2" fill="#c98320"/><circle cx="18" cy="18" r="2" fill="#c98320"/></svg>
+              公路
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="6" y="3" width="12" height="15" rx="4" stroke="#0d7c5b" stroke-width="1.8"/><path d="M8.5 8h7M8.5 12h7M9 21l3-3 3 3" stroke="#0d7c5b" stroke-width="1.8" stroke-linecap="round"/><circle cx="9.5" cy="15" r="1" fill="#0d7c5b"/><circle cx="14.5" cy="15" r="1" fill="#0d7c5b"/></svg>
+              铁路
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 13 7 20h10l3-7-8 3-8-3Z" stroke="#1376a6" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 13V7h8v6M12 7V3" stroke="#1376a6" stroke-width="1.8" stroke-linecap="round"/></svg>
+              海运
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="#9caab0" stroke-width="1.8"/><path d="M12 8v5l3 2" stroke="#9caab0" stroke-width="1.8" stroke-linecap="round"/></svg>
+              待执行
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel timeline-panel">
+        <div class="timeline-head"><div><strong>粮链事件时间轴</strong> <span>点击节点查看业务事件与可信凭证</span></div><span id="event-count">已采集 37 条 EPCIS 事件</span></div>
+        <div class="timeline-wrap"><div id="timeline" class="timeline"></div></div>
+      </section>
+    </section>
+
+    <aside class="column">
+      <section class="panel right-summary">
+        <div class="summary-top">
+          <div><small>粮链健康状态</small><strong id="health-label">链路正常 · 数据连续</strong></div>
+          <div class="trust-ring"><span id="trust-score">96</span></div>
+        </div>
+        <div class="summary-kpis">
+          <div><span>质量等级</span><strong id="sum-quality">二等</strong></div>
+          <div><span>累计损耗</span><strong id="sum-loss">0.12%</strong></div>
+          <div><span>有效凭证</span><strong id="sum-docs">12/12</strong></div>
+        </div>
+      </section>
+
+      <section class="panel detail-panel">
+        <div class="detail-tabs">
+          <button class="detail-tab active" data-tab="quality" type="button">质量与谱系</button>
+          <button class="detail-tab" data-tab="exception" type="button">责任与异常</button>
+          <button class="detail-tab" data-tab="verify" type="button">共享与核验</button>
+        </div>
+        <div id="tab-content" class="tab-content"></div>
+      </section>
+
+      <section class="panel ai-panel" aria-label="AI检测提示">
+        <div class="ai-head">
+          <div class="ai-title">
+            <div class="ai-badge">AI</div>
+            <div><strong>AI检测提示</strong><span id="ai-updated">更新于 07-29 10:32</span></div>
+          </div>
+          <span id="ai-level" class="ai-level">低风险</span>
+        </div>
+        <p id="ai-message" class="ai-message">事件链连续，未发现质量或数量突变；建议持续关注港口装船窗口。</p>
+        <div class="ai-facts">
+          <div class="ai-fact"><span>判断置信度</span><strong id="ai-confidence">94%</strong></div>
+          <div class="ai-fact"><span>质量稳定性</span><strong id="ai-quality">良好</strong></div>
+          <div class="ai-fact"><span>事件完整度</span><strong id="ai-complete">96%</strong></div>
+        </div>
+      </section>
+    </aside>
+  </main>
+</div>
+
+<div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-card">
+    <div class="modal-head"><div><small id="modal-kicker">GRAIN CHAIN</small><h3 id="modal-title">粮链详情</h3></div><button id="modal-close" class="modal-close" type="button" aria-label="关闭">×</button></div>
+    <div id="modal-body" class="modal-body"></div>
+    <div class="modal-foot"><button id="modal-cancel" class="dialog-btn" type="button">关闭</button><button id="modal-confirm" class="dialog-btn primary" type="button">确认</button></div>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+(() => {
+  const chains = [
+    {
+      id:"GL-202607-00128",code:"LC-2026-CORN-000128",name:"绥化—东莞玉米粮链",grain:"玉米 · 二等",nature:"市场贸易粮",
+      origin:"黑龙江绥化",receiver:"东莞某饲料企业",owner:"北安某粮食贸易公司",contract:"HT-2026-0712",
+      initial:1200,current:1198.6,quantity:"1,198.6 吨",status:"港口待装船",eta:"07-27 16:30",remaining:"预计 2天18小时",
+      route:"绥化粮库 → 哈尔滨站 → 营口港 → 广州港 → 东莞加工厂",risk:"low",riskLabel:"低风险",
+      completeness:96,trust:96,qualityGrade:"二等",qualityScore:92,loss:"0.12%",docs:"12/12",events:37,currentIndex:4,
+      quality:[
+        ["水分","13.8%","14.0%","78"],["杂质","0.8%","1.0%","84"],["容重","710 g/L","≥685","91"],["破碎率","3.2%","≤5.0%","68"],
+        ["霉变粒","0.4%","≤2.0%","88"],["不完善粒","5.1%","≤8.0%","72"]
+      ],
+      alerts:[{level:"medium",title:"港口停留接近预警值",time:"07-24 10:18",desc:"受泊位计划调整影响，预计等待4.5小时，尚未影响最终交付。",owner:"营口港作业中心"}],
+      responsibilities:[["仓储区段","绥化直属库","已完成"],["铁路区段","沈阳局货运中心","已完成"],["港口区段","营口港作业中心","当前责任"],["海运区段","北方某船运公司","待开始"]],
+      documents:[["采购合同","HT-2026-0712","已签章"],["出库质检报告","ZJ-2026-4821","已核验"],["铁路运单","95306-240718-889","已核验"],["港口交接单","YK-PORT-7241","已签章"],["海运订舱单","BOOK-2026-7218","已核验"]],
+      nodes:[
+        {name:"粮源建档",place:"绥化粮库",time:"07-18 08:20",status:"done",actor:"绥化直属库",event:"批次创建与入库核验",evidence:"入库单、粮源证明、称重记录"},
+        {name:"出库质检",place:"绥化粮库",time:"07-19 07:40",status:"done",actor:"黑龙江某检测中心",event:"扦样检测并生成质量报告",evidence:"质检报告 ZJ-2026-4821"},
+        {name:"公路短驳",place:"绥化—哈尔滨",time:"07-19 11:20",status:"done",actor:"龙运物流",event:"32辆散粮车完成短驳",evidence:"公路运单、车辆轨迹、电子铅封"},
+        {name:"铁路发运",place:"哈尔滨站",time:"07-20 03:15",status:"done",actor:"沈阳局货运中心",event:"装车完成并发往营口港",evidence:"95306运单、装车清单、检斤记录"},
+        {name:"港口交接",place:"营口港",time:"07-24 09:48",status:"current",actor:"营口港作业中心",event:"到港复核，等待装船计划",evidence:"港口交接单、到港称重、现场影像"},
+        {name:"海运装船",place:"营口港",time:"07-24 14:30",status:"plan",actor:"北方某船运公司",event:"计划装入北粮海运08轮",evidence:"订舱单、装船计划"},
+        {name:"到港卸船",place:"广州港",time:"07-27 09:20",status:"plan",actor:"广州港粮食码头",event:"计划靠泊与卸船复检",evidence:"靠泊计划、卸船预约"},
+        {name:"签收交付",place:"东莞加工厂",time:"07-27 16:30",status:"plan",actor:"东莞某饲料企业",event:"到货复检与交付签收",evidence:"待生成签收单"}
+      ]
+    },
+    {
+      id:"GL-202607-00119",code:"LC-2026-RICE-000119",name:"佳木斯—佛山稻谷粮链",grain:"粳稻 · 一级",nature:"地方储备轮换粮",
+      origin:"黑龙江佳木斯",receiver:"佛山某粮油加工企业",owner:"三江某粮食储备公司",contract:"HT-2026-0698",
+      initial:850,current:848.1,quantity:"848.1 吨",status:"铁路运输中",eta:"07-29 11:00",remaining:"预计 4天7小时",
+      route:"佳木斯粮库 → 哈尔滨站 → 鲅鱼圈港 → 深圳港 → 佛山粮油厂",risk:"medium",riskLabel:"中风险",
+      completeness:89,trust:89,qualityGrade:"一级",qualityScore:88,loss:"0.22%",docs:"9/11",events:29,currentIndex:3,
+      quality:[["水分","14.2%","14.5%","82"],["杂质","0.7%","1.0%","88"],["出糙率","79.1%","≥77%","90"],["黄粒米","0.5%","≤1.0%","76"],["谷外糙米","1.3%","≤2.0%","82"],["互混率","3.1%","≤5.0%","74"]],
+      alerts:[{level:"high",title:"铁路节点事件延迟上报",time:"07-24 09:36",desc:"最近一次位置事件晚于计划2小时，已向承运单位发起补报任务。",owner:"沈阳局货运中心"},{level:"medium",title:"缺少港口进场预约单",time:"07-24 08:15",desc:"鲅鱼圈港进场预约凭证尚未同步。",owner:"货运代理"}],
+      responsibilities:[["仓储区段","三江某粮食储备公司","已完成"],["铁路区段","沈阳局货运中心","当前责任"],["港口区段","鲅鱼圈港","待开始"],["海运区段","华南某船运公司","待开始"]],
+      documents:[["轮换销售合同","HT-2026-0698","已签章"],["出库质检报告","ZJ-2026-4763","已核验"],["铁路运单","95306-240720-118","已核验"],["港口预约单","待同步","缺失"],["海运订舱单","BOOK-2026-7225","已核验"]],
+      nodes:[
+        {name:"粮源建档",place:"佳木斯粮库",time:"07-20 08:10",status:"done",actor:"三江某粮食储备公司",event:"轮换批次建档",evidence:"轮换计划、库存台账"},
+        {name:"出库质检",place:"佳木斯粮库",time:"07-20 15:20",status:"done",actor:"省粮油质检中心",event:"一级粳稻出库检测",evidence:"质检报告 ZJ-2026-4763"},
+        {name:"公路短驳",place:"佳木斯站",time:"07-21 06:40",status:"done",actor:"佳运物流",event:"完成粮库至铁路站短驳",evidence:"公路运单、称重记录"},
+        {name:"铁路运输",place:"辽宁昌图",time:"07-24 07:30",status:"current",actor:"沈阳局货运中心",event:"在途位置事件待补报",evidence:"铁路运单、编组信息"},
+        {name:"港口进场",place:"鲅鱼圈港",time:"07-25 12:00",status:"plan",actor:"鲅鱼圈港",event:"计划进港交接",evidence:"港口预约单待同步"},
+        {name:"海运装船",place:"鲅鱼圈港",time:"07-26 08:00",status:"plan",actor:"华南某船运公司",event:"计划装船",evidence:"订舱单"},
+        {name:"到港卸船",place:"深圳港",time:"07-29 05:30",status:"plan",actor:"深圳港粮食码头",event:"计划卸船复检",evidence:"靠泊计划"},
+        {name:"签收交付",place:"佛山粮油厂",time:"07-29 11:00",status:"plan",actor:"佛山某粮油加工企业",event:"到货签收",evidence:"待生成"}
+      ]
+    },
+    {
+      id:"GL-202607-00105",code:"LC-2026-SOY-000105",name:"北安—南通大豆粮链",grain:"大豆 · 三等",nature:"市场贸易粮",
+      origin:"黑龙江北安",receiver:"南通某油脂企业",owner:"北安某农产品贸易公司",contract:"HT-2026-0642",
+      initial:600,current:594.8,quantity:"594.8 吨",status:"到港复检",eta:"07-25 18:00",remaining:"预计 7小时",
+      route:"北安粮库 → 齐齐哈尔站 → 大连港 → 南通港 → 油脂加工厂",risk:"high",riskLabel:"高风险",
+      completeness:91,trust:91,qualityGrade:"三等",qualityScore:76,loss:"0.87%",docs:"11/12",events:41,currentIndex:6,
+      quality:[["水分","13.5%","13.0%","58"],["杂质","1.2%","1.0%","61"],["完整粒率","86.2%","≥85%","74"],["损伤粒","4.1%","≤5.0%","69"],["热损伤粒","0.4%","≤0.5%","71"],["粗蛋白","38.6%","≥38%","82"]],
+      alerts:[{level:"high",title:"到港复检水分超合同约定",time:"07-25 10:18",desc:"到港水分13.5%，较发运前上升0.7个百分点，已冻结交付确认。",owner:"南通港质检中心"},{level:"medium",title:"运输损耗超预警值",time:"07-25 10:02",desc:"累计数量差异5.2吨，超过0.5%预警阈值。",owner:"承运与港口交接双方"}],
+      responsibilities:[["仓储区段","北安某粮食库","已完成"],["铁路区段","哈尔滨局货运中心","已完成"],["海运区段","东北某船运公司","待核查"],["到港区段","南通港粮食码头","当前责任"]],
+      documents:[["采购合同","HT-2026-0642","已签章"],["发运质检报告","ZJ-2026-4520","已核验"],["海运提单","BL-2026-7719","已核验"],["到港复检报告","NT-ZJ-2508","异常"],["交付签收单","待生成","冻结"]],
+      nodes:[
+        {name:"粮源建档",place:"北安粮库",time:"07-17 09:10",status:"done",actor:"北安某粮食库",event:"大豆批次建档",evidence:"粮源证明、入库台账"},
+        {name:"出库质检",place:"北安粮库",time:"07-18 07:50",status:"done",actor:"北安检测中心",event:"发运前质量检测",evidence:"报告 ZJ-2026-4520"},
+        {name:"铁路发运",place:"齐齐哈尔站",time:"07-18 16:20",status:"done",actor:"哈尔滨局货运中心",event:"铁路装运",evidence:"铁路运单、装车清单"},
+        {name:"港口装船",place:"大连港",time:"07-21 12:00",status:"done",actor:"大连港粮食码头",event:"完成装船交接",evidence:"装船单、海运提单"},
+        {name:"海上运输",place:"黄海海域",time:"07-23 18:40",status:"done",actor:"东北某船运公司",event:"船舶在途",evidence:"AIS轨迹、航海日志"},
+        {name:"到港卸船",place:"南通港",time:"07-25 08:30",status:"done",actor:"南通港粮食码头",event:"卸船称重完成",evidence:"卸船单、港口称重"},
+        {name:"到港复检",place:"南通港",time:"07-25 10:18",status:"warn",actor:"南通港质检中心",event:"水分与损耗触发异常",evidence:"复检报告 NT-ZJ-2508"},
+        {name:"签收交付",place:"油脂加工厂",time:"待定",status:"plan",actor:"南通某油脂企业",event:"异常关闭后执行交付",evidence:"待生成"}
+      ]
+    },
+    {
+      id:"GL-202607-00096",code:"LC-2026-CORN-000096",name:"松原—茂名玉米粮链",grain:"玉米 · 二等",nature:"市场贸易粮",
+      origin:"吉林松原",receiver:"茂名某饲料加工企业",owner:"松原某粮贸集团",contract:"HT-2026-0608",
+      initial:980,current:978.4,quantity:"978.4 吨",status:"海上运输中",eta:"07-31 14:20",remaining:"预计 3天11小时",
+      route:"松原粮库 → 长春兴隆山站 → 锦州港 → 湛江港 → 茂名饲料厂",risk:"low",riskLabel:"低风险",
+      completeness:94,trust:95,qualityGrade:"二等",qualityScore:90,loss:"0.16%",docs:"10/10",events:34,currentIndex:5,
+      quality:[["水分","13.6%","14.0%","82"],["杂质","0.9%","1.0%","80"],["容重","702 g/L","≥685","88"],["破碎率","3.6%","≤5.0%","72"],["霉变粒","0.5%","≤2.0%","86"],["不完善粒","5.4%","≤8.0%","74"]],
+      alerts:[{level:"medium",title:"琼州海峡外侧有强对流天气",time:"07-29 09:50",desc:"预计可能造成航速短时下降，当前ETA仍在合同交付窗口内。",owner:"南北粮运06轮"}],
+      responsibilities:[["仓储区段","松原某粮食库","已完成"],["铁路区段","沈阳局货运中心","已完成"],["港口区段","锦州港粮食码头","已完成"],["海运区段","南北粮运06轮","当前责任"]],
+      documents:[["采购合同","HT-2026-0608","已签章"],["出库质检报告","JL-ZJ-6088","已核验"],["铁路运单","95306-240724-506","已核验"],["海运提单","BL-2026-8066","已核验"],["船舶轨迹","AIS-8066","持续核验"]],
+      nodes:[
+        {name:"粮源建档",place:"松原粮库",time:"07-23 08:30",status:"done",actor:"松原某粮食库",event:"玉米批次建档",evidence:"粮源证明、入库台账"},
+        {name:"出库质检",place:"松原粮库",time:"07-23 15:10",status:"done",actor:"吉林省粮油质检中心",event:"发运前质量检测",evidence:"报告 JL-ZJ-6088"},
+        {name:"公路短驳",place:"兴隆山站",time:"07-24 06:20",status:"done",actor:"吉运物流",event:"粮库至铁路场站短驳",evidence:"公路运单、车辆轨迹"},
+        {name:"铁路运输",place:"长春—锦州",time:"07-25 03:40",status:"done",actor:"沈阳局货运中心",event:"铁路整列运输",evidence:"95306运单、编组信息"},
+        {name:"港口装船",place:"锦州港",time:"07-27 11:30",status:"done",actor:"锦州港粮食码头",event:"完成装船与数量交接",evidence:"装船单、港口称重"},
+        {name:"海上运输",place:"东海南部海域",time:"07-29 10:10",status:"current",actor:"南北粮运06轮",event:"沿中国近海航线南下",evidence:"AIS轨迹、航海日志"},
+        {name:"到港卸船",place:"湛江港",time:"07-31 08:00",status:"plan",actor:"湛江港粮食码头",event:"计划靠泊卸船",evidence:"靠泊计划、卸船预约"},
+        {name:"签收交付",place:"茂名饲料厂",time:"07-31 14:20",status:"plan",actor:"茂名某饲料加工企业",event:"到货复检与交付",evidence:"待生成签收单"}
+      ]
+    }
+  ];
+
+  let selected = chains[0];
+  let currentTab = "quality";
+  let routeMode = "actual";
+  let chart = null;
+  let playback = null;
+  let toastTimer = null;
+
+  const $ = id => document.getElementById(id);
+  const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+  function riskClass(risk){ return risk === "low" ? "" : risk; }
+
+  function renderList(){
+    const query = $("chain-filter").value.trim().toLowerCase();
+    const risk = $("risk-filter").value;
+    const filtered = chains.filter(item => {
+      const haystack = `${item.name} ${item.code} ${item.owner} ${item.receiver}`.toLowerCase();
+      return (!query || haystack.includes(query)) && (risk === "all" || item.risk === risk);
+    });
+    $("chain-list").innerHTML = filtered.length ? filtered.map(item => `
+      <button class="chain-card ${item.id === selected.id ? "active" : ""}" data-chain="${esc(item.id)}" type="button">
+        <div class="chain-card-top"><strong>${esc(item.name)}</strong><span class="risk ${riskClass(item.risk)}">${esc(item.riskLabel)}</span></div>
+        <div class="chain-card-code">${esc(item.code)}</div>
+        <div class="chain-card-meta"><span>${esc(item.status)}</span><b>${esc(item.quantity)}</b></div>
+      </button>`).join("") : `<div style="padding:20px;text-align:center;color:var(--muted);font-size:10px">未找到匹配粮链</div>`;
+    document.querySelectorAll(".chain-card").forEach(card => card.addEventListener("click", () => selectChain(card.dataset.chain)));
+  }
+
+  function renderIdentity(){
+    $("identity-title").textContent = `${selected.grain.split(" · ")[0]}粮链档案`;
+    $("identity-risk").className = `risk ${riskClass(selected.risk)}`;
+    $("identity-risk").textContent = selected.riskLabel;
+    $("identity-code").textContent = `粮链编码：${selected.code}`;
+    $("identity-status").textContent = selected.status;
+    $("identity-quantity").textContent = selected.quantity;
+    $("identity-eta").textContent = selected.eta;
+    $("field-grain").textContent = selected.grain;
+    $("field-nature").textContent = selected.nature;
+    $("field-origin").textContent = selected.origin;
+    $("field-receiver").textContent = selected.receiver;
+    $("field-contract").textContent = selected.contract;
+    $("field-complete").textContent = `${selected.completeness}%`;
+    $("health-label").textContent = selected.risk === "low" ? "链路正常 · 数据连续" : selected.risk === "medium" ? "存在待补数据" : "存在质量异常";
+    $("trust-score").textContent = selected.trust;
+    document.querySelector(".trust-ring").style.background = `conic-gradient(${selected.risk === "high" ? "var(--red)" : "var(--green)"} 0 ${selected.trust}%,#e8edef ${selected.trust}%)`;
+    $("sum-quality").textContent = selected.qualityGrade;
+    $("sum-loss").textContent = selected.loss;
+    $("sum-docs").textContent = selected.docs;
+    const aiMessage = selected.risk === "high"
+      ? `检测到${selected.alerts.map(item=>item.title).join("、")}。建议暂停交付确认，立即核查质量变化与责任交接区段。`
+      : selected.risk === "medium"
+        ? `检测到${selected.alerts.map(item=>item.title).join("、")}。建议优先补齐缺失事件与业务凭证，并持续跟踪预计到达时间。`
+        : selected.alerts.length
+          ? `事件链与质量指标总体稳定；${selected.alerts[0].title}，当前仍在合同交付窗口内，建议持续关注。`
+          : "事件链连续，未发现质量、数量或运输轨迹突变，可按当前计划继续执行。";
+    $("ai-level").className = `ai-level ${riskClass(selected.risk)}`;
+    $("ai-level").textContent = selected.riskLabel;
+    $("ai-message").textContent = aiMessage;
+    $("ai-confidence").textContent = `${Math.max(88,selected.trust-1)}%`;
+    $("ai-quality").textContent = selected.risk === "high" ? "异常" : selected.risk === "medium" ? "需关注" : "良好";
+    $("ai-complete").textContent = `${selected.completeness}%`;
+  }
+
+  function renderTimeline(activeIndex = null){
+    $("event-count").textContent = `已采集 ${selected.events} 条 EPCIS 事件`;
+    $("timeline").innerHTML = selected.nodes.map((node,index) => `
+      <button class="event ${esc(node.status)} ${activeIndex === index ? "current" : ""}" data-node="${index}" type="button">
+        <i class="event-dot">${node.status === "done" ? "✓" : index + 1}</i>
+        <strong>${esc(node.name)}</strong><span>${esc(node.place)}</span><em>${esc(node.time)}</em>
+      </button>`).join("");
+    document.querySelectorAll(".event").forEach(node => node.addEventListener("click", () => openNode(Number(node.dataset.node))));
+  }
+
+  const routeMaps = {
+    "GL-202607-00128":{
+      segments:[
+        {mode:"road",name:"公路短驳",startNode:0,endNode:2,color:"#c98320",iconAt:[126.80,46.18],coords:[[126.97,46.63],[126.82,46.20],[126.63,45.75]]},
+        {mode:"rail",name:"铁路运输",startNode:2,endNode:4,color:"#0d7c5b",iconAt:[124.15,43.30],coords:[[126.63,45.75],[125.30,44.10],[123.80,42.55],[122.20,40.68]]},
+        {mode:"ship",name:"沿海运输",startNode:4,endNode:6,color:"#1376a6",iconAt:[121.40,28.10],coords:[[122.20,40.68],[121.70,39.30],[122.70,37.80],[123.45,35.20],[122.85,32.10],[121.95,29.00],[120.65,25.70],[118.30,22.80],[115.60,21.45],[113.58,22.72]]},
+        {mode:"road",name:"末端配送",startNode:6,endNode:7,color:"#c98320",iconAt:[113.67,22.87],coords:[[113.58,22.72],[113.75,23.02]]}
+      ],
+      points:[
+        {name:"绥化粮库",coord:[126.97,46.63],type:"warehouse",nodeIndex:0,position:"right"},
+        {name:"哈尔滨铁路站",coord:[126.63,45.75],type:"rail",nodeIndex:2,position:"right"},
+        {name:"营口港",coord:[122.20,40.68],type:"port",nodeIndex:4,position:"left"},
+        {name:"北粮海运08轮",coord:[121.40,28.10],type:"ship",nodeIndex:5,position:"right"},
+        {name:"广州港南沙港区",coord:[113.58,22.72],type:"port",nodeIndex:6,position:"left"},
+        {name:"东莞加工厂",coord:[113.75,23.02],type:"factory",nodeIndex:7,position:"right"}
+      ]
+    },
+    "GL-202607-00119":{
+      segments:[
+        {mode:"road",name:"公路短驳",startNode:0,endNode:2,color:"#c98320",iconAt:[128.35,46.25],coords:[[130.37,46.81],[128.50,46.30],[126.63,45.75]]},
+        {mode:"rail",name:"铁路运输",startNode:2,endNode:4,color:"#0d7c5b",iconAt:[124.10,42.78],coords:[[126.63,45.75],[125.20,44.15],[124.10,42.78],[122.10,40.30]]},
+        {mode:"ship",name:"沿海运输",startNode:4,endNode:6,color:"#1376a6",iconAt:[120.60,27.00],coords:[[122.10,40.30],[121.75,39.10],[122.70,37.60],[123.35,35.00],[122.75,31.90],[121.70,28.10],[120.10,24.80],[117.40,21.90],[114.26,22.58]]},
+        {mode:"road",name:"末端配送",startNode:6,endNode:7,color:"#c98320",iconAt:[113.65,22.80],coords:[[114.26,22.58],[113.65,22.80],[113.12,23.02]]}
+      ],
+      points:[
+        {name:"佳木斯粮库",coord:[130.37,46.81],type:"warehouse",nodeIndex:0,position:"right"},
+        {name:"哈尔滨铁路站",coord:[126.63,45.75],type:"rail",nodeIndex:2,position:"right"},
+        {name:"昌图铁路区间",coord:[124.10,42.78],type:"rail",nodeIndex:3,position:"right"},
+        {name:"鲅鱼圈港区",coord:[122.10,40.30],type:"port",nodeIndex:4,position:"left"},
+        {name:"华南粮运12轮",coord:[120.60,27.00],type:"ship",nodeIndex:5,position:"right"},
+        {name:"深圳港",coord:[114.26,22.58],type:"port",nodeIndex:6,position:"left"},
+        {name:"佛山粮油厂",coord:[113.12,23.02],type:"factory",nodeIndex:7,position:"right"}
+      ]
+    },
+    "GL-202607-00105":{
+      segments:[
+        {mode:"road",name:"公路短驳",startNode:0,endNode:2,color:"#c98320",iconAt:[125.15,47.80],coords:[[126.50,48.24],[125.15,47.80],[123.95,47.35]]},
+        {mode:"rail",name:"铁路运输",startNode:2,endNode:3,color:"#0d7c5b",iconAt:[123.10,43.20],coords:[[123.95,47.35],[124.10,44.60],[123.10,42.20],[121.65,38.92]]},
+        {mode:"ship",name:"沿海运输",startNode:3,endNode:5,color:"#1376a6",iconAt:[122.60,34.70],coords:[[121.65,38.92],[122.55,37.20],[123.05,35.10],[122.55,33.25],[121.55,32.15],[120.89,31.98]]},
+        {mode:"road",name:"末端配送",startNode:6,endNode:7,color:"#c98320",iconAt:[120.87,31.96],coords:[[120.89,31.98],[120.85,31.93]]}
+      ],
+      points:[
+        {name:"北安粮库",coord:[126.50,48.24],type:"warehouse",nodeIndex:0,position:"right"},
+        {name:"齐齐哈尔铁路站",coord:[123.95,47.35],type:"rail",nodeIndex:2,position:"right"},
+        {name:"大连港",coord:[121.65,38.92],type:"port",nodeIndex:3,position:"left"},
+        {name:"东北粮运03轮",coord:[122.60,34.70],type:"ship",nodeIndex:4,position:"right"},
+        {name:"南通港",coord:[120.89,31.98],type:"port",nodeIndex:6,position:"left"},
+        {name:"南通油脂加工厂",coord:[120.85,31.93],type:"factory",nodeIndex:7,position:"right"}
+      ]
+    },
+    "GL-202607-00096":{
+      segments:[
+        {mode:"road",name:"公路短驳",startNode:0,endNode:2,color:"#c98320",iconAt:[125.20,44.55],coords:[[124.82,45.14],[125.20,44.55],[125.52,43.97]]},
+        {mode:"rail",name:"铁路运输",startNode:2,endNode:4,color:"#0d7c5b",iconAt:[123.20,42.10],coords:[[125.52,43.97],[123.90,42.70],[122.20,41.60],[121.13,40.96]]},
+        {mode:"ship",name:"沿海运输",startNode:4,endNode:6,color:"#1376a6",iconAt:[121.40,27.00],coords:[[121.13,40.96],[121.60,39.60],[122.70,38.00],[123.40,35.00],[122.70,31.60],[121.40,27.00],[119.20,23.20],[116.20,21.35],[112.70,20.55],[110.40,21.20]]},
+        {mode:"road",name:"末端配送",startNode:6,endNode:7,color:"#c98320",iconAt:[110.66,21.43],coords:[[110.40,21.20],[110.66,21.43],[110.93,21.67]]}
+      ],
+      points:[
+        {name:"松原粮库",coord:[124.82,45.14],type:"warehouse",nodeIndex:0,position:"right"},
+        {name:"长春兴隆山站",coord:[125.52,43.97],type:"rail",nodeIndex:2,position:"right"},
+        {name:"锦州港",coord:[121.13,40.96],type:"port",nodeIndex:4,position:"left"},
+        {name:"南北粮运06轮",coord:[121.40,27.00],type:"ship",nodeIndex:5,position:"right"},
+        {name:"湛江港",coord:[110.40,21.20],type:"port",nodeIndex:6,position:"left"},
+        {name:"茂名饲料厂",coord:[110.93,21.67],type:"factory",nodeIndex:7,position:"right"}
+      ]
+    }
+  };
+
+  const vehicleSymbols = {
+    road:"path://M2 7h12v7h2V9h3l3 3v4h-2a3 3 0 0 1-6 0H9a3 3 0 0 1-6 0H2V7Zm4 7a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm11 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z",
+    rail:"path://M6 2h12a3 3 0 0 1 3 3v11a3 3 0 0 1-3 3l2 3h-3l-2-3H9l-2 3H4l2-3a3 3 0 0 1-3-3V5a3 3 0 0 1 3-3Zm1 4v5h10V6H7Zm1 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z",
+    ship:"path://M3 12 7 20h10l4-8-9 4-9-4Zm5-1V5h8v6h-2V7h-4v4H8Z"
+  };
+
+  function nodeSymbol(type,state){
+    const colors={warehouse:"#7b6a35",road:"#c98320",rail:"#315c68",port:"#1376a6",ship:"#1376a6",factory:"#536671"};
+    const color=state==="plan"?"#9eabb1":colors[type];
+    const drawings={
+      warehouse:`<path d="M8 15h18v13H8zM6 15l11-8 11 8M12 19v9M17 19v9M22 19v9" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round"/>`,
+      road:`<path d="M6 13h14v10H6zM20 16h5l3 4v3h-8z" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round"/><circle cx="11" cy="25" r="2.5" fill="white" stroke="${color}" stroke-width="2"/><circle cx="24" cy="25" r="2.5" fill="white" stroke="${color}" stroke-width="2"/>`,
+      rail:`<rect x="9" y="6" width="16" height="21" rx="5" fill="none" stroke="${color}" stroke-width="2"/><path d="M12 12h10M12 17h10M13 30l4-4 4 4" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round"/><circle cx="13" cy="22" r="1.6" fill="${color}"/><circle cx="21" cy="22" r="1.6" fill="${color}"/>`,
+      port:`<path d="M17 7v20M12 12h10M9 19c0 6 3 9 8 9s8-3 8-9M6 21l3-2 3 2M22 21l3-2 3 2" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round"/><circle cx="17" cy="7" r="2" fill="none" stroke="${color}" stroke-width="2"/>`,
+      ship:`<path d="M7 18l4 10h12l4-10-10 4-10-4ZM12 17V9h10v8M17 9V5" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`,
+      factory:`<path d="M7 28V15l7 4v-6l7 4v-7h6v18H7ZM21 10V5h5v5M11 23h3M18 23h3" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round"/>`
+    };
+    const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 34 34"><circle cx="17" cy="17" r="16" fill="white" stroke="${state==="current"?"#e19a2a":color}" stroke-width="${state==="current"?3:2}"/>${drawings[type]}</svg>`;
+    return "image://data:image/svg+xml;charset=UTF-8,"+encodeURIComponent(svg);
+  }
+
+  function mapOption(activeIndex = null){
+    const activeNode=activeIndex===null?selected.currentIndex:activeIndex;
+    const config=routeMaps[selected.id];
+    const segmentState=segment=>activeNode>=segment.endNode?"done":activeNode>segment.startNode?"current":"plan";
+    const pointState=point=>point.nodeIndex===activeNode?"current":point.nodeIndex<activeNode?"done":"plan";
+    const currentPoint=[...config.points].reverse().find(point=>point.nodeIndex<=activeNode)||config.points[0];
+    const segmentSeries=config.segments.map(segment=>{
+      const state=segmentState(segment);
+      const actual=routeMode==="actual";
+      return {
+        name:segment.name,type:"lines",coordinateSystem:"geo",polyline:true,zlevel:2,
+        data:[{coords:segment.coords}],
+        lineStyle:{
+          color:segment.color,width:state==="done"||state==="current"?4:2,
+          opacity:actual?(state==="plan"?.28:.95):.72,
+          type:actual?(state==="plan"?"dashed":"solid"):"dashed"
+        },
+        effect:actual&&state==="current"?{
+          show:true,period:6,constantSpeed:22,trailLength:.12,symbol:vehicleSymbols[segment.mode],symbolSize:13,color:segment.color
+        }:undefined
+      };
+    });
+    const transportIcons=config.segments.map(segment=>{
+      const state=segmentState(segment);
+      return {
+        name:segment.name,
+        value:[segment.iconAt[0],segment.iconAt[1],state],
+        symbol:nodeSymbol(segment.mode,state)
+      };
+    });
+    const nodeData=config.points.map(point=>{
+      const state=pointState(point);
+      return {
+        name:point.name,value:[point.coord[0],point.coord[1],point.nodeIndex],
+        symbol:nodeSymbol(point.type,state),symbolSize:state==="current"?38:31,
+        label:{position:point.position||"right"}
+      };
+    });
+    return {
+      animationDuration:600,
+      tooltip:{
+        trigger:"item",
+        formatter:params=>{
+          const value=params.value||[];
+          const coord=value.length>=2?`<br><span style="color:#7b8b93">经度 ${Number(value[0]).toFixed(2)} · 纬度 ${Number(value[1]).toFixed(2)}</span>`:"";
+          return `<strong>${params.name||"运输路线"}</strong>${coord}`;
+        }
+      },
+      geo:{
+        map:"china",roam:true,zoom:1.12,center:[118.2,35.2],label:{show:false},
+        itemStyle:{areaColor:"#e8f0f2",borderColor:"#b9cdd3"},emphasis:{itemStyle:{areaColor:"#dfecee"}}
+      },
+      series:[
+        ...segmentSeries,
+        {name:"运输方式",type:"scatter",coordinateSystem:"geo",zlevel:3,data:transportIcons,symbolSize:22,label:{show:false}},
+        {
+          name:"业务节点",type:"scatter",coordinateSystem:"geo",zlevel:5,data:nodeData,
+          label:{show:true,formatter:"{b}",color:"#344750",fontSize:9,backgroundColor:"rgba(255,255,255,.9)",padding:[3,4],borderRadius:3}
+        },
+        {
+          name:"当前节点",type:"effectScatter",coordinateSystem:"geo",zlevel:4,
+          data:[{name:currentPoint.name,value:[currentPoint.coord[0],currentPoint.coord[1]]}],
+          symbolSize:19,rippleEffect:{scale:2.8,brushType:"stroke"},itemStyle:{color:"#e19a2a"},label:{show:false}
+        }
+      ]
+    };
+  }
+
+  function renderMap(activeIndex = null){
+    $("map-subtitle").textContent = selected.route;
+    const current = selected.nodes[Math.min(activeIndex ?? selected.currentIndex, selected.nodes.length-1)];
+    $("current-node").textContent = `${current.place} · ${current.name}`;
+    const progress = Math.round(((activeIndex ?? selected.currentIndex) + 1) / selected.nodes.length * 100);
+    $("progress-bar").style.width = `${progress}%`;
+    $("progress-text").textContent = `完成 ${(activeIndex ?? selected.currentIndex) + 1}/${selected.nodes.length} 个节点`;
+    $("map-eta").textContent = selected.remaining;
+    if (window.echarts && echarts.getMap && echarts.getMap("china")) {
+      document.querySelector(".map-fallback").style.display = "none";
+      if (!chart) chart = echarts.init($("chain-map"));
+      chart.setOption(mapOption(activeIndex),true);
+    } else {
+      document.querySelector(".map-fallback").style.display = "block";
+    }
+  }
+
+  function renderQuality(){
+    const received = selected.current;
+    const loss = (selected.initial - received).toFixed(1);
+    $("tab-content").innerHTML = `
+      <div class="quality-grade"><b>${esc(selected.qualityGrade.replace("等",""))}</b><div><strong>当前质量：${esc(selected.qualityGrade)} · 评分 ${selected.qualityScore}</strong><span>已关联发运检测、节点抽检与到港复检记录</span></div></div>
+      <div class="metric-list">${selected.quality.slice(0,4).map(item=>`<div class="metric"><div class="metric-head"><span>${esc(item[0])}</span><b>${esc(item[1])}</b></div><div class="bar"><i style="width:${esc(item[3])}%"></i></div></div>`).join("")}</div>
+      <div class="quantity-box">
+        <div class="subhead"><strong>数量守恒校验</strong><span>${selected.risk==="high"?"超预警阈值":"校验通过"}</span></div>
+        <div class="quantity-flow"><div><span>建链数量</span><b>${selected.initial}t</b></div><i>→</i><div><span>当前数量</span><b>${received}t</b></div><i>→</i><div><span>累计差异</span><b>${loss}t</b></div></div>
+        <button id="lineage-open" class="lineage-btn" type="button">查看批次拆分、合并与来源谱系</button>
+      </div>`;
+    $("lineage-open").addEventListener("click", openLineage);
+  }
+
+  function renderException(){
+    $("tab-content").innerHTML = `
+      ${selected.alerts.length ? selected.alerts.map((alert,index)=>`<div class="alert-card ${esc(alert.level)}"><div class="alert-top"><strong>${esc(alert.title)}</strong><span>${esc(alert.time)}</span></div><p>${esc(alert.desc)}</p><button data-alert="${index}" type="button">查看并处置</button></div>`).join("") : `<div class="verify-result"><strong>当前无待处置异常</strong><span>链路事件、质量与数量校验均正常。</span></div>`}
+      <div class="responsibility"><div class="subhead"><strong>当前责任区段</strong><span>以交接事件划分</span></div>${selected.responsibilities.map(row=>`<div class="responsibility-row"><span>${esc(row[0])}</span><b>${esc(row[1])}</b><em>${esc(row[2])}</em></div>`).join("")}</div>`;
+    document.querySelectorAll("[data-alert]").forEach(btn=>btn.addEventListener("click",()=>openAlert(Number(btn.dataset.alert))));
+  }
+
+  function renderVerify(){
+    $("tab-content").innerHTML = `
+      <div class="verify-result"><strong>可信核验通过</strong><span>主体、批次、合同、质量、运单与节点事件关系一致；数据完整度 ${selected.completeness}%。</span></div>
+      <div class="doc-list">${selected.documents.map(doc=>`<div class="doc-row"><div><strong>${esc(doc[0])}</strong><span>${esc(doc[1])}</span></div><em style="${["缺失","异常","冻结"].includes(doc[2])?"color:var(--red)":""}">${esc(doc[2])}</em></div>`).join("")}</div>
+      <div class="verify-actions"><button id="verify-now" type="button">重新核验</button><button id="share-code" class="primary" type="button">生成一链一码</button></div>`;
+    $("verify-now").addEventListener("click",()=>{showToast("已完成最新事件与凭证一致性核验");});
+    $("share-code").addEventListener("click",openShare);
+  }
+
+  function renderTab(){
+    document.querySelectorAll(".detail-tab").forEach(btn=>btn.classList.toggle("active",btn.dataset.tab===currentTab));
+    if(currentTab==="quality") renderQuality();
+    if(currentTab==="exception") renderException();
+    if(currentTab==="verify") renderVerify();
+  }
+
+  function selectChain(id){
+    selected = chains.find(item=>item.id===id) || chains[0];
+    stopPlayback();
+    renderList();renderIdentity();renderTimeline();renderMap();renderTab();
+  }
+
+  function fieldsHtml(fields){
+    return `<div class="info-grid">${fields.map(row=>`<div class="info-item"><label>${esc(row[0])}</label><strong>${esc(row[1])}</strong></div>`).join("")}</div>`;
+  }
+
+  function openModal(kicker,title,body,confirmText="确认"){
+    $("modal-kicker").textContent=kicker;
+    $("modal-title").textContent=title;
+    $("modal-body").innerHTML=body;
+    $("modal-confirm").textContent=confirmText;
+    $("modal").classList.add("open");
+  }
+  function closeModal(){$("modal").classList.remove("open")}
+
+  function openNode(index){
+    const node=selected.nodes[index];
+    openModal("EPCIS EVENT",`${node.name} · ${node.place}`,fieldsHtml([
+      ["发生时间",node.time],["当前状态",node.status==="done"?"已完成":node.status==="plan"?"待执行":node.status==="warn"?"异常":"执行中"],
+      ["责任主体",node.actor],["业务事件",node.event],["关联粮链",selected.code],["可信凭证",node.evidence]
+    ])+`<p class="modal-note">该节点事件由业务系统通过连接器转换为EPCIS标准事件，并经可信数据空间完成来源与授权校验。</p>`,"查看原始凭证");
+  }
+
+  function openLineage(){
+    openModal("BATCH LINEAGE","批次拆分与合并谱系",`
+      <div class="lineage-tree">
+        <div class="tree-node"><strong>${esc(selected.origin)}原始批次</strong><span>${selected.initial} 吨 · 来源已核验</span></div>
+        <div class="tree-line"></div>
+        <div class="tree-children">
+          <div class="tree-node"><strong>铁路/公路发运子批次 A</strong><span>${(selected.initial*.55).toFixed(1)} 吨 · 已完成交接</span></div>
+          <div class="tree-node"><strong>铁路/公路发运子批次 B</strong><span>${(selected.initial*.45).toFixed(1)} 吨 · 已完成交接</span></div>
+        </div>
+        <div class="tree-line"></div>
+        <div class="tree-node"><strong>当前运输批次</strong><span>${esc(selected.quantity)} · 数量关系可追溯</span></div>
+      </div><p class="modal-note">系统保留父批次、子批次、装载单元和交接批次之间的关系，适应散粮拆分、合并及换装作业。</p>`,"导出谱系");
+  }
+
+  function openAlert(index){
+    const alert=selected.alerts[index];
+    openModal("EXCEPTION TASK",alert.title,fieldsHtml([
+      ["发现时间",alert.time],["风险等级",alert.level==="high"?"高风险":"中风险"],["责任主体",alert.owner],["当前状态","待确认"],
+      ["处置流程","上报 → 确认 → 分派 → 复核"],["关联粮链",selected.code]
+    ])+`<p class="modal-note">${esc(alert.desc)} 系统提供责任区段与证据支撑，最终责任由相关业务主体协商或依法认定。</p>`,"创建处置任务");
+  }
+
+  function qrCells(){
+    const seed=[...selected.code].reduce((sum,char)=>sum+char.charCodeAt(0),0);
+    return Array.from({length:121},(_,i)=>`<i class="${((i*7+seed)%13<6||i<4||i>116)?"on":""}"></i>`).join("");
+  }
+  function openShare(){
+    openModal("ONE CHAIN · ONE CODE","一链一码授权分享",`<div class="qr-box"><div class="qr">${qrCells()}</div><div class="share-copy"><strong>${esc(selected.code)}</strong><p>扫码后按照核验方身份展示获授权字段；分享有效期72小时，可随时撤销。</p><div class="share-scope"><span>批次身份</span><span>质量档案</span><span>运输节点</span><span>可信凭证</span></div></div></div>`,"生成授权链接");
+  }
+
+  function openArchive(){
+    openModal("GRAIN CHAIN ARCHIVE","粮链完整数字档案",fieldsHtml([
+      ["粮链编码",selected.code],["业务批次",selected.id],["品种与等级",selected.grain],["粮食性质",selected.nature],
+      ["粮源地",selected.origin],["当前货权方",selected.owner],["收货单位",selected.receiver],["贸易合同",selected.contract],
+      ["当前数量",selected.quantity],["链路完整度",`${selected.completeness}%`],["EPCIS事件",`${selected.events}条`],["可信凭证",selected.docs]
+    ]),"编辑档案");
+  }
+
+  function openNew(){
+    openModal("CREATE GRAIN CHAIN","新建粮链",`
+      <div class="info-grid">
+        <div class="info-item"><label>建链方式</label><strong>从发运批次自动建链</strong></div><div class="info-item"><label>关联运输需求</label><strong>请选择运输需求</strong></div>
+        <div class="info-item"><label>粮食批次</label><strong>请选择可追溯批次</strong></div><div class="info-item"><label>粮食性质</label><strong>市场贸易粮</strong></div>
+        <div class="info-item"><label>发货主体</label><strong>从可信主体中选择</strong></div><div class="info-item"><label>收货主体</label><strong>从可信主体中选择</strong></div>
+      </div><p class="modal-note">建链后系统自动生成唯一粮链编码，并持续关联质量、仓储、运输、交接和签收事件。</p>`,"生成粮链");
+  }
+
+  function stopPlayback(){
+    if(playback){clearInterval(playback);playback=null}
+    $("route-play").textContent="▶ 路径回放";
+  }
+  function playRoute(){
+    if(playback){stopPlayback();renderTimeline();renderMap();return}
+    let index=0;$("route-play").textContent="■ 停止回放";
+    renderTimeline(index);renderMap(index);
+    playback=setInterval(()=>{
+      index++;
+      if(index>=selected.nodes.length){stopPlayback();renderTimeline();renderMap();showToast("粮链路径回放完成");return}
+      renderTimeline(index);renderMap(index);
+    },750);
+  }
+
+  function exportArchive(){
+    const content=[
+      "北粮南运一粮一链可信档案",`粮链编码：${selected.code}`,`业务批次：${selected.id}`,`品种等级：${selected.grain}`,
+      `粮源地：${selected.origin}`,`收货单位：${selected.receiver}`,`当前状态：${selected.status}`,`当前数量：${selected.quantity}`,
+      `质量等级：${selected.qualityGrade}`,`链路完整度：${selected.completeness}%`,`EPCIS事件：${selected.events}条`,
+      "", "节点事件：", ...selected.nodes.map((n,i)=>`${i+1}. ${n.name}｜${n.place}｜${n.time}｜${n.actor}`)
+    ].join("\n");
+    const blob=new Blob([content],{type:"text/plain;charset=utf-8"});
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`${selected.code}-可信档案.txt`;a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1000);showToast("可信档案已导出");
+  }
+
+  function showToast(message){
+    $("toast").textContent=message;$("toast").classList.add("show");
+    clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("toast").classList.remove("show"),2100);
+  }
+
+  document.querySelectorAll(".detail-tab").forEach(btn=>btn.addEventListener("click",()=>{currentTab=btn.dataset.tab;renderTab()}));
+  document.querySelectorAll(".route-mode").forEach(btn=>btn.addEventListener("click",()=>{
+    routeMode=btn.dataset.mode;document.querySelectorAll(".route-mode").forEach(item=>item.classList.toggle("active",item===btn));renderMap();
+    showToast(routeMode==="actual"?"已切换至实际执行路径":"已切换至计划路径");
+  }));
+  $("route-play").addEventListener("click",playRoute);
+  $("chain-filter").addEventListener("input",renderList);
+  $("risk-filter").addEventListener("change",renderList);
+  $("refresh-list").addEventListener("click",()=>{renderList();showToast("粮链与事件状态已刷新")});
+  $("new-chain").addEventListener("click",openNew);
+  $("archive-open").addEventListener("click",openArchive);
+  $("export-chain").addEventListener("click",exportArchive);
+  $("modal-close").addEventListener("click",closeModal);
+  $("modal-cancel").addEventListener("click",closeModal);
+  $("modal-confirm").addEventListener("click",()=>{closeModal();showToast("操作已完成")});
+  $("modal").addEventListener("click",e=>{if(e.target===e.currentTarget)closeModal()});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+  window.addEventListener("resize",()=>chart&&chart.resize());
+
+  renderList();renderIdentity();renderTimeline();renderMap();renderTab();
+})();
+</script>
+</body>
+</html>
