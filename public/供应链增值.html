@@ -1,0 +1,873 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- 修复版：2026-07-30，已增加初始化保护及静态兜底 -->
+<title>供应链金融与交易可信服务（中仓登·中登网协同版）</title>
+<style>
+:root{--bg:#f3f6fb;--panel:#fff;--line:#e6ebf2;--text:#172033;--muted:#6f7890;--blue:#1769ff;--blue2:#0d55d8;--green:#18a36c;--orange:#f59e0b;--red:#e44848;--purple:#7657e8;--soft:#edf4ff}
+*{box-sizing:border-box}html,body{height:100%;margin:0;font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.app{height:100vh;display:block;overflow:hidden}
+.top{background:#0c326d;color:white;display:flex;align-items:center;justify-content:space-between;padding:0 22px}
+.brand{display:flex;align-items:center;gap:11px}.logo{width:35px;height:35px;border-radius:10px;background:linear-gradient(145deg,#56b1ff,#1769ff);display:grid;place-items:center;font-weight:900}.brand b{font-size:17px}.brand small{display:block;opacity:.65;margin-top:3px}
+.topnav{height:100%;display:flex}.topnav span{display:flex;align-items:center;padding:0 18px;color:#c8d5ea;font-size:14px;position:relative}.topnav .on{color:white;background:#ffffff12;font-weight:700}.topnav .on:after{content:"";height:3px;position:absolute;left:18px;right:18px;bottom:0;background:#55aaff}
+.user{display:flex;align-items:center;gap:12px;font-size:13px}.space{background:#ffffff14;border-radius:16px;padding:6px 10px}.avatar{width:30px;height:30px;border-radius:50%;background:#277de6;display:grid;place-items:center;font-weight:700}
+.shell{display:grid;grid-template-columns:200px 1fr;height:100vh;min-height:0}
+.side{background:white;border-right:1px solid var(--line);overflow:auto;padding:12px 10px 24px}.side-title{padding:10px 12px 14px;font-weight:800}.side-title:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--blue);display:inline-block;margin-right:8px}
+.group{margin-bottom:6px}.ghead{padding:10px 11px;border-radius:8px;display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:700;color:#36415b;cursor:pointer}.ghead:hover{background:#f5f8fd}.gleft{display:flex;align-items:center;gap:10px}.ico{width:20px;text-align:center;color:#69748c}.arrow{color:#99a3b5}.group.fold .subs{display:none}.group.fold .arrow{transform:rotate(-90deg)}
+.item{padding:9px 10px 9px 41px;margin:2px 0;border-radius:7px;font-size:13px;color:#707a90;cursor:pointer;position:relative}.item:hover{background:#f5f8fd;color:#33415c}.item.on{background:var(--soft);color:var(--blue);font-weight:800}.item.on:before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:2px;background:var(--blue)}
+.main{display:grid;grid-template-rows:49px 1fr;min-width:0;min-height:0}.crumb{background:white;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 19px;font-size:13px;color:#7d879b}.crumb b{color:#28344e}.crumb button{border:1px solid var(--line);background:white;border-radius:7px;width:31px;height:31px;color:#63708a}
+.content{overflow:auto;padding:16px 18px 28px}.pagehead{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:14px}.pagehead h1{font-size:21px;margin:0 0 5px}.pagehead p{font-size:13px;color:var(--muted);margin:0}.actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.btn{border:1px solid var(--line);background:white;color:#3b4660;padding:8px 13px;border-radius:8px;font-size:13px}.btn:hover{border-color:#b8cae9}.btn.primary{background:var(--blue);border-color:var(--blue);color:white}.btn.primary:hover{background:var(--blue2)}.btn.danger{color:var(--red);background:#fff3f3;border-color:#ffd5d5}.btn.link{border:0;background:transparent;color:var(--blue);padding:3px 4px}.btn.small{padding:5px 8px;font-size:12px}
+.grid{display:grid;gap:14px}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g21{grid-template-columns:minmax(0,2fr) minmax(320px,1fr)}.g32{grid-template-columns:minmax(0,3fr) minmax(360px,2fr)}
+.card{background:white;border:1px solid var(--line);border-radius:12px;box-shadow:0 2px 8px #1c355708;min-width:0}.chead{height:48px;border-bottom:1px solid var(--line);padding:0 15px;display:flex;align-items:center;justify-content:space-between}.ctitle{font-size:14px;font-weight:800}.csub{font-size:12px;color:var(--muted)}.cbody{padding:14px 15px}
+.metric{min-height:105px;padding:16px;display:flex;align-items:center;justify-content:space-between}.mlabel{font-size:13px;color:var(--muted);margin-bottom:9px}.mvalue{font-size:25px;font-weight:900}.mfoot{font-size:12px;color:#8791a4;margin-top:7px}.micon{width:45px;height:45px;border-radius:13px;display:grid;place-items:center;font-size:21px}.blue{background:#edf4ff;color:var(--blue)}.green{background:#eaf8f2;color:var(--green)}.orange{background:#fff5e4;color:#c77a00}.purple{background:#f1edff;color:var(--purple)}
+.toolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;padding:12px 14px;border-bottom:1px solid var(--line)}.search{position:relative;flex:1;min-width:230px;max-width:360px}.search input{width:100%;height:34px;border:1px solid var(--line);border-radius:8px;padding:0 11px 0 33px;background:#fbfcfe;outline:none}.search:before{content:"⌕";position:absolute;left:11px;top:6px;color:#8993a8}.filter{height:34px;border:1px solid var(--line);border-radius:8px;padding:0 28px 0 10px;background:white;color:#526078;outline:none}.search input:focus,.filter:focus,.formc:focus{border-color:#8db3f7;box-shadow:0 0 0 3px #1769ff14}
+.tablewrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:950px}.table th{font-size:12px;color:#6c768b;font-weight:700;background:#f8fafc;padding:11px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}.table td{font-size:13px;padding:12px;border-bottom:1px solid #eef1f5;vertical-align:middle}.table tr:hover td{background:#fbfdff}.strong{font-weight:800}.code{font-family:Consolas,monospace;color:#48617d;font-size:12px}.amount{font-weight:800}.muted{color:var(--muted)}.ellipsis{max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tag{display:inline-flex;padding:3px 8px;border-radius:13px;font-size:12px;white-space:nowrap}.tgreen{background:#eaf8f2;color:#118859}.torange{background:#fff4e1;color:#c57800}.tred{background:#fff0f0;color:#d63f3f}.tblue{background:#edf4ff;color:var(--blue)}.tpurple{background:#f1edff;color:#6b4cda}.tgray{background:#f0f2f6;color:#69738a}
+.pager{border-top:1px solid var(--line);padding:11px 14px;display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}.pg button{width:28px;height:28px;border:1px solid var(--line);background:white;border-radius:6px;margin-left:4px}.pg .on{background:var(--blue);color:white;border-color:var(--blue)}
+.notice{padding:11px 13px;border-radius:9px;background:#eff6ff;color:#3c5d8e;font-size:12px;line-height:1.6;margin-bottom:14px}.notice.warn{background:#fff8e8;color:#91620d}.notice.red{background:#fff0f0;color:#a33d3d}
+.quick{display:flex;flex-direction:column;gap:9px}.qitem{border:1px solid var(--line);border-radius:10px;padding:11px;display:flex;gap:10px;align-items:flex-start}.qico{width:34px;height:34px;border-radius:9px;background:#edf4ff;color:var(--blue);display:grid;place-items:center;flex:0 0 auto}.qbody{flex:1;min-width:0}.qname{font-size:13px;font-weight:800;margin-bottom:4px}.qdesc{font-size:12px;color:var(--muted);line-height:1.5}.qmeta{font-size:11px;color:#98a2b4;margin-top:5px}
+.donutbox{display:flex;align-items:center;gap:25px}.donut{width:160px;height:160px;border-radius:50%;background:conic-gradient(#1769ff 0 34%,#18a36c 34% 59%,#f59e0b 59% 77%,#7657e8 77% 91%,#b9c6da 91%);position:relative;flex:0 0 auto}.donut:after{content:"";position:absolute;inset:36px;border-radius:50%;background:white}.dcenter{position:absolute;inset:0;z-index:1;display:grid;place-items:center;text-align:center}.dcenter b{font-size:21px}.dcenter small{display:block;color:var(--muted);margin-top:3px}.dlegend{flex:1;display:grid;gap:10px}.drow{display:flex;justify-content:space-between;font-size:12px}.drow span:before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--c);margin-right:7px}
+.chart{height:220px}.chart svg{width:100%;height:100%}
+.process{display:flex;align-items:center;padding:5px 0 18px}.step{flex:1;text-align:center;position:relative}.step:after{content:"";position:absolute;left:50%;right:-50%;top:16px;height:2px;background:#dde4ef}.step:last-child:after{display:none}.circle{width:32px;height:32px;border-radius:50%;margin:auto;background:#e9edf4;color:#788398;display:grid;place-items:center;font-size:12px;font-weight:800;position:relative;z-index:1}.step.done .circle{background:#e5f6ee;color:var(--green)}.step.done:after{background:#83d3b3}.step.active .circle{background:var(--blue);color:white;box-shadow:0 0 0 5px #1769ff16}.sname{font-size:12px;color:var(--muted);margin-top:7px}.step.done .sname,.step.active .sname{color:#33405a;font-weight:800}
+.details{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:10px;overflow:hidden}.di{padding:12px 14px;min-height:66px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.di:nth-child(3n){border-right:0}.di:nth-last-child(-n+3){border-bottom:0}.dl{font-size:11px;color:var(--muted);margin-bottom:6px}.dv{font-size:13px;font-weight:700;line-height:1.45}
+.chain{display:flex;gap:8px;overflow:auto;padding:3px 0 6px}.node{min-width:128px;border:1px solid var(--line);border-radius:10px;padding:10px;position:relative}.node:not(:last-child):after{content:"→";position:absolute;right:-17px;top:28px;color:#9da6b8}.node.ok{border-color:#bce7d3;background:#f7fdfa}.node.warn{border-color:#f2d59b;background:#fffaf0}.nt{font-size:12px;font-weight:800}.ns{font-size:11px;color:var(--muted);margin-top:4px}.nst{font-size:11px;color:var(--green);margin-top:7px}
+.progress{height:7px;border-radius:7px;background:#edf0f5;overflow:hidden}.progress span{display:block;height:100%;background:linear-gradient(90deg,#5199ff,#1769ff)}
+.tabs{display:flex;gap:18px;border-bottom:1px solid var(--line);padding:0 15px}.tab{font-size:13px;color:var(--muted);padding:13px 0 10px;border-bottom:2px solid transparent;cursor:pointer}.tab.on{color:var(--blue);border-color:var(--blue);font-weight:800}
+.product{padding:16px;position:relative;overflow:hidden}.product:after{content:"";position:absolute;width:115px;height:115px;border-radius:50%;background:#1769ff0d;right:-40px;top:-48px}.pname{font-size:15px;font-weight:900}.pbank{font-size:12px;color:var(--muted);margin-top:5px}.pamt{font-size:22px;font-weight:900;margin:16px 0 4px}.pamt small{font-size:12px;font-weight:400;color:var(--muted)}.pinfo{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:13px 0}.pinfo div{background:#f7f9fc;border-radius:8px;padding:8px}.pinfo label{font-size:10px;color:var(--muted);display:block}.pinfo b{font-size:12px;display:block;margin-top:4px}.pfoot{border-top:1px solid var(--line);padding-top:11px;margin-top:12px;display:flex;justify-content:space-between;align-items:center}
+.alert{border-left:3px solid var(--c);padding:11px 12px;background:white;box-shadow:0 1px 4px #24385c0b;margin-bottom:9px}.atop{display:flex;justify-content:space-between}.atitle{font-size:13px;font-weight:800}.atime{font-size:11px;color:#98a2b3}.adesc{font-size:12px;color:var(--muted);line-height:1.5;margin-top:5px}
+.mask{position:fixed;inset:0;background:#0c182e6e;z-index:80;display:none}.mask.show{display:block}.drawer{position:absolute;right:0;top:0;bottom:0;width:min(720px,92vw);background:white;display:grid;grid-template-rows:59px 1fr 63px;box-shadow:-18px 0 42px #10213b2e}.dhead,.mhead{border-bottom:1px solid var(--line);padding:0 19px;display:flex;align-items:center;justify-content:space-between}.dhead h2,.mhead h3{margin:0;font-size:17px}.close{border:0;background:#f3f5f9;width:32px;height:32px;border-radius:8px;font-size:20px;color:#707a90}.dbody{overflow:auto;padding:18px 20px}.dfoot,.mfoot{border-top:1px solid var(--line);padding:0 19px;display:flex;align-items:center;justify-content:flex-end;gap:8px}
+
+.verify-flow{display:grid;grid-template-columns:repeat(6,minmax(110px,1fr));gap:8px}.flow-item{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;position:relative}.flow-item:not(:last-child):after{content:"→";position:absolute;right:-8px;top:34px;color:#9ba6b8;z-index:2}.flow-no{width:27px;height:27px;border-radius:8px;background:#edf4ff;color:var(--blue);display:grid;place-items:center;font-weight:900;font-size:12px;margin-bottom:8px}.flow-name{font-size:13px;font-weight:800}.flow-desc{font-size:11px;color:var(--muted);line-height:1.5;margin-top:5px}
+.verify-summary{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}.mini-kpi{border:1px solid var(--line);border-radius:9px;padding:11px;background:#fbfcff}.mini-kpi span{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}.mini-kpi b{font-size:16px}.mini-kpi small{font-size:11px;color:var(--muted);margin-left:4px}
+.modal.wide{width:min(880px,95vw)}.wizard-nav{display:flex;align-items:flex-start;gap:0;margin-bottom:17px}.wizard-step{flex:1;text-align:center;position:relative}.wizard-step:after{content:"";position:absolute;left:50%;right:-50%;top:15px;height:2px;background:#dde4ef}.wizard-step:last-child:after{display:none}.wizard-step .wn{width:30px;height:30px;border-radius:50%;margin:auto;background:#e9edf4;color:#778298;display:grid;place-items:center;font-size:12px;font-weight:900;position:relative;z-index:1}.wizard-step.active .wn{background:var(--blue);color:#fff;box-shadow:0 0 0 5px #1769ff16}.wizard-step.done .wn{background:#e5f6ee;color:var(--green)}.wizard-step.done:after{background:#83d3b3}.wizard-step .wt{font-size:12px;color:var(--muted);margin-top:7px}.wizard-step.active .wt,.wizard-step.done .wt{font-weight:800;color:#33405a}
+.source-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.source-card{border:1px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;background:#fff}.source-card:hover,.source-card.selected{border-color:#8db3f7;background:#f7faff}.source-top{display:flex;align-items:center;justify-content:space-between;gap:8px}.source-name{font-size:13px;font-weight:800}.source-desc{font-size:11px;color:var(--muted);line-height:1.55;margin-top:6px}.source-meta{font-size:11px;color:#64738c;margin-top:8px}.source-card input{accent-color:var(--blue)}
+.check-list{display:grid;gap:8px}.check-row{display:grid;grid-template-columns:28px minmax(150px,1fr) minmax(180px,2fr) 90px;gap:9px;align-items:center;border:1px solid var(--line);border-radius:9px;padding:10px 11px}.check-row .okmark{width:24px;height:24px;border-radius:7px;background:#eaf8f2;color:var(--green);display:grid;place-items:center;font-weight:900}.check-row .warnmark{background:#fff4e1;color:#c57800}.check-title{font-size:12px;font-weight:800}.check-desc{font-size:11px;color:var(--muted)}
+.upload-box{border:1px dashed #b8c7db;border-radius:10px;background:#f9fbfe;padding:18px;text-align:center;color:#64738c;font-size:12px;cursor:pointer}.upload-box:hover{border-color:var(--blue);background:#f5f9ff}.upload-box b{display:block;color:#35445f;margin-bottom:5px}.material-list{display:grid;gap:8px}.material-row{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:9px;padding:10px}.material-row .file-ico{width:32px;height:32px;border-radius:8px;background:#edf4ff;color:var(--blue);display:grid;place-items:center}.material-row .file-main{flex:1;min-width:0}.material-row .file-name{font-size:12px;font-weight:800}.material-row .file-meta{font-size:11px;color:var(--muted);margin-top:4px}
+.drawer-tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:0 -1px 16px}.drawer-tab{border:0;background:transparent;padding:10px 12px;color:var(--muted);font-size:12px;border-bottom:2px solid transparent}.drawer-tab.on{color:var(--blue);border-color:var(--blue);font-weight:800}.drawer-pane{display:none}.drawer-pane.on{display:block}.audit-list{display:grid;gap:0}.audit-item{display:grid;grid-template-columns:110px 1fr;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}.audit-time{font-size:11px;color:var(--muted)}.audit-main{font-size:12px;line-height:1.55}.audit-main b{display:block;margin-bottom:2px}.verify-result{display:grid;gap:8px}.result-item{display:grid;grid-template-columns:120px 1fr 92px 80px;gap:10px;align-items:center;border:1px solid var(--line);border-radius:9px;padding:10px}.result-name{font-size:12px;font-weight:800}.result-desc{font-size:11px;color:var(--muted);line-height:1.5}.result-score{font-size:12px;text-align:right;font-weight:800}.action-group{display:flex;gap:2px;align-items:center;white-space:nowrap}
+@media(max-width:1100px){.verify-flow{grid-template-columns:repeat(3,1fr)}.flow-item:nth-child(3):after{display:none}.verify-summary{grid-template-columns:repeat(3,1fr)}.source-grid{grid-template-columns:repeat(2,1fr)}}
+.modal{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(650px,93vw);max-height:88vh;background:white;border-radius:13px;display:grid;grid-template-rows:58px 1fr 62px;box-shadow:0 24px 60px #10203e45}.mbody{padding:17px 18px;overflow:auto}.form{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}.fi{display:flex;flex-direction:column;gap:6px}.fi.full{grid-column:1/-1}.fl{font-size:12px;color:#566078}.fl em{color:var(--red);font-style:normal}.formc{height:36px;border:1px solid var(--line);border-radius:8px;padding:0 10px;outline:none;background:white;width:100%}.formc.area{height:80px;padding:9px;resize:vertical}.checks{display:flex;gap:14px;flex-wrap:wrap;font-size:12px}.checks label{display:flex;gap:5px;align-items:center}.toast{position:fixed;left:50%;top:78px;transform:translate(-50%,-10px);background:#1d2c44;color:white;padding:10px 15px;border-radius:8px;opacity:0;transition:.2s;z-index:100}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:1200px){.g4{grid-template-columns:repeat(2,1fr)}.g21,.g32{grid-template-columns:1fr}.topnav{display:none}.details{grid-template-columns:repeat(2,1fr)}.di:nth-child(3n){border-right:1px solid var(--line)}.di:nth-child(2n){border-right:0}.di:nth-last-child(-n+3){border-bottom:1px solid var(--line)}.di:nth-last-child(-n+2){border-bottom:0}}
+@media(max-width:780px){.shell{grid-template-columns:72px 1fr}.side-title,.ghead span:not(.ico),.subs{display:none}.ghead{justify-content:center}.g2,.g4{grid-template-columns:1fr}.content{padding:12px}.space{display:none}.form{grid-template-columns:1fr}.pagehead{gap:8px}.actions{max-width:48%}}
+
+.block-title{font-size:14px;margin:20px 0 10px}.score-row{display:grid;grid-template-columns:90px 1fr 35px;gap:8px;align-items:center;margin:11px 0;font-size:12px}.tabs{overflow-x:auto;white-space:nowrap}.tab{flex:0 0 auto}.table td .progress{min-width:110px}.metric .mvalue{font-variant-numeric:tabular-nums}.card>.tabs+.toolbar{border-top:0}.card>.cbody+.tabs{border-top:1px solid var(--line)}
+
+.workflow-layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(250px,1fr);gap:14px}.workflow-side{border:1px solid var(--line);border-radius:10px;padding:12px;background:#f8fafc}.workflow-side h4{font-size:13px;margin:0 0 10px}.workflow-side ul{margin:0;padding-left:18px;color:var(--muted);font-size:12px;line-height:1.9}.flow-note{display:flex;gap:9px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:12px}.flow-note:last-child{border-bottom:0}.flow-num{width:23px;height:23px;border-radius:50%;background:var(--soft);color:var(--blue);display:grid;place-items:center;font-weight:800;flex:0 0 auto}.decision-box{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.decision{border:1px solid var(--line);padding:10px;border-radius:9px;background:white;font-size:12px}.decision input{margin-right:5px}.record-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.record-chip{border:1px solid var(--line);border-radius:9px;padding:10px;background:#fbfcfe}.record-chip b{display:block;font-size:12px;margin-bottom:4px}.record-chip span{font-size:11px;color:var(--muted)}.modal.xwide{width:min(1080px,94vw)}.required:after{content:" *";color:var(--red)}
+@media(max-width:1050px){.workflow-layout{grid-template-columns:1fr}.record-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="shell"><aside class="side"><div class="side-title">金融增值服务</div><div id="menu"><div style="padding:14px;color:#6f7890;font-size:13px">菜单加载中…</div></div></aside>
+<main class="main"><div class="crumb"><span>金融增值服务 / <b id="crumb">金融工作台</b></span></div><section class="content" id="content"><div class="card" style="padding:24px"><h2 style="margin:0 0 8px">金融工作台</h2><p style="margin:0;color:#6f7890">页面正在加载，请稍候…</p></div></section></main></div></div>
+<div class="mask" id="drawerMask" onclick="maskClose(event,'drawer')"><div class="drawer" onclick="event.stopPropagation()"><div class="dhead"><h2 id="drawerTitle">详情</h2><button class="close" onclick="closeDrawer()">×</button></div><div class="dbody" id="drawerBody"></div><div class="dfoot" id="drawerFoot"><button class="btn" onclick="closeDrawer()">关闭</button></div></div></div>
+<div class="mask" id="modalMask" onclick="maskClose(event,'modal')"><div class="modal" onclick="event.stopPropagation()"><div class="mhead"><h3 id="modalTitle">操作</h3><button class="close" onclick="closeModal()">×</button></div><div class="mbody" id="modalBody"></div><div class="mfoot" id="modalFoot"></div></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const menu = [
+  ['金融服务总览','▦', [['dashboard','金融工作台'],['todo_progress','待办与进度']]],
+  ['交易验真','✓', [['verify_center','交易验真'],['verify_report','验真报告'],['abnormal_rules','异常与规则']]],
+  ['信用与授信','▣', [['enterprise_credit','企业信用'],['credit_apply','授信申请'],['credit_approve','授信审批'],['credit_limit','授信额度'],['credit_rules','信用与授信规则']]],
+  ['融资服务','¥', [['finance_products','金融产品'],['finance_apply','融资申请'],['finance_approve','融资审批'],['contract_disburse','合同与放款'],['repayment_settlement','还款与结清'],['finance_ledger','融资业务台账']]],
+  ['货权监管','◇', [['ownership_records','货权与存货档案'],['warehouse_receipt','电子仓单'],['pledge_supervision','质押与登记监管'],['valuation','货物估值'],['ownership_abnormal','货权异常']]],
+  ['贷后管理','⚠', [['post_monitor','贷后监测'],['risk_center','风险预警与处置'],['post_report','贷后检查报告'],['maturity_reminder','到期与还款提醒']]],
+  ['金融机构管理','▤', [['institutions_page','金融机构'],['product_config','金融产品配置'],['registration_platforms','登记平台管理'],['rules_config','业务规则配置'],['pricing_pledge','定价与质押配置'],['agreements','合作协议']]]
+];
+const names = Object.fromEntries(menu.flatMap(g => g[2]));
+let current = 'dashboard';
+const state = {tabs:{}};
+let verifyWizardStep=0;
+let verifyWizardData={};
+let activeVerifyIndex=0;
+
+const DATA = {
+  verify: [
+    {id:'YZ202607300018',object:'粮食购销合同',applicant:'黑龙江北丰粮贸有限公司',counterparty:'广东华南饲料集团',amount:'¥ 2,860.00万',ref:'HT-BF-2026-0718',status:'待验真',score:'—',time:'2026-07-30 08:45',tasks:0},
+    {id:'YZ202607300017',object:'多式联运订单',applicant:'吉林谷丰供应链有限公司',counterparty:'广西粮油食品有限公司',amount:'¥ 1,480.00万',ref:'LD20260726009',status:'验真中',score:'76',time:'2026-07-30 08:13',tasks:2},
+    {id:'YZ202607290046',object:'应收账款',applicant:'辽宁港联物流有限公司',counterparty:'华润五丰有限公司',amount:'¥ 682.40万',ref:'YSZK-202607-008',status:'已通过',score:'92',time:'2026-07-29 17:28',tasks:0},
+    {id:'YZ202607290041',object:'电子仓单',applicant:'北大荒粮食集团',counterparty:'锦州港粮食物流',amount:'¥ 3,760.00万',ref:'WHD20260722031',status:'存在风险',score:'58',time:'2026-07-29 15:52',tasks:3},
+    {id:'YZ202607290033',object:'运输合同',applicant:'沈阳中谷物流有限公司',counterparty:'营口港务集团',amount:'¥ 416.80万',ref:'YSHT-20260718-22',status:'待补充',score:'68',time:'2026-07-29 13:06',tasks:1}
+  ],
+  verifyTasks: [
+    {id:'RW202607300061',verify:'YZ202607300017',type:'物流核验',item:'收货主体与合同买方名称存在差异',enterprise:'吉林谷丰供应链有限公司',assignee:'李倩',deadline:'今日 11:30',status:'待复核'},
+    {id:'RW202607300060',verify:'YZ202607300017',type:'合同核验',item:'合同电子签章无法自动识别',enterprise:'吉林谷丰供应链有限公司',assignee:'王磊',deadline:'今日 12:00',status:'处理中'},
+    {id:'RW202607290089',verify:'YZ202607290041',type:'货物核验',item:'仓单库存与实物盘点差异 326 吨',enterprise:'北大荒粮食集团',assignee:'张浩',deadline:'今日 10:30',status:'待复核'},
+    {id:'RW202607290081',verify:'YZ202607290033',type:'物流核验',item:'缺少铁路货票与港口进场记录',enterprise:'沈阳中谷物流有限公司',assignee:'赵宁',deadline:'今日 15:00',status:'待补充'},
+    {id:'RW202607290077',verify:'YZ202607290046',type:'资金核验',item:'监管账户回款记录核对',enterprise:'辽宁港联物流有限公司',assignee:'陈峰',deadline:'已完成',status:'已完成'}
+  ],
+  reports:[
+    {id:'BG202607290046',verify:'YZ202607290046',object:'应收账款',enterprise:'辽宁港联物流有限公司',amount:'¥ 682.40万',conclusion:'可信',score:'92',integrity:'96%',risk:'0项',time:'2026-07-29 17:46'},
+    {id:'BG202607290041',verify:'YZ202607290041',object:'电子仓单',enterprise:'北大荒粮食集团',amount:'¥ 3,760.00万',conclusion:'存在风险',score:'58',integrity:'88%',risk:'3项',time:'2026-07-29 16:28'},
+    {id:'BG202607280037',verify:'YZ202607280037',object:'粮食购销合同',enterprise:'龙江新谷贸易有限公司',amount:'¥ 930.00万',conclusion:'基本可信',score:'84',integrity:'91%',risk:'1项',time:'2026-07-28 15:31'},
+    {id:'BG202607270029',verify:'YZ202607270029',object:'多式联运订单',enterprise:'黑龙江北丰粮贸有限公司',amount:'¥ 2,186.00万',conclusion:'可信',score:'95',integrity:'98%',risk:'0项',time:'2026-07-27 18:02'}
+  ],
+  abnormal:[
+    {id:'YC20260730008',type:'疑似重复质押',enterprise:'北大荒粮食集团',object:'WHD20260722031',amount:'¥ 2,400万',desc:'同一批次关联两笔有效质押',level:'高风险',status:'待复核',time:'2026-07-30 08:41'},
+    {id:'YC20260730007',type:'物流轨迹不一致',enterprise:'吉林谷丰供应链有限公司',object:'LD20260726009',amount:'¥ 1,480万',desc:'运输轨迹与计划中转节点不一致',level:'中风险',status:'核查中',time:'2026-07-30 08:12'},
+    {id:'YC20260729021',type:'疑似资金回流',enterprise:'龙江新谷贸易有限公司',object:'FP-23002409',amount:'¥ 930万',desc:'交易资金同日回流关联账户',level:'高风险',status:'待处置',time:'2026-07-29 17:05'}
+  ],
+  verifyRules:[
+    {name:'主体与账户一致性',category:'主体核验',condition:'账户户名须与合同主体或授权账户一致',source:'可信空间主体/账户',level:'高风险',hits:8,status:'启用',update:'2026-07-28'},
+    {name:'合同唯一性检查',category:'合同核验',condition:'合同编号、签章摘要不得重复',source:'合同库',level:'高风险',hits:3,status:'启用',update:'2026-07-27'},
+    {name:'货物存在性校验',category:'货物核验',condition:'须关联粮食批次、入库或在途事件',source:'一粮一链',level:'高风险',hits:6,status:'启用',update:'2026-07-26'},
+    {name:'运输闭环完整性',category:'物流核验',condition:'发运、中转、到达、签收必须闭环',source:'多式联运',level:'中风险',hits:11,status:'启用',update:'2026-07-25'},
+    {name:'中仓登仓单与货权一致性',category:'仓储与仓单核验',condition:'仓单持有人、数量、仓库及质押状态须与平台一致',source:'中仓登/货权监管',level:'高风险',hits:5,status:'启用',update:'2026-07-30'},
+    {name:'中登网在先担保冲突',category:'担保状态核验',condition:'担保财产描述不得与有效在先登记重叠',source:'中登网查询结果',level:'高风险',hits:2,status:'启用',update:'2026-07-30'}
+  ],
+  credit:[
+    {name:'黑龙江北丰粮贸有限公司',code:'91230110MA1B8X2N6E',region:'黑龙江·哈尔滨',grade:'AA',score:86,trade:'¥ 8.72亿',performance:'98.6%',limit:'¥ 6,000万',risk:'低风险'},
+    {name:'吉林谷丰供应链有限公司',code:'91220104MA17X8M24Y',region:'吉林·长春',grade:'A+',score:81,trade:'¥ 5.31亿',performance:'96.8%',limit:'¥ 4,200万',risk:'低风险'},
+    {name:'辽宁港联物流有限公司',code:'91210103MA0P5L3A9Q',region:'辽宁·沈阳',grade:'A',score:77,trade:'¥ 3.86亿',performance:'94.2%',limit:'¥ 2,800万',risk:'中低风险'},
+    {name:'龙江新谷贸易有限公司',code:'91230203MA19Y4D2XX',region:'黑龙江·齐齐哈尔',grade:'BBB+',score:73,trade:'¥ 2.14亿',performance:'92.4%',limit:'¥ 1,800万',risk:'中风险'},
+    {name:'东北恒仓储运有限公司',code:'91211200MA10N4BQ8L',region:'辽宁·铁岭',grade:'BBB',score:68,trade:'¥ 1.46亿',performance:'89.9%',limit:'¥ 1,000万',risk:'中风险'}
+  ],
+  creditApply:[
+    {id:'SX20260730001',enterprise:'吉林谷丰供应链有限公司',grade:'A+',amount:'¥ 4,500万',term:'12个月',type:'循环授信',purpose:'粮食采购及在途周转',status:'待审批',time:'2026-07-30 09:12'},
+    {id:'SX20260729008',enterprise:'黑龙江北丰粮贸有限公司',grade:'AA',amount:'¥ 6,000万',term:'12个月',type:'综合授信',purpose:'订单与仓单融资',status:'评估中',time:'2026-07-29 15:36'},
+    {id:'SX20260728005',enterprise:'辽宁港联物流有限公司',grade:'A',amount:'¥ 2,000万',term:'12个月',type:'循环授信',purpose:'运费保理',status:'待补充',time:'2026-07-28 14:02'},
+    {id:'SX20260726003',enterprise:'龙江新谷贸易有限公司',grade:'BBB+',amount:'¥ 1,500万',term:'6个月',type:'专项授信',purpose:'应收账款融资',status:'已通过',time:'2026-07-26 10:18'}
+  ],
+  creditLimits:[
+    {enterprise:'黑龙江北丰粮贸有限公司',agreement:'XY-SX-2026-001',total:'¥ 6,000万',used:'¥ 3,260万',available:'¥ 2,740万',frozen:'—',expiry:'2027-02-28',usage:'54%',status:'正常'},
+    {enterprise:'吉林谷丰供应链有限公司',agreement:'XY-SX-2026-002',total:'¥ 4,200万',used:'¥ 2,150万',available:'¥ 2,050万',frozen:'—',expiry:'2027-03-31',usage:'51%',status:'正常'},
+    {enterprise:'辽宁港联物流有限公司',agreement:'XY-SX-2026-003',total:'¥ 2,800万',used:'¥ 1,320万',available:'¥ 1,280万',frozen:'¥ 200万',expiry:'2027-04-30',usage:'47%',status:'部分冻结'},
+    {enterprise:'龙江新谷贸易有限公司',agreement:'XY-SX-2026-004',total:'¥ 1,800万',used:'¥ 920万',available:'¥ 880万',frozen:'—',expiry:'2027-05-31',usage:'51%',status:'正常'}
+  ],
+  finance:[
+    {id:'RZ202607300012',enterprise:'黑龙江北丰粮贸有限公司',product:'在途货物融资',institution:'中国银行黑龙江省分行',apply:'¥ 2,000万',approve:'待审批',term:'90天',status:'风控审核',time:'2026-07-30 09:05',zcd:'原仓单已变更',zd:'待登记',registry:'待完成'},
+    {id:'RZ202607290038',enterprise:'吉林谷丰供应链有限公司',product:'订单融资',institution:'浦发银行长春分行',apply:'¥ 1,500万',approve:'¥ 1,200万',term:'120天',status:'待签约',time:'2026-07-29 16:42',zcd:'不适用',zd:'查询通过',registry:'待登记'},
+    {id:'RZ202607290031',enterprise:'辽宁港联物流有限公司',product:'运费保理',institution:'交通银行辽宁省分行',apply:'¥ 680万',approve:'¥ 620万',term:'180天',status:'已放款',time:'2026-07-29 14:15',zcd:'不适用',zd:'应收登记有效',registry:'一致'},
+    {id:'RZ202607280022',enterprise:'北大荒粮食集团',product:'仓单质押融资',institution:'农业银行黑龙江省分行',apply:'¥ 3,000万',approve:'¥ 2,400万',term:'180天',status:'贷后监测',time:'2026-07-28 11:26',zcd:'仓单质押有效',zd:'担保登记有效',registry:'一致'},
+    {id:'RZ202607270017',enterprise:'龙江新谷贸易有限公司',product:'应收账款融资',institution:'招商银行哈尔滨分行',apply:'¥ 900万',approve:'¥ 760万',term:'120天',status:'已结清',time:'2026-07-27 09:30',zcd:'已解押',zd:'已注销',registry:'已闭环'}
+  ],
+  receipts:[
+    {id:'WHD20260722031',owner:'北大荒粮食集团',warehouse:'锦州港粮食物流一号库',grain:'玉米 / 二等',qty:'12,000 吨',value:'¥ 3,760万',pledged:'¥ 2,400万',status:'已质押',update:'2026-07-30 08:34',zcdNo:'ZCD-HLJ-20260722031',zcdStatus:'已登记',zcdPledge:'已质押',zcdSync:'2026-07-30 08:31'},
+    {id:'WHD20260725018',owner:'黑龙江北丰粮贸有限公司',warehouse:'哈尔滨双城中央库',grain:'玉米 / 一等',qty:'8,600 吨',value:'¥ 2,924万',pledged:'—',status:'正常',update:'2026-07-30 08:10',zcdNo:'ZCD-HLJ-20260725018',zcdStatus:'已登记',zcdPledge:'未质押',zcdSync:'2026-07-30 08:06'},
+    {id:'WHD20260719009',owner:'吉林谷丰供应链有限公司',warehouse:'长春兴隆保税库',grain:'大豆 / 三等',qty:'4,200 吨',value:'¥ 1,974万',pledged:'¥ 1,200万',status:'冻结中',update:'2026-07-29 17:55',zcdNo:'ZCD-JL-20260719009',zcdStatus:'待变更',zcdPledge:'冻结中',zcdSync:'2026-07-29 17:48'},
+    {id:'WHD20260716007',owner:'龙江新谷贸易有限公司',warehouse:'齐齐哈尔富裕粮库',grain:'水稻 / 二等',qty:'6,300 吨',value:'¥ 2,583万',pledged:'¥ 760万',status:'部分质押',update:'2026-07-29 16:20',zcdNo:'ZCD-HLJ-20260716007',zcdStatus:'已登记',zcdPledge:'部分解押',zcdSync:'2026-07-29 16:15'}
+  ],
+  ownership:[
+    {batch:'PL20260722001',grain:'玉米 / 二等',qty:'12,000吨',owner:'北大荒粮食集团',controller:'锦州港粮食物流',custodian:'锦州港粮食物流一号库',pledgee:'农业银行黑龙江省分行',status:'已确认',time:'2026-07-30 08:34',zcdRecord:'ZCD-HQ-20260722001',zcdStatus:'登记一致'},
+    {batch:'PL20260725003',grain:'玉米 / 一等',qty:'8,600吨',owner:'黑龙江北丰粮贸有限公司',controller:'沈阳中谷物流有限公司',custodian:'在途运输',pledgee:'中国银行黑龙江省分行',status:'融资监管中',time:'2026-07-30 08:10',zcdRecord:'原仓单ZCD-HQ-20260725003',zcdStatus:'仓内转在途'},
+    {batch:'PL20260719006',grain:'大豆 / 三等',qty:'4,200吨',owner:'吉林谷丰供应链有限公司',controller:'长春兴隆保税库',custodian:'长春兴隆保税库',pledgee:'浦发银行长春分行',status:'待确认',time:'2026-07-29 17:55',zcdRecord:'ZCD-HQ-20260719006',zcdStatus:'待确认'},
+    {batch:'PL20260716002',grain:'水稻 / 二等',qty:'6,300吨',owner:'龙江新谷贸易有限公司',controller:'齐齐哈尔富裕粮库',custodian:'齐齐哈尔富裕粮库',pledgee:'招商银行哈尔滨分行',status:'已确认',time:'2026-07-29 16:20',zcdRecord:'ZCD-HQ-20260716002',zcdStatus:'登记一致'}
+  ],
+  pledge:[
+    {id:'ZY20260722001',finance:'RZ202607280022',receipt:'WHD20260722031',pledgor:'北大荒粮食集团',pledgee:'农业银行黑龙江省分行',value:'¥ 3,760万',amount:'¥ 2,400万',ratio:'63.8%',status:'有效',zcd:'质押状态已更新',zdNo:'ZD202607280022',zd:'登记有效'},
+    {id:'ZY20260725002',finance:'RZ202607300012',receipt:'WHD20260725018',pledgor:'黑龙江北丰粮贸有限公司',pledgee:'中国银行黑龙江省分行',value:'¥ 2,924万',amount:'¥ 2,000万',ratio:'68.4%',status:'待生效',zcd:'待更新质押状态',zdNo:'—',zd:'待登记'},
+    {id:'ZY20260719003',finance:'RZ202607290038',receipt:'WHD20260719009',pledgor:'吉林谷丰供应链有限公司',pledgee:'浦发银行长春分行',value:'¥ 1,974万',amount:'¥ 1,200万',ratio:'60.8%',status:'有效',zcd:'冻结状态有效',zdNo:'ZD202607290038',zd:'登记有效'},
+    {id:'ZY20260716004',finance:'RZ202607270017',receipt:'WHD20260716007',pledgor:'龙江新谷贸易有限公司',pledgee:'招商银行哈尔滨分行',value:'¥ 2,583万',amount:'¥ 760万',ratio:'29.4%',status:'部分解押',zcd:'部分解押已更新',zdNo:'ZD202607270017',zd:'变更完成'}
+  ],
+  alerts:[
+    {id:'YJ20260730001',level:'红色',type:'质押仓单库存异常减少',enterprise:'北大荒粮食集团',object:'WHD20260722031',desc:'库存较昨日减少 326 吨，未检索到有效出库审批或解押指令。',status:'待处置',time:'2026-07-30 08:32',owner:'王磊'},
+    {id:'YJ20260730002',level:'橙色',type:'融资货物路线偏离',enterprise:'黑龙江北丰粮贸有限公司',object:'LD20260726009',desc:'车辆编组偏离计划路线 42 公里，已持续 1 小时 18 分。',status:'核查中',time:'2026-07-30 08:05',owner:'李倩'},
+    {id:'YJ20260729003',level:'橙色',type:'应收账款回款逾期',enterprise:'辽宁港联物流有限公司',object:'YSZK-202607-008',desc:'监管账户未收到约定回款，已超过计划回款日 2 天。',status:'待处置',time:'2026-07-29 18:10',owner:'张浩'},
+    {id:'YJ20260729004',level:'黄色',type:'货值覆盖率下降',enterprise:'吉林谷丰供应链有限公司',object:'WHD20260719009',desc:'受大豆市场参考价下降影响，质押物覆盖率降至 124%。',status:'持续监测',time:'2026-07-29 16:42',owner:'赵宁'},
+    {id:'YJ20260730005',level:'红色',type:'中仓登与平台库存不一致',enterprise:'北大荒粮食集团',object:'ZCD-HLJ-20260722031',desc:'中仓登登记数量12,000吨，平台有效库存11,674吨，差异326吨。',status:'待处置',time:'2026-07-30 08:36',owner:'王磊'},
+    {id:'YJ20260730006',level:'橙色',type:'中登网登记即将到期',enterprise:'吉林谷丰供应链有限公司',object:'ZD202607290038',desc:'担保登记将在15日内到期，融资业务仍处于存续期。',status:'待处理',time:'2026-07-30 08:18',owner:'陈峰'}
+  ],
+  institutions:[
+    {name:'中国银行黑龙江省分行',type:'银行',region:'黑龙江省',products:6,amount:'¥ 3.18亿',status:'正常',expiry:'2027-01-31',contact:'陈经理',score:'4.8'},
+    {name:'农业银行黑龙江省分行',type:'银行',region:'黑龙江省',products:8,amount:'¥ 4.26亿',status:'正常',expiry:'2027-02-28',contact:'周经理',score:'4.9'},
+    {name:'浦发银行长春分行',type:'银行',region:'吉林省',products:4,amount:'¥ 1.82亿',status:'正常',expiry:'2027-03-31',contact:'刘经理',score:'4.7'},
+    {name:'交通银行辽宁省分行',type:'银行',region:'辽宁省',products:5,amount:'¥ 2.06亿',status:'正常',expiry:'2027-04-30',contact:'王经理',score:'4.8'},
+    {name:'东北农业融资担保有限公司',type:'担保机构',region:'东北三省',products:2,amount:'¥ 0.86亿',status:'待续约',expiry:'2026-08-31',contact:'孙经理',score:'4.5'}
+  ],
+  registrationPlatforms:[
+    {code:'REG-ZCD',name:'中仓登',type:'仓储/货权/仓单登记核验',operator:'合作登记服务机构',mode:'合作接口 + 人工回填',business:'仓库、存货、货权、仓单、质押状态',status:'正常',lastSync:'2026-07-30 09:18',rate:'98.6%'},
+    {code:'REG-ZDW',name:'中登网',type:'动产和权利担保登记公示',operator:'中国人民银行征信中心',mode:'查询/登记协同 + 凭证回填',business:'在先查询、担保登记、变更、展期、注销',status:'正常',lastSync:'2026-07-30 09:12',rate:'99.2%'}
+  ],
+  registrationRecords:[
+    {id:'DJ20260730018',platform:'中仓登',business:'仓单登记查询',object:'WHD20260722031',enterprise:'北大荒粮食集团',regNo:'ZCD-HLJ-20260722031',action:'状态同步',status:'成功',sync:'2026-07-30 09:18',operator:'系统'},
+    {id:'DJ20260730017',platform:'中登网',business:'在先担保查询',object:'RZ202607300012',enterprise:'黑龙江北丰粮贸有限公司',regNo:'—',action:'融资前查询',status:'无冲突',sync:'2026-07-30 09:12',operator:'王磊'},
+    {id:'DJ20260730016',platform:'中仓登',business:'质押状态更新',object:'ZY20260725002',enterprise:'黑龙江北丰粮贸有限公司',regNo:'ZCD-HLJ-20260725018',action:'待提交',status:'待办理',sync:'2026-07-30 09:05',operator:'李倩'},
+    {id:'DJ20260729089',platform:'中登网',business:'担保登记',object:'RZ202607280022',enterprise:'北大荒粮食集团',regNo:'ZD202607280022',action:'登记核验',status:'有效',sync:'2026-07-29 17:55',operator:'系统'},
+    {id:'DJ20260729081',platform:'中仓登',business:'登记一致性核验',object:'WHD20260722031',enterprise:'北大荒粮食集团',regNo:'ZCD-HLJ-20260722031',action:'数量对比',status:'存在差异',sync:'2026-07-29 17:42',operator:'系统'},
+    {id:'DJ20260728077',platform:'中登网',business:'登记注销',object:'RZ202607270017',enterprise:'龙江新谷贸易有限公司',regNo:'ZD202607270017',action:'结清注销',status:'已完成',sync:'2026-07-28 16:30',operator:'赵宁'}
+  ]
+};
+
+const PRODUCTS = [
+  ['在途货物融资','中国银行黑龙江省分行','最高 ¥ 3,000万','3.65% 起','90-180天','95%','真实运单、在途位置、货权状态和下游订单共同支撑'],
+  ['仓单质押融资','农业银行黑龙江省分行','最高 ¥ 5,000万','3.80% 起','180天','90%','电子仓单、库存、质量和质押冻结状态共同支撑'],
+  ['订单融资','浦发银行长春分行','最高 ¥ 2,000万','3.95% 起','120天','88%','下游订单、交易对手信用和历史履约共同支撑'],
+  ['应收账款融资','招商银行哈尔滨分行','最高 ¥ 1,500万','4.10% 起','90-180天','86%','签收凭证、发票、应收确认和监管账户共同支撑'],
+  ['运费保理','交通银行辽宁省分行','最高 ¥ 1,000万','0.45% 起','180天','84%','已完成运单、对账单和运费应收共同支撑'],
+  ['企业经营贷款','建设银行吉林省分行','最高 ¥ 800万','4.20% 起','12个月','79%','平台连续经营、真实交易和结算信用共同支撑']
+];
+
+function buildMenu(){
+  document.getElementById('menu').innerHTML = menu.map((g,i)=>`<div class="group${g[2].some(x=>x[0]===current)?'':' fold'}" data-g="${i}"><div class="ghead" onclick="fold(${i})"><div class="gleft"><span class="ico">${g[1]}</span><span>${g[0]}</span></div><span class="arrow">⌄</span></div><div class="subs">${g[2].map(x=>`<div class="item ${x[0]===current?'on':''}" onclick="go('${x[0]}')">${x[1]}</div>`).join('')}</div></div>`).join('');
+}
+function fold(i){document.querySelector(`[data-g="${i}"]`).classList.toggle('fold')}
+function go(id){current=id;buildMenu();document.getElementById('crumb').textContent=names[id];render();document.querySelector('.content').scrollTop=0}
+function setTab(key,val){state.tabs[key]=val;render()}
+function getTab(key,def){return state.tabs[key]||def}
+function tabs(key,items,def){const on=getTab(key,def||items[0]);return `<div class="tabs">${items.map(x=>`<div class="tab ${x===on?'on':''}" onclick="setTab('${key}','${x}')">${x}</div>`).join('')}</div>`}
+function head(t,d,a=''){return `<div class="pagehead"><div><h1>${t}</h1><p>${d}</p></div><div class="actions">${a}</div></div>`}
+function metric(l,v,f,c='blue',i='•'){return `<div class="card metric"><div><div class="mlabel">${l}</div><div class="mvalue">${v}</div><div class="mfoot">${f}</div></div><div class="micon ${c}">${i}</div></div>`}
+function tag(s){s=String(s);let c=(s.includes('通过')||s.includes('正常')||s.includes('完成')||s.includes('有效')||s.includes('结清')||s.includes('已放款')||s.includes('可信')||s.includes('无冲突')||s.includes('一致')||s.includes('成功'))?'tgreen':(s.includes('风险')||s.includes('逾期')||s.includes('红色')||s.includes('驳回')||s.includes('异常'))?'tred':(s.includes('待')||s.includes('审核')||s.includes('中')||s.includes('黄色')||s.includes('橙色')||s.includes('核查'))?'torange':(s.includes('冻结')||s.includes('质押'))?'tpurple':'tblue';return `<span class="tag ${c}">${s}</span>`}
+function toolbar(ph='请输入编号、企业名称或关键词',extra=''){return `<div class="toolbar"><div class="search"><input oninput="filterRows(this.value)" placeholder="${ph}"></div><select class="filter"><option>全部状态</option><option>待处理</option><option>处理中</option><option>已完成</option><option>存在风险</option></select><select class="filter"><option>全部类型</option><option>订单融资</option><option>在途融资</option><option>仓单质押</option></select><button class="btn" onclick="filterRows(document.querySelector('.search input').value)">查询</button><button class="btn" onclick="resetFilter()">重置</button><span style="flex:1"></span>${extra}</div>`}
+function table(cols,rows,id='tbody'){return `<div class="tablewrap"><table class="table"><thead><tr>${cols.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody id="${id}">${rows.join('')}</tbody></table></div>`}
+function pager(n){return `<div class="pager"><span>共 ${n} 条记录，每页 10 条</span><span class="pg"><button>‹</button><button class="on">1</button><button>2</button><button>›</button></span></div>`}
+function act(type,i,second='办理'){return `<div class="action-group"><button class="btn link" onclick="detail('${type}',${i})">详情</button><button class="btn link" onclick="openBusinessAction('${type}',${i},'${second}')">${second}</button></div>`}
+function tr(cells,search=''){return `<tr data-s="${search||cells.map(x=>String(x).replace(/<[^>]+>/g,'')).join(' ')}">${cells.map(x=>`<td>${x}</td>`).join('')}</tr>`}
+function steps(arr,active){return `<div class="process">${arr.map((x,i)=>`<div class="step ${i<active?'done':i===active?'active':''}"><div class="circle">${i<active?'✓':i+1}</div><div class="sname">${x}</div></div>`).join('')}</div>`}
+function details(arr){return arr.map(x=>`<div class="di"><div class="dl">${x[0]}</div><div class="dv">${x[1]}</div></div>`).join('')}
+function sectionTitle(t,s=''){return `<div class="chead"><div><div class="ctitle">${t}</div>${s?`<div class="csub">${s}</div>`:''}</div></div>`}
+function progressBar(v){return `<div class="progress"><span style="width:${v}%"></span></div>`}
+function listCard(title,desc,meta,status,icon='•'){return `<div class="qitem"><div class="qico">${icon}</div><div class="qbody"><div class="qname">${title}</div><div class="qdesc">${desc}</div><div class="qmeta">${meta}</div></div>${tag(status)}</div>`}
+function filterRows(q){q=(q||'').toLowerCase();document.querySelectorAll('tbody tr').forEach(x=>x.style.display=!q||(x.dataset.s||'').toLowerCase().includes(q)?'':'none')}
+function resetFilter(){let i=document.querySelector('.search input');if(i)i.value='';document.querySelectorAll('.filter').forEach(x=>x.selectedIndex=0);filterRows('')}
+
+function dashboard(){
+  const financeRows=DATA.finance.slice(0,4).map((r,i)=>tr([`<b>${r.enterprise}</b><div class="code">${r.id}</div>`,r.product,`<span class="amount">${r.apply}</span>`,tag(r.status),act('finance',i)],Object.values(r).join(' ')));
+  const regRows=DATA.registrationRecords.slice(0,5).map((r,i)=>tr([`<span class="code">${r.id}</span>`,r.platform,r.business,`<span class="code">${r.object}</span>`,tag(r.status),`<button class="btn link" onclick="openRegistrationModal('record',${i})">查看</button>`],Object.values(r).join(' ')));
+  return head('金融工作台','汇聚交易验真、企业授信、融资贷款、货权监管、外部登记及贷后风险，形成金融业务统一入口。')+
+  `<div class="grid g4">${metric('累计融资金额','¥ 12.68亿','较上月 ↑ 18.6%','blue','¥')}${metric('中仓登有效仓单','268','登记货值 ¥ 15.86亿','green','仓')}${metric('中登网有效登记','76','担保金额 ¥ 5.21亿','orange','登')}${metric('登记一致性异常','3','其中红色风险 1 条','purple','⚠')}</div>
+  <div class="grid g21" style="margin-top:14px"><div class="card">${sectionTitle('融资业务生命周期','基础资产登记、担保登记与融资全流程协同')}<div class="cbody">${steps(['交易验真','中仓登核验','信用授信','融资审批','质押冻结','中登网登记','合同放款','贷后结清'],4)}<div class="grid g4">${metric('待中仓登核验','7','仓单/货权信息待同步','blue','仓')}${metric('待融资审批','9','申请金额 ¥ 1.28亿','green','▣')}${metric('待中登网登记','5','未完成不得放款','orange','登')}${metric('待解押注销','4','7日内完成 3 笔','purple','⌛')}</div></div></div><div class="card">${sectionTitle('外部登记状态','中仓登与中登网办理口径')}<div class="cbody"><div class="quick">${listCard('中仓登基础资产登记','仓库、存货、货权和仓单登记核验。','最近同步 09:18','正常','仓')}${listCard('中登网担保登记公示','融资前查询、登记、变更、展期和注销。','最近同步 09:12','正常','登')}${listCard('三方一致性核验','平台库存/货权、中仓登、中登网状态交叉对比。','今日发现 3 项差异','重点关注','✓')}</div><button class="btn primary" style="width:100%;margin-top:12px" onclick="go('registration_platforms')">进入登记平台管理</button></div></div></div>
+  <div class="grid g32" style="margin-top:14px"><div class="card"><div class="chead"><div class="ctitle">重点融资业务</div><button class="btn link" onclick="go('finance_ledger')">查看全部</button></div>${table(['企业 / 编号','融资产品','申请金额','状态','操作'],financeRows,'dashFinance')}</div><div class="card"><div class="chead"><div class="ctitle">待办事项</div><button class="btn link" onclick="go('todo_progress')">全部待办</button></div><div class="cbody"><div class="quick">${todoItems().slice(0,5).join('')}</div></div></div></div>
+  <div class="grid g2" style="margin-top:14px"><div class="card"><div class="chead"><div class="ctitle">交易与登记验真动态</div><button class="btn link" onclick="go('verify_center')">进入交易验真</button></div><div class="cbody"><div class="chain">${[['主体核验','身份、资质、账户','已通过','ok'],['合同核验','金额、签章、唯一性','已通过','ok'],['货物核验','批次、质量、数量','已通过','ok'],['中仓登核验','仓单、货权、质押状态','已通过','ok'],['中登网查询','在先担保及冲突','待复核','warn'],['物流核验','运单、轨迹、签收','待执行','']].map(x=>`<div class="node ${x[3]}"><div class="nt">${x[0]}</div><div class="ns">${x[1]}</div><div class="nst">${x[2]}</div></div>`).join('')}</div><div class="notice" style="margin:14px 0 0">当前业务：<b>黑龙江北丰粮贸有限公司 / RZ202607300012</b>，需完成中登网担保登记后方可进入放款审批。</div></div></div><div class="card"><div class="chead"><div class="ctitle">登记办理动态</div><button class="btn link" onclick="go('registration_platforms')">查看全部</button></div>${table(['记录编号','平台','业务','关联对象','状态','操作'],regRows,'dashReg')}</div></div>`;
+}
+function todoItems(){return [
+  listCard('交易验真材料待补充','沈阳中谷物流缺少铁路货票与港口进场记录。','YZ202607290033','今天 11:30','✓'),
+  listCard('中仓登质押状态待更新','WHD20260725018 已审批质押，需提交中仓登状态更新。','DJ20260730016','待办理','仓'),
+  listCard('中登网担保登记待完成','RZ202607300012 放款条件尚缺担保登记证明。','RZ202607300012','放款前置','登'),
+  listCard('质押库存登记差异待核查','中仓登登记数量与平台库存差异 326 吨。','ZCD-HLJ-20260722031','红色风险','◇'),
+  listCard('企业授信申请待审批','吉林谷丰申请年度循环授信 ¥ 4,500 万。','SX20260730001','待审批','▣'),
+  listCard('数字合约待签署','融资合同与数据授权合约待企业电子签章。','RZ202607300012','待签署','▤')
+]}
+function alertCard(r){let c=r.level==='红色'?'#e44848':r.level==='橙色'?'#f59e0b':'#e7b12d';return `<div class="alert" style="--c:${c}"><div class="atop"><div class="atitle">${r.type}</div><div class="atime">${r.time.slice(5)}</div></div><div class="adesc">${r.enterprise}：${r.desc}</div></div>`}
+
+function todoProgress(){
+  const tab=getTab('todoProgress','全部待办');
+  let body='';
+  if(tab==='全部待办'||tab.includes('待办')) body=`<div class="cbody"><div class="quick">${todoItems().join('')}</div></div>${pager(18)}`;
+  else {
+    const rows=DATA.finance.map((r,i)=>tr([`<span class="code">${r.id}</span>`,`<b>${r.enterprise}</b>`,r.product,stepsInline(statusStep(r.status)),tag(r.status),act('finance',i,'跟进')],Object.values(r).join(' ')));
+    body=`${toolbar('输入融资编号或企业名称')}${table(['融资编号','申请企业','融资产品','业务进度','当前状态','操作'],rows,'progressRows')}${pager(38)}`;
+  }
+  return head('待办与进度','统一处理验真、授信、融资、签约、货权及贷后事项，并跟踪业务全流程进度。','<button class="btn" onclick="toast(\'清单已导出\')">导出</button><button class="btn primary" onclick="openModal(\'assign\')">批量转办</button>')+
+  `<div class="grid g4">${metric('全部待办','18','今日新增 6 项','blue','▦')}${metric('即将超时','3','2小时内到期','orange','⌛')}${metric('审批处理中','12','平均处理 3.6 小时','green','✓')}${metric('今日已完成','27','完成率 82.4%','purple','▤')}</div><div style="height:14px"></div><div class="card">${tabs('todoProgress',['全部待办','验真待办','融资待办','风险待办','业务进度'],'全部待办')}${body}</div>`;
+}
+function statusStep(status){const map={'风控审核':3,'待签约':4,'已放款':5,'贷后监测':6,'已结清':7};return map[status]||2}
+function stepsInline(n){return `<div class="progress" style="width:150px"><span style="width:${Math.min(n/7*100,100)}%"></span></div><div class="qmeta">${n}/7节点</div>`}
+
+function verifyProcessIndex(status){return {'待验真':1,'验真中':3,'待补充':3,'已通过':5,'存在风险':5}[status]||2}
+function verifyActions(r,i){
+  let primary='';
+  if(r.status==='待验真') primary=`<button class="btn link" onclick="openVerifyModal('start',${i})">启动核验</button>`;
+  else if(r.status==='验真中') primary=`<button class="btn link" onclick="detail('verify',${i})">继续办理</button>`;
+  else if(r.status==='待补充') primary=`<button class="btn link" onclick="openVerifyModal('supplement',${i})">补充材料</button>`;
+  else if(r.status==='已通过') primary=`<button class="btn link" onclick="openVerifyModal('report',${i})">生成报告</button>`;
+  else primary=`<button class="btn link" onclick="openVerifyModal('review',${i})">风险复核</button>`;
+  return `<div class="action-group"><button class="btn link" onclick="detail('verify',${i})">详情</button>${primary}</div>`;
+}
+function verifyCenter(){
+  const tab=getTab('verifyCenter','验真业务');
+  let body='';
+  if(tab==='我的验真任务'){
+    const rows=DATA.verifyTasks.map((r,i)=>tr([`<span class="code">${r.id}</span>`,`<button class="btn link" onclick="detail('verify',${Math.max(0,DATA.verify.findIndex(v=>v.id===r.verify))})">${r.verify}</button>`,r.type,`<span class="ellipsis" title="${r.item}">${r.item}</span>`,`<b>${r.enterprise}</b>`,r.assignee,r.deadline,tag(r.status),`<div class="action-group"><button class="btn link" onclick="detail('verifyTask',${i})">详情</button><button class="btn link" onclick="openVerifyModal('taskProcess',${i})">处理</button></div>`],Object.values(r).join(' ')));
+    body=`${toolbar('输入任务编号、验真单或企业名称','<button class="btn" onclick="openVerifyModal(\'batchAssign\')">批量分派</button>')}${table(['任务编号','所属验真单','任务类型','待核验事项','企业','处理人','时限','状态','操作'],rows,'verifyTaskRows')}${pager(16)}`;
+  }else{
+    let list=DATA.verify;
+    if(tab==='待补充') list=list.filter(x=>x.status==='待补充');
+    if(tab==='待复核') list=list.filter(x=>x.tasks>0&&x.status!=='待补充'&&x.status!=='已通过');
+    if(tab==='已完成') list=list.filter(x=>x.status==='已通过'||x.status==='存在风险');
+    const rows=list.map(r=>{const i=DATA.verify.indexOf(r);return tr([`<span class="code">${r.id}</span>`,r.object,`<b>${r.applicant}</b>`,r.counterparty,`<span class="amount">${r.amount}</span>`,`<span class="code">${r.ref}</span>`,tag(r.status),r.score,`${r.tasks}项`,r.time,verifyActions(r,i)],Object.values(r).join(' '))});
+    body=`${toolbar('输入验真编号、企业或业务对象','<button class="btn" onclick="openVerifyModal(\'batchStart\')">批量启动核验</button><button class="btn" onclick="toast(\'验真清单已导出\')">导出</button>')}${table(['验真编号','验真对象','申请企业','交易对手','业务金额','对象编号','状态','评分','人工任务','申请时间','操作'],rows,'verifyRows')}${pager(Math.max(list.length*6,18))}`;
+  }
+  return head('交易验真','对主体、合同、货物、物流、资金以及中仓登基础资产、中登网担保状态进行交叉核验，形成可追溯的可信结论。','<button class="btn" onclick="openVerifyModal(\'verifyAuth\')">授权记录</button><button class="btn primary" onclick="openVerifyModal(\'create\')">新建验真</button>')+
+  `<div class="grid g4">${metric('验真业务','38','今日新增 5 笔','blue','✓')}${metric('自动核验中','9','规则命中 27 项','green','⚙')}${metric('人工复核任务','16','其中 3 项即将超时','orange','▦')}${metric('本月验真通过率','91.6%','平均耗时 2.8 小时','purple','▤')}</div>
+  <div style="height:14px"></div><div class="card">${sectionTitle('交易验真业务流程','一笔验真单贯穿数据授权、自动核验、人工复核和报告生成')}<div class="cbody"><div class="verify-flow">${[['01','选择业务对象','购销合同、联运订单、仓单、应收账款'],['02','关联可信数据','可信空间、一粮一链、多式联运'],['03','查询外部登记','中仓登资产核验、中登网在先查询'],['04','自动规则核验','主体、合同、货物、物流、资金及登记'],['05','异常人工复核','任务分派、补充材料、登记冲突复核'],['06','生成共享报告','可信结论、电子签章、融资引用']].map(x=>`<div class="flow-item"><div class="flow-no">${x[0]}</div><div class="flow-name">${x[1]}</div><div class="flow-desc">${x[2]}</div></div>`).join('')}</div></div></div>
+  <div style="height:14px"></div><div class="card">${tabs('verifyCenter',['验真业务','我的验真任务','待补充','待复核','已完成'],'验真业务')}${body}</div>`;
+}
+
+function verifyReport(){
+  const rows=DATA.reports.map((r,i)=>tr([`<span class="code">${r.id}</span>`,`<span class="code">${r.verify}</span>`,r.object,`<b>${r.enterprise}</b>`,`<span class="amount">${r.amount}</span>`,tag(r.conclusion),`<b>${r.score}</b>`,r.integrity,`${tag(i===1?'中仓登差异':'中仓登一致')} ${tag(i===1?'中登网待复核':'中登网无冲突')}`,r.risk,r.time,act('report',i,'授权')],Object.values(r).join(' ')));
+  return head('验真报告','集中管理验真结论、可信评分、中仓登/中登网核验结果、风险项及报告授权共享记录。','<button class="btn" onclick="toast(\'报告清单已导出\')">批量导出</button><button class="btn primary" onclick="openModal(\'reportShare\')">授权共享</button>')+
+  `<div class="grid g4">${metric('累计验真报告','1,286','本月新增 182 份','blue','▤')}${metric('外部登记核验通过','89.8%','中仓登/中登网综合口径','green','✓')}${metric('登记冲突报告','12','高风险 3 份','orange','!')}${metric('已授权金融机构','12','有效授权 286 次','purple','◇')}</div><div style="height:14px"></div><div class="card">${toolbar('输入报告编号、验真单或企业名称')}${table(['报告编号','验真编号','验真对象','企业','业务金额','结论','评分','完整度','外部登记核验','风险项','生成时间','操作'],rows,'reportRows')}${pager(1286)}</div>`;
+}
+function abnormalRules(){
+  const tab=getTab('abnormalRules','异常交易');
+  let body;
+  if(tab==='异常交易'){
+    const rows=DATA.abnormal.map((r,i)=>tr([`<span class="code">${r.id}</span>`,r.type,`<b>${r.enterprise}</b>`,`<span class="code">${r.object}</span>`,`<span class="amount">${r.amount}</span>`,`<span class="ellipsis">${r.desc}</span>`,tag(r.level),tag(r.status),r.time,act('abnormal',i,'处置')],Object.values(r).join(' ')));
+    body=`${toolbar('输入异常编号、企业或关联对象','<button class="btn primary" onclick="openModal(\'abnormalCreate\')">人工上报</button>')}${table(['异常编号','风险类型','企业','关联对象','涉及金额','异常描述','风险等级','状态','发现时间','操作'],rows,'abnormalRows')}${pager(23)}`;
+  }else{
+    const rows=DATA.verifyRules.map((r,i)=>tr([`<b>${r.name}</b>`,r.category,r.condition,r.source,tag(r.level),r.hits,tag(r.status),r.update,act('rule',i,'编辑')],Object.values(r).join(' ')));
+    body=`${toolbar('输入规则名称或核验分类','<button class="btn primary" onclick="openModal(\'verifyRuleCreate\')">新增规则</button>')}${table(['规则名称','核验分类','规则条件','数据来源','风险等级','命中次数','状态','更新时间','操作'],rows,'ruleRows')}${pager(42)}`;
+  }
+  return head('异常与规则','集中管理验真发现的异常交易及自动核验规则，形成“规则识别—人工复核—风险处置”闭环。','<button class="btn" onclick="toast(\'规则已执行全量校验\')">全量校验</button>')+`<div class="card">${tabs('abnormalRules',['异常交易','验真规则'],'异常交易')}${body}</div>`;
+}
+
+function enterpriseCredit(){
+  const tab=getTab('enterpriseCredit','企业画像');
+  const rows=DATA.credit.map((r,i)=>tr([`<b>${r.name}</b>`,`<span class="code">${r.code}</span>`,r.region,`<span class="tag tblue"><b>${r.grade}</b></span>`,`<b>${r.score}</b>`,`<span class="amount">${r.trade}</span>`,r.performance,`<span class="amount">${r.limit}</span>`,tag(r.risk),act('credit',i,'更新')],Object.values(r).join(' ')));
+  return head('企业信用','将主体、交易、物流、结算、融资和风险记录汇聚为企业信用画像，为准入、授信和定价提供依据。','<button class="btn" onclick="toast(\'信用数据已同步\')">同步信用数据</button><button class="btn primary" onclick="openModal(\'creditRecalc\')">重新评分</button>')+
+  `<div class="grid g4">${metric('已建信用档案','186','有效融资客户 58 家','blue','▣')}${metric('A级及以上','73','占比 39.2%','green','A')}${metric('平均履约率','95.6%','近12个月口径','orange','✓')}${metric('风险观察企业','9','其中高风险 2 家','purple','!')}</div><div style="height:14px"></div><div class="card">${tabs('enterpriseCredit',['企业画像','交易信用','物流信用','结算信用','金融信用','资产登记信用','风险记录'],'企业画像')}${toolbar('输入企业名称、信用代码或区域')}${table(['企业名称','统一社会信用代码','区域','等级','评分','累计交易额','履约率','授信额度','风险水平','操作'],rows,'creditRows')}${pager(186)}</div>`;
+}
+function creditApply(){
+  const rows=DATA.creditApply.map((r,i)=>tr([`<span class="code">${r.id}</span>`,`<b>${r.enterprise}</b>`,`<span class="tag tblue">${r.grade}</span>`,`<span class="amount">${r.amount}</span>`,r.term,r.type,r.purpose,tag(r.status),r.time,act('creditApply',i,r.status==='待审批'?'撤回':'查看')],Object.values(r).join(' ')));
+  return simplePage('授信申请','企业提交授信额度、期限、用途，并授权经营、交易、物流和结算数据。',['本月申请','26','申请金额 ¥ 3.82亿'],['待审批','8','平均等待 3.2 小时'],['待补充','4','主要缺失交易材料'],['已通过','14','通过率 78.6%'],'新建授信申请','creditApplyCreate',['申请编号','申请企业','信用等级','申请额度','授信期限','授信类型','授信用途','状态','申请时间','操作'],rows,68);
+}
+function creditApprove(){
+  const rows=DATA.creditApply.map((r,i)=>tr([`<span class="code">${r.id}</span>`,`<b>${r.enterprise}</b>`,`<span class="tag tblue">${r.grade}</span>`,`<span class="amount">${r.amount}</span>`,['¥ 4,200万','¥ 5,500万','待测算','¥ 1,200万'][i],tag(['中仓登资产正常','中仓登资产正常','待补充登记','无仓单资产'][i]),tag(['中登网无冲突','中登网无冲突','待查询','存在历史已注销登记'][i]),['低风险','低风险','中低风险','中风险'][i],tag(['待初审','风险评估','待补充','已通过'][i]),act('creditApprove',i,'审批')],Object.values(r).join(' ')));
+  return head('授信审批','金融机构核验企业真实交易规模、资产登记信用、在先担保和风险水平，形成额度、期限和附加条件。','<button class="btn" onclick="openRegistrationModal(\'batchQuery\')">批量外部查询</button><button class="btn primary" onclick="openModal(\'assign\')">审批分派</button>')+`<div class="grid g4">${metric('待初审','9','高优先级 2 笔','blue','▦')}${metric('资产登记待核验','4','中仓登资料待补充','green','仓')}${metric('在先担保待查询','3','中登网查询未完成','orange','登')}${metric('今日通过','12','批复额度 ¥ 1.76亿','purple','✓')}</div><div style="height:14px"></div><div class="card">${toolbar('输入申请编号、企业或登记编号')}${table(['申请编号','申请企业','信用等级','申请额度','建议额度','中仓登资产','中登网查询','风险等级','状态','操作'],rows,'creditApproveRows')}${pager(36)}</div>`;
+}
+function creditLimit(){
+  const rows=DATA.creditLimits.map((r,i)=>tr([`<b>${r.enterprise}</b>`,`<span class="code">${r.agreement}</span>`,`<span class="amount">${r.total}</span>`,`<span class="amount">${r.used}</span>`,`<span class="amount">${r.available}</span>`,r.frozen,r.expiry,`${progressBar(parseInt(r.usage))}<div class="qmeta">${r.usage}</div>`,tag(r.status),act('limit',i,'调整')],Object.values(r).join(' ')));
+  return head('授信额度','统一管理总授信、已用、可用、冻结额度，以及提额、降额、续期和终止记录。','<button class="btn" onclick="toast(\'额度清单已导出\')">导出</button><button class="btn primary" onclick="openModal(\'limitAdjust\')">额度调整</button>')+
+  `<div class="grid g4">${metric('总授信额度','¥ 3.42亿','覆盖 58 家企业','blue','¥')}${metric('已用额度','¥ 1.86亿','使用率 54.4%','green','▤')}${metric('可用额度','¥ 1.49亿','可支持新增融资','orange','＋')}${metric('冻结额度','¥ 700万','涉及 3 家企业','purple','◇')}</div><div style="height:14px"></div><div class="card">${tabs('creditLimit',['额度概览','额度使用明细','额度冻结记录','额度调整记录','到期管理'],'额度概览')}${toolbar('输入企业名称或授信协议')}${table(['企业名称','授信协议','总授信','已用额度','可用额度','冻结额度','有效期','使用率','状态','操作'],rows,'limitRows')}${pager(58)}</div>`;
+}
+function creditRules(){
+  const tab=getTab('creditRules','信用评价模型');
+  let body;
+  if(tab==='信用评价模型'){
+    const items=[['主体信用','企业认证、经营状态、资质完整性',15,'启用'],['交易信用','真实交易规模、交易持续性、合同履约',22,'启用'],['物流信用','发运完成率、准时率、货损率',18,'启用'],['结算信用','付款及时率、应收逾期率、坏账记录',18,'启用'],['资产登记信用','中仓登登记一致性、中登网变更注销及时性',17,'启用'],['风险表现','异常交易、登记冲突、纠纷和逾期',10,'启用']];
+    body=`${table(['评价维度','主要指标','权重','状态','操作'],items.map((x,i)=>tr([`<b>${x[0]}</b>`,x[1],`${x[2]}%`,tag(x[3]),act('creditRule',i,'编辑')],x.join(' '))),'creditRuleRows')}${pager(18)}`;
+  }else if(tab==='资产登记规则'){
+    const items=[['中仓登有效登记要求','仓单融资必须存在有效仓单及货权登记','未登记则不计入可授信资产','全部仓单融资','启用'],['登记异常扣减','近12月每次高风险登记差异扣减信用分5分','最多扣减20分','全部企业','启用'],['中登网在先担保扣减','有效在先担保金额从净可授信资产中扣减','按登记金额计算','全部融资产品','启用'],['解押注销及时率','贷款结清后5个工作日内完成注销','逾期降低登记信用','全部存续融资','启用']];
+    body=`${table(['规则名称','规则条件','处理方式','适用范围','状态','操作'],items.map((x,i)=>tr([`<b>${x[0]}</b>`,x[1],x[2],x[3],tag(x[4]),act('creditRule',i,'编辑')],x.join(' '))),'creditRuleRows')}${pager(12)}`;
+  }else{
+    const items=[['真实交易规模授信系数','近12个月真实交易额','履约率≥92%','8%','A及以上','启用'],['可核验存货净值系数','中仓登有效登记货值扣除有效担保余额','登记状态一致','15%','BBB及以上','启用'],['风险预警扣减规则','近6个月预警记录','每条红色预警扣减20%','-20%','全部等级','启用'],['客户集中度限制','单一买方交易占比','不得高于60%','-15%','全部等级','启用']];
+    body=`${table(['规则名称','计算口径','规则条件','授信系数','适用等级','状态','操作'],items.map((x,i)=>tr([`<b>${x[0]}</b>`,...x.slice(1,5),tag(x[5]),act('creditRule',i,'编辑')],x.join(' '))),'creditRuleRows')}${pager(24)}`;
+  }
+  return head('信用与授信规则','统一配置信用模型、授信测算和资产登记信用规则，支持版本、生效时间和模拟测算。','<button class="btn" onclick="toast(\'规则模拟测算已完成\')">模拟测算</button><button class="btn primary" onclick="openModal(\'creditRuleCreate\')">新增规则</button>')+`<div class="card">${tabs('creditRules',['信用评价模型','授信额度规则','资产登记规则','风险扣减规则','等级映射'],'信用评价模型')}${toolbar('输入指标或规则名称')}${body}</div>`;
+}
+
+function financeProducts(){return head('金融产品','展示订单融资、在途融资、仓单质押、应收账款融资等产品，并明确中仓登与中登网登记条件。','<button class="btn" onclick="toast(\'匹配结果已刷新\')">重新匹配</button><button class="btn primary" onclick="openModal(\'productCreate\')">新增金融产品</button>')+`<div class="notice">产品匹配基于已授权的企业信用、真实交易、粮食批次、运输执行、仓单及回款数据。最终额度和利率以金融机构审批结果为准。</div>${toolbar('搜索产品名称或金融机构')}<div class="grid g2">${PRODUCTS.map((p,i)=>`<div class="card product"><div style="display:flex;justify-content:space-between"><div><div class="pname">${p[0]}</div><div class="pbank">${p[1]}</div></div>${tag(i<3?'智能推荐':'可申请')}</div><div class="pamt">${p[2]} <small>可申请额度</small></div><div class="pinfo"><div><label>参考利率/费率</label><b>${p[3]}</b></div><div><label>融资期限</label><b>${p[4]}</b></div><div><label>匹配度</label><b>${p[5]}</b></div></div><div class="qdesc">${p[6]}</div><div class="notice" style="margin:10px 0 0;padding:9px 11px"><b>登记要求：</b>${i===1?'中仓登仓单有效 + 中登网担保登记':i===0?'原仓单状态变更 + 中登网担保登记':i===3?'中登网应收账款相关登记/查询':'按产品规则执行中登网查询'}</div><div class="pfoot"><span style="font-size:12px;color:var(--green);font-weight:800">数据完整度 ${92-i*2}%</span><span><button class="btn link" onclick="detail('product',${i})">产品详情</button><button class="btn small primary" onclick="openModal('financeCreate')">立即申请</button></span></div></div>`).join('')}</div>`}
+function financeApply(){
+  const rows=financeRows('apply');
+  return head('融资申请','选择金融产品，关联授信、验真报告、粮食批次、仓单或应收账款，并完成外部登记预核验。','<button class="btn" onclick="openRegistrationModal(\'batchQuery\')">批量查重</button><button class="btn primary" onclick="openModal(\'financeCreate\')">新建融资申请</button>')+`<div class="grid g4">${metric('本月申请','42','申请金额 ¥ 6.84亿','blue','▦')}${metric('中仓登待核验','6','仓单/货权登记待确认','green','仓')}${metric('中登网待查询','5','提交前需完成','orange','登')}${metric('已受理','31','受理率 86.1%','purple','✓')}</div><div style="height:14px"></div><div class="card">${toolbar('输入融资编号、企业、仓单或登记编号')}${table(['融资编号','申请企业','融资产品','申请金额','期限','中仓登状态','中登网状态','登记综合状态','业务状态','申请时间','操作'],rows,'financeApplyRows')}${pager(82)}</div>`;
+}
+function financeApprove(){
+  const rows=financeRows('approve');
+  return head('融资审批','综合交易验真、企业信用、授信额度、融资资产、中仓登核验、中登网在先查询和风险评估形成审批结论。','<button class="btn" onclick="openRegistrationModal(\'batchQuery\')">重新外部查询</button><button class="btn primary" onclick="openModal(\'assign\')">审批分派</button>')+`<div class="grid g4">${metric('待初审','9','高优先级 2 笔','blue','▦')}${metric('中仓登异常','2','需人工核验','green','仓')}${metric('中登网冲突待复核','1','不得直接放款','orange','登')}${metric('今日通过','12','金额 ¥ 1.76亿','purple','✓')}</div><div style="height:14px"></div><div class="card">${toolbar('输入融资编号、企业或登记编号')}${table(['融资编号','申请企业','融资产品','申请金额','审批金额','中仓登核验','中登网查询','综合登记结论','状态','申请时间','操作'],rows,'financeApproveRows')}${pager(38)}</div>`;
+}
+function financeRows(mode){return DATA.finance.map((r,i)=>tr([`<span class="code">${r.id}</span>`,`<b>${r.enterprise}</b>`,r.product,`<span class="amount">${r.apply}</span>`,`<span class="amount">${r.approve}</span>`,tag(r.zcd),tag(r.zd),tag(r.registry),tag(r.status),r.time,act('finance',i,mode==='approve'?'审批':'办理')],Object.values(r).join(' ')))}
+function contractDisburse(){
+  const tab=getTab('contractDisburse','待签署合同');
+  const items=[
+    ['HT-RZ-2026-0071','RZ202607290038','吉林谷丰供应链有限公司','订单融资','¥ 1,200万','合同待签署','中仓登不适用','中登网待登记','待签署'],
+    ['HT-RZ-2026-0068','RZ202607290031','辽宁港联物流有限公司','运费保理','¥ 620万','全部签署','中仓登不适用','中登网登记有效','已生效'],
+    ['FK20260730001','RZ202607300012','黑龙江北丰粮贸有限公司','在途货物融资','¥ 2,000万','放款条件 5/7','原仓单已变更','中登网待登记','待放款'],
+    ['FK20260729004','RZ202607280022','北大荒粮食集团','仓单质押融资','¥ 2,400万','全部满足','质押状态有效','登记有效','已放款']
+  ];
+  let filtered=items;if(tab==='待签署合同')filtered=items.filter(x=>x[8]==='待签署');if(tab==='已生效合同')filtered=items.filter(x=>x[8]==='已生效');if(tab==='待放款')filtered=items.filter(x=>x[8]==='待放款');if(tab==='已放款')filtered=items.filter(x=>x[8]==='已放款');
+  const rows=filtered.map((x,i)=>tr([`<span class="code">${x[0]}</span>`,`<span class="code">${x[1]}</span>`,`<b>${x[2]}</b>`,x[3],`<span class="amount">${x[4]}</span>`,x[5],tag(x[6]),tag(x[7]),tag(x[8]),act('contract',i,x[8]==='待签署'?'签署':'办理')],x.join(' ')));
+  return head('合同与放款','将合同签署、平台资产冻结、中仓登质押状态更新、中登网担保登记和放款条件核验串联为完整流程。','<button class="btn" onclick="openRegistrationModal(\'consistency\')">登记一致性核验</button><button class="btn primary" onclick="openModal(\'contractCreate\')">生成融资合同</button>')+
+  `<div class="card"><div class="cbody">${steps(['审批通过','合同签署','资产冻结','中仓登更新','中登网登记','条件核验','放款执行'],4)}</div>${tabs('contractDisburse',['待签署合同','已生效合同','待放款','已放款','放款失败'],'待签署合同')}${toolbar('输入合同号、融资编号或登记编号','<button class="btn" onclick="openRegistrationModal(\'zcdPledge\')">提交中仓登</button><button class="btn" onclick="openRegistrationModal(\'zdRegister\')">办理中登网登记</button>')}${table(['合同/放款编号','融资编号','企业','融资产品','金额','合同/条件状态','中仓登','中登网','状态','操作'],rows,'contractRows')}${pager(26)}</div>`;
+}
+function repaymentSettlement(){
+  const tab=getTab('repaymentSettlement','还款计划');
+  const items=[
+    ['HK20260802001','RZ202607290031','辽宁港联物流有限公司','¥ 180万','¥ 2.1万','2026-08-02','¥ 180万','¥ 2.1万','待还款'],
+    ['HK20260803002','RZ202607290038','吉林谷丰供应链有限公司','¥ 320万','¥ 3.5万','2026-08-03','¥ 320万','¥ 3.5万','待还款'],
+    ['HK20260805003','RZ202607280022','北大荒粮食集团','¥ 620万','¥ 6.8万','2026-08-05','¥ 300万','¥ 326.8万','部分还款'],
+    ['HK20260728004','RZ202607270017','龙江新谷贸易有限公司','¥ 760万','¥ 8.2万','2026-07-28','¥ 768.2万','¥ 0','已结清'],
+    ['HK20260727005','RZ202607260008','东北恒仓储运有限公司','¥ 86万','¥ 1.2万','2026-07-27','—','¥ 87.2万','逾期']
+  ];
+  let filtered=items;if(tab==='逾期管理')filtered=items.filter(x=>x[8]==='逾期');if(tab==='已结清')filtered=items.filter(x=>x[8]==='已结清');
+  const rows=filtered.map((x,i)=>tr([`<span class="code">${x[0]}</span>`,`<span class="code">${x[1]}</span>`,`<b>${x[2]}</b>`,`<span class="amount">${x[3]}</span>`,x[4],x[5],x[6],`<span class="amount">${x[7]}</span>`,tag(x[8]),act('repayment',i,'登记')],x.join(' ')));
+  return head('还款与结清','统一管理还款计划、本金利息、提前还款、逾期催收、融资结清和授信额度恢复。','<button class="btn" onclick="openRegistrationModal(\'cancel\')">办理登记注销</button><button class="btn primary" onclick="openModal(\'repaymentCreate\')">登记还款</button>')+
+  `<div class="card"><div class="cbody">${steps(['还款确认','解押申请','中登网变更/注销','中仓登解除质押','平台释放资产','结清归档'],2)}</div></div><div style="height:14px"></div><div class="grid g4">${metric('本月应还','¥ 1,260万','涉及 7 笔融资','blue','¥')}${metric('已还金额','¥ 640万','完成率 50.8%','green','✓')}${metric('7日内到期','¥ 420万','需重点提醒','orange','⌛')}${metric('逾期金额','¥ 86万','1 笔逾期','purple','!')}</div><div style="height:14px"></div><div class="card">${tabs('repaymentSettlement',['还款计划','提前还款','逾期管理','已结清','结清证明'],'还款计划')}${toolbar('输入还款计划号、融资编号或企业名称')}${table(['还款计划号','融资编号','企业','应还本金','应还利息','还款日','已还金额','剩余应还','状态','操作'],rows,'repayRows')}${pager(42)}</div>`;
+}
+function financeLedger(){
+  const tab=getTab('financeLedger','全部业务');
+  let list=DATA.finance;if(tab!=='全部业务'){const map={'申请审批中':['风控审核'],'待签约放款':['待签约','已放款'],'贷后存续':['贷后监测'],'已结清':['已结清']};list=list.filter(x=>(map[tab]||[]).includes(x.status));}
+  const rows=list.map((r,i)=>tr([`<span class="code">${r.id}</span>`,`<b>${r.enterprise}</b>`,r.product,r.institution,`<span class="amount">${r.approve}</span>`,tag(r.zcd),tag(r.zd),tag(r.registry),['2026-10-28','2026-11-26','2027-01-25','2027-01-24','2026-11-24'][DATA.finance.indexOf(r)],tag(r.status),act('finance',DATA.finance.indexOf(r),'查看')],Object.values(r).join(' ')));
+  return head('融资业务台账','统一查询融资申请、审批、放款、外部登记、贷后和结清状态。','<button class="btn" onclick="toast(\'融资台账已导出\')">导出台账</button><button class="btn primary" onclick="openModal(\'financeCreate\')">发起融资</button>')+`<div class="card">${tabs('financeLedger',['全部业务','申请审批中','待签约放款','贷后存续','已结清','已逾期'],'全部业务')}${toolbar('输入融资编号、企业、登记号或机构')}${table(['融资编号','融资企业','融资产品','金融机构','审批金额','中仓登','中登网','登记一致性','到期日期','业务状态','操作'],rows,'ledgerRows')}${pager(138)}</div>`;
+}
+
+function ownershipRecords(){
+  const tab=getTab('ownershipRecords','当前货权');
+  const rows=DATA.ownership.map((r,i)=>tr([`<span class="code">${r.batch}</span>`,r.grain,r.qty,`<b>${r.owner}</b>`,r.controller,r.custodian,r.pledgee,`<span class="code">${r.zcdRecord}</span>`,tag(r.zcdStatus),tag(r.status),act('ownership',i,r.status==='待确认'?'确认':'变更')],Object.values(r).join(' ')));
+  return head('货权与存货档案','集中管理平台粮食批次、所有权、控制关系及中仓登存货/货权登记信息，开展一致性核验。','<button class="btn" onclick="openRegistrationModal(\'consistency\')">三方一致性核验</button><button class="btn primary" onclick="openModal(\'ownershipCreate\')">发起货权确认</button>')+
+  `<div class="grid g4">${metric('监管粮食批次','126','监管数量 48.2万吨','blue','◇')}${metric('中仓登登记资产','118','登记货值 ¥ 15.86亿','green','仓')}${metric('待多方确认','8','金融机构待确认 3 笔','orange','⌛')}${metric('登记信息差异','3','均已限制货权操作','purple','!')}</div><div style="height:14px"></div><div class="card">${tabs('ownershipRecords',['当前货权','中仓登登记信息','一致性核验','待确认','货权变更记录','授权记录'],'当前货权')}${toolbar('输入粮食批次、货主、中仓登登记号或质权人','<button class="btn" onclick="openRegistrationModal(\'zcdOwnership\')">中仓登货权登记</button>')}${table(['粮食批次','粮食品种','当前数量','所有权人','当前控制方','保管/承运方','质权人','中仓登登记号','中仓登状态','货权状态','操作'],rows,'ownershipRows')}${pager(126)}</div>`;
+}
+function warehouseReceipt(){
+  const rows=DATA.receipts.map((r,i)=>tr([`<span class="code">${r.id}</span>`,`<b>${r.owner}</b>`,r.warehouse,r.grain,r.qty,`<span class="amount">${r.value}</span>`,`<span class="code">${r.zcdNo}</span>`,tag(r.zcdStatus),tag(r.zcdPledge),tag(r.status),act('receipt',i,'办理')],Object.values(r).join(' ')));
+  return head('电子仓单','管理仓单申请、签发、中仓登登记/查询、拆分合并、转让、质押状态和注销全生命周期。','<button class="btn" onclick="openRegistrationModal(\'syncZcd\')">同步中仓登状态</button><button class="btn primary" onclick="openModal(\'receiptCreate\')">新建电子仓单</button>')+`<div class="grid g4">${metric('有效仓单','286','库存 42.6 万吨','blue','▦')}${metric('中仓登已登记','268','登记率 93.7%','green','仓')}${metric('已质押仓单','96','质押余额 ¥ 5.63亿','orange','◇')}${metric('登记异常仓单','3','数量差异 1 笔','purple','!')}</div><div style="height:14px"></div><div class="card">${tabs('warehouseReceipt',['仓单台账','待中仓登登记','登记变更','拆分合并','转让管理','注销归档'],'仓单台账')}${toolbar('输入仓单号、货主、仓库或中仓登登记号','<button class="btn" onclick="openRegistrationModal(\'zcdRegister\')">提交中仓登登记</button>')}${table(['电子仓单号','货主企业','仓储企业/仓库','粮食品种','库存数量','当前货值','中仓登登记号','登记状态','质押状态','平台状态','操作'],rows,'receiptRows')}${pager(286)}</div>`;
+}
+function pledgeSupervision(){
+  const tab=getTab('pledgeSupervision','质押与登记台账');
+  const rows=DATA.pledge.map((r,i)=>tr([`<span class="code">${r.id}</span>`,`<span class="code">${r.finance}</span>`,`<span class="code">${r.receipt}</span>`,`<b>${r.pledgor}</b>`,r.pledgee,`<span class="amount">${r.amount}</span>`,r.ratio,tag(r.zcd),`<span class="code">${r.zdNo}</span>`,tag(r.zd),tag(r.status),act('pledge',i,tab.includes('解押')?'解押':'办理')],Object.values(r).join(' ')));
+  return head('质押与登记监管','统一管理平台资产预占/冻结、中仓登质押状态、中登网担保登记、受控出库、解押和注销。','<button class="btn" onclick="openRegistrationModal(\'consistency\')">登记一致性核验</button><button class="btn primary" onclick="openModal(\'pledgeCreate\')">发起质押</button>')+
+  `<div class="card"><div class="cbody">${steps(['质押申请','资产预占','中仓登核验','平台冻结','中仓登更新','中登网登记','放款监管','解押注销'],5)}</div>${tabs('pledgeSupervision',['质押与登记台账','质押申请','平台资产冻结','中仓登登记','中登网登记','出库审批','解押与注销'],'质押与登记台账')}${toolbar('输入质押编号、融资编号、仓单号或登记号','<button class="btn" onclick="openRegistrationModal(\'zcdPledge\')">更新中仓登</button><button class="btn" onclick="openRegistrationModal(\'zdRegister\')">办理中登网登记</button>')}${table(['质押编号','融资编号','电子仓单','出质人','质权人','质押金额','质押率','中仓登状态','中登网登记号','中登网状态','业务状态','操作'],rows,'pledgeRows')}${pager(96)}</div>`;
+}
+function valuation(){
+  const rows=DATA.receipts.map((r,i)=>tr([`<span class="code">GZ202607300${i+1}</span>`,`<span class="code">${r.id}</span>`,`<b>${r.owner}</b>`,r.grain,r.qty,tag(r.zcdStatus),`¥ ${[3133,3400,4700,4100][i]}/吨`,`${[1.8,0.8,2.5,1.2][i]}%`,`<span class="amount">${r.value}</span>`,`<span class="amount">${['¥ 2,444万','¥ 1,901万','¥ 1,184万','¥ 1,601万'][i]}</span>`,act('valuation',i,'重估')],Object.values(r).join(' ')));
+  return simplePage('货物估值','结合中仓登有效登记数量、实际库存、品种等级、市场价格和品质折损，测算当前货值及可融资价值。',['估值资产','126','货值 ¥ 18.72亿'],['中仓登有效资产','118','登记货值 ¥ 15.86亿'],['价格/数量预警','6','登记数量差异 1 笔'],['今日重估','18','市场价格已同步'],'发起估值','valuationCreate',['估值编号','仓单/批次','货主企业','品种等级','实际数量','中仓登状态','参考单价','质量折价','当前估值','可融资价值','操作'],rows,126);
+}
+function ownershipAbnormal(){
+  const items=[['HQYC20260730001','重复质押','WHD20260722031','北大荒粮食集团','同一粮食批次存在两笔有效质押申请','高风险','待复核','2026-07-30 08:41'],['HQYC20260730002','库存异常减少','WHD20260722031','北大荒粮食集团','库存减少 326 吨但无出库审批','高风险','待处置','2026-07-30 08:32'],['HQYC20260729003','货权主体变更','PL20260719006','吉林谷丰供应链有限公司','质押期间发起货权转让申请','中风险','核查中','2026-07-29 17:21'],['HQYC20260728004','仓单与实物不一致','WHD20260716007','龙江新谷贸易有限公司','盘点数量与仓单数量差异 48 吨','中风险','已关闭','2026-07-28 13:02'],['HQYC20260730005','中仓登登记差异','ZCD-HLJ-20260722031','北大荒粮食集团','中仓登登记数量与平台有效库存差异326吨','高风险','待处置','2026-07-30 08:36'],['HQYC20260730006','质权人状态不一致','ZD202607290038','吉林谷丰供应链有限公司','中仓登质权人与中登网担保权人待复核','中风险','核查中','2026-07-30 08:18']];
+  const rows=items.map((x,i)=>tr([`<span class="code">${x[0]}</span>`,x[1],`<span class="code">${x[2]}</span>`,`<b>${x[3]}</b>`,`<span class="ellipsis">${x[4]}</span>`,tag(x[5]),tag(x[6]),x[7],act('ownershipAbnormal',i,'处置')],x.join(' ')));
+  return simplePage('货权异常','集中识别重复仓单、重复质押、未授权出库，以及平台、中仓登和中登网之间的数量、持有人、质权人和状态差异。',['异常事项','12','本月新增 3 项'],['高风险','3','均已限制货权操作'],['核查处理中','5','平均处理 4.2 小时'],['今日关闭','4','已留存完整审计'],'人工上报','ownershipAbnormalCreate',['异常编号','异常类型','关联对象','企业','异常描述','风险等级','状态','发现时间','操作'],rows,12);
+}
+
+function postMonitor(){
+  const tab=getTab('postMonitor','综合监测');
+  const datasets={
+    '综合监测': DATA.finance.slice(0,4).map((r,i)=>[r.id,r.enterprise,r.product,r.approve,`${[146,132,118,157][i]}%`,r.registry,i===2?'重点关注':'正常',`2026-07-30 09:1${i}`]),
+    '在途监管': DATA.finance.slice(0,4).map((r,i)=>[r.id,r.enterprise,`LD2026072${6-i}00${i+1}`,['黑龙江双城→锦州港','长春→营口港','锦州港→广州港','齐齐哈尔→深圳港'][i],['运输中 68%','港口待装船','海运中 43%','已到达'][i],['原仓单已变更','不适用','不适用','目的地待入库'][i],['07-31 18:00','08-01 09:00','08-03 14:00','已到达'][i],i===2?'重点关注':'正常']),
+    '库存监管': DATA.receipts.map((r,i)=>[DATA.finance[i]?.id||'RZ20260726008',r.owner,r.warehouse,r.id,r.qty,r.value,r.zcdStatus,i===0?'异常':'正常']),
+    '回款监管': DATA.finance.slice(0,4).map((r,i)=>[r.id,r.enterprise,['广东华南饲料集团','广西粮油食品有限公司','华润五丰有限公司','深圳市金牧实业'][i],['¥ 2,000万','¥ 1,200万','¥ 620万','¥ 760万'][i],['¥ 1,040万','¥ 320万','¥ 534万','¥ 760万'][i],['¥ 960万','¥ 880万','¥ 86万','¥ 0'][i],`2026-08-0${i+2}`,i===2?'逾期':'正常']),
+    '资金用途监管': DATA.finance.slice(0,4).map((r,i)=>[r.id,r.enterprise,r.approve,['粮食采购','采购及运费','运费结算','仓储采购'][i],['¥ 1,260万','¥ 820万','¥ 620万','¥ 1,680万'][i],`${[63,68,100,70][i]}%`,i===1?'待补充凭证':'正常','2026-07-30']),
+    '货值与覆盖率': DATA.receipts.map((r,i)=>[DATA.finance[i]?.id||'RZ20260726008',r.owner,r.id,r.value,r.pledged,`${[157,146,124,163][i]}%`,i===2?'接近预警线':'充足',r.update]),
+    '登记状态监测': DATA.finance.slice(0,5).map((r,i)=>[r.id,r.enterprise,r.product,r.zcd,r.zd,r.registry,['2027-01-24','2026-11-26','2027-01-25','2027-01-24','已注销'][i],r.registry==='一致'||r.registry==='已闭环'?'正常':'重点关注'])
+  };
+  const cols={
+    '综合监测':['融资编号','企业','融资产品','融资余额','货值覆盖率','登记状态','风险状态','更新时间','操作'],
+    '在途监管':['融资编号','企业','联运订单','当前区段','运输进度','原仓单状态','预计到达','风险状态','操作'],
+    '库存监管':['融资编号','企业','监管仓库','电子仓单','监管库存','库存货值','中仓登状态','风险状态','操作'],
+    '回款监管':['融资编号','企业','回款对象','应回金额','已回金额','剩余金额','计划日期','状态','操作'],
+    '资金用途监管':['融资编号','企业','放款金额','约定用途','已使用金额','使用进度','状态','更新时间','操作'],
+    '货值与覆盖率':['融资编号','企业','仓单','当前货值','融资余额','覆盖率','风险状态','更新时间','操作'],
+    '登记状态监测':['融资编号','企业','融资产品','中仓登状态','中登网状态','三方一致性','登记到期/状态','风险状态','操作']
+  };
+  const rows=(datasets[tab]||datasets['综合监测']).map((x,i)=>{
+    const cells=x.map((v,j)=>{
+      if(j===0)return `<span class="code">${v}</span>`;
+      if(String(v).includes('¥'))return `<span class="amount">${v}</span>`;
+      const statusIndexes={'综合监测':[5,6],'在途监管':[5,7],'库存监管':[6,7],'回款监管':[7],'资金用途监管':[6],'货值与覆盖率':[6],'登记状态监测':[3,4,5,7]};
+      return (statusIndexes[tab]||[]).includes(j)?tag(v):v;
+    });
+    return tr([...cells,act('post',i,'查看')],x.join(' '));
+  });
+  return head('贷后监测','围绕存续融资统一监测业务执行、库存、回款、货值以及中仓登和中登网登记状态。','<button class="btn" onclick="openRegistrationModal(\'syncAll\')">同步登记状态</button><button class="btn primary" onclick="openModal(\'monitorPlan\')">配置监测计划</button>')+
+  `<div class="grid g4">${metric('存续融资','38','余额 ¥ 5.42亿','blue','▤')}${metric('登记状态一致','31','占比 81.6%','green','✓')}${metric('登记待办理/变更','6','中登网到期 1 笔','orange','登')}${metric('三方状态异常','1','已启动处置','purple','⚠')}</div><div style="height:14px"></div><div class="card">${tabs('postMonitor',['综合监测','在途监管','库存监管','回款监管','资金用途监管','货值与覆盖率','登记状态监测'],'综合监测')}${toolbar('输入融资编号、企业、仓单或登记号')}${table(cols[tab]||cols['综合监测'],rows,'postRows')}${pager(38)}</div>`;
+}
+function riskCenter(){
+  const tab=getTab('riskCenter','预警中心');
+  let body;
+  if(tab==='预警中心'){
+    const rows=DATA.alerts.map((r,i)=>tr([`<span class="code">${r.id}</span>`,tag(r.level+'预警'),`<b>${r.type}</b>`,r.enterprise,`<span class="code">${r.object}</span>`,`<span class="ellipsis">${r.desc}</span>`,r.time,tag(r.status),r.owner,act('alert',i,'处置')],Object.values(r).join(' ')));
+    body=`${toolbar('输入预警编号、企业或关联对象')}${table(['预警编号','等级','预警类型','企业','关联对象','预警描述','发现时间','状态','责任人','操作'],rows,'alertRows')}${pager(18)}`;
+  }else{
+    const rows=DATA.alerts.map((r,i)=>tr([`<span class="code">CZ202607300${i+1}</span>`,`<span class="code">${r.id}</span>`,`<b>${r.enterprise}</b>`,r.type,['冻结仓单并现场盘点','补充路线偏离说明','限制新增融资并催收','补充质押物'][i],r.owner,`2026-07-${31-i} 18:00`,`${[35,60,20,75][i]}%`,tag(i===2?'待制定方案':'执行中'),act('disposal',i,'跟进')],Object.values(r).join(' ')));
+    body=`${toolbar('输入处置编号、预警编号或企业名称','<button class="btn" onclick="toast(\'处置清单已导出\')">导出处置清单</button>')}${table(['处置编号','预警编号','企业','风险事项','处置措施','责任人','计划完成时间','进度','状态','操作'],rows,'disposalRows')}${pager(12)}`;
+  }
+  return head('风险预警与处置','将预警生成、风险研判、任务分派、现场核验、处置反馈和预警关闭形成闭环。','<button class="btn" onclick="toast(\'预警规则已刷新\')">刷新预警</button><button class="btn primary" onclick="openModal(\'disposalCreate\')">新建处置任务</button>')+
+  `<div class="grid g4">${metric('红色预警','1','较昨日 +1','blue','!')}${metric('橙色预警','5','核查中 3 条','green','⚠')}${metric('黄色预警','12','已通知 9 条','orange','⌛')}${metric('今日已关闭','8','平均处置 2.6 小时','purple','✓')}</div><div style="height:14px"></div><div class="card">${tabs('riskCenter',['预警中心','处置任务','现场核验','已关闭'],'预警中心')}${body}</div>`;
+}
+function postReport(){
+  const items=[['DHBG20260730001','RZ202607280022','北大荒粮食集团','定期检查','资产/库存/登记一致性检查','重点关注','中仓登数量差异','中登网有效','王磊','2026-07-30','已生成'],['DHBG20260729008','RZ202607290031','辽宁港联物流有限公司','专项检查','回款及担保登记检查','存在风险','不适用','中登网登记待变更','张浩','2026-07-29','待复核'],['DHBG20260728005','RZ202607290038','吉林谷丰供应链有限公司','定期检查','订单执行与登记到期检查','正常','不适用','15日内到期','李倩','2026-07-28','已生成'],['DHBG20260727003','RZ202607300012','黑龙江北丰粮贸有限公司','首次检查','放款及外部登记前置检查','正常','原仓单已变更','中登网待登记','赵宁','2026-07-27','已归档']];
+  const rows=items.map((x,i)=>tr([`<span class="code">${x[0]}</span>`,`<span class="code">${x[1]}</span>`,`<b>${x[2]}</b>`,x[3],x[4],tag(x[5]),tag(x[6]),tag(x[7]),x[8],x[9],tag(x[10]),act('postReport',i,'查看')],x.join(' ')));
+  return simplePage('贷后检查报告','自动汇总经营、资产、货权、运输、回款，以及中仓登和中登网登记状态，形成定期或专项检查报告。',['本月检查','46','定期检查 38 份'],['登记一致','36','占比 78.3%'],['登记异常/到期','8','需持续跟踪'],['待复核报告','2','今日需完成'],'生成检查报告','postReportCreate',['报告编号','融资编号','企业','检查类型','检查主题','检查结论','中仓登结论','中登网结论','检查人','检查日期','状态','操作'],rows,146);
+}
+function maturityReminder(){
+  const items=[['DQ20260802001','融资还款','RZ202607290031','辽宁港联物流有限公司','¥ 182.1万','2026-08-02','3天','已通知','正常'],['DQ20260803002','融资还款','RZ202607290038','吉林谷丰供应链有限公司','¥ 323.5万','2026-08-03','4天','已通知','正常'],['DQ20260805003','融资还款','RZ202607280022','北大荒粮食集团','¥ 326.8万','2026-08-05','6天','待通知','重点提醒'],['DQ20260814006','中登网登记到期','ZD202607290038','吉林谷丰供应链有限公司','¥ 1,200万','2026-08-14','15天','待展期','重点提醒'],['DQ20260818007','中仓登仓单有效期','ZCD-HLJ-20260722031','北大荒粮食集团','¥ 3,760万','2026-08-18','19天','待复核','正常'],['DQ20260831004','合作协议','XY202603007','浦发银行长春分行','—','2026-08-31','32天','待续签','即将到期']];
+  const rows=items.map((x,i)=>tr([`<span class="code">${x[0]}</span>`,x[1],`<span class="code">${x[2]}</span>`,`<b>${x[3]}</b>`,`<span class="amount">${x[4]}</span>`,x[5],x[6],tag(x[7]),tag(x[8]),act('reminder',i,'提醒')],x.join(' ')));
+  return simplePage('到期与还款提醒','统一管理融资还款、授信、仓单、质押、中仓登登记、中登网登记及合作协议到期提醒。',['7日内到期','6','金额 ¥ 420万'],['登记到期/展期','5','中登网 3 笔'],['已发送提醒','22','短信/站内信/邮件'],['逾期未处理','1','已升级风险处置'],'批量发送提醒','reminderCreate',['提醒编号','到期类型','关联编号','企业/机构','涉及金额','到期日期','剩余时间','通知状态','风险状态','操作'],rows,52);
+}
+
+function institutionsPage(){
+  const tab=getTab('institutionsPage','机构档案');
+  const rows=DATA.institutions.map((r,i)=>tr([`<b>${r.name}</b>`,r.type,r.region,r.products,`<span class="amount">${r.amount}</span>`,tag(r.status),r.expiry,r.contact,r.score,act('institution',i,tab==='入驻审核'?'审核':'管理')],Object.values(r).join(' ')));
+  return head('金融机构','管理银行、保理、担保机构的入驻审核、资质、服务能力、合作状态、业务统计和服务评价。','<button class="btn" onclick="toast(\'机构数据已同步\')">同步机构数据</button><button class="btn primary" onclick="openModal(\'institutionCreate\')">新增金融机构</button>')+
+  `<div class="grid g4">${metric('合作金融机构','18','银行 12 家','blue','▤')}${metric('上线金融产品','36','本月新增 4 个','green','¥')}${metric('累计合作金额','¥ 12.68亿','较上月增长 18.6%','orange','▣')}${metric('待续约机构','2','30日内到期','purple','⌛')}</div><div style="height:14px"></div><div class="card">${tabs('institutionsPage',['机构档案','入驻审核','资质管理','服务能力','业务统计','服务评价'],'机构档案')}${toolbar('输入机构名称、类型或服务区域')}${table(['机构名称','机构类型','服务区域','上线产品数','累计合作金额','合作状态','协议有效期','联系人','评分','操作'],rows,'institutionRows')}${pager(18)}</div>`;
+}
+function registrationPlatforms(){
+  const tab=getTab('registrationPlatforms','平台档案');
+  let cols=[],rows=[];
+  if(tab==='平台档案'){
+    cols=['平台编码','平台名称','平台类型','运营/服务主体','对接模式','支持业务','状态','最近同步','成功率','操作'];
+    rows=DATA.registrationPlatforms.map((r,i)=>tr([`<span class="code">${r.code}</span>`,`<b>${r.name}</b>`,r.type,r.operator,r.mode,r.business,tag(r.status),r.lastSync,r.rate,`<div class="action-group"><button class="btn link" onclick="detail('registrationPlatform',${i})">详情</button><button class="btn link" onclick="openRegistrationModal('platformConfig',${i})">配置</button></div>`],Object.values(r).join(' ')));
+  }else if(tab==='接口配置'){
+    cols=['平台','环境','对接方式','认证方式','回调/回填方式','超时重试','连接状态','最近测试','操作'];
+    const a=[['中仓登','生产/测试','合作接口+人工模式','数字证书/IP白名单','异步回调或凭证回填','30秒/3次','连接正常','09:16'],['中登网','生产办理','查询/登记协同','机构账号+操作授权','登记编号/证明回填','人工复核','可用','09:11']];
+    rows=a.map((x,i)=>tr([...x.slice(0,6),tag(x[6]),x[7],`<button class="btn link" onclick="openRegistrationModal('platformTest',${i})">测试/校验</button>`],x.join(' ')));
+  }else if(tab==='数据映射'){
+    cols=['映射类型','平台字段','中仓登字段','中登网字段','转换规则','状态','操作'];
+    const a=[['主体标识','统一社会信用代码','存货人/仓储方主体标识','担保人/担保权人标识','统一代码优先','启用'],['资产标识','融资资产编号','存货/仓单登记编号','担保财产描述/登记编号','四码关联','启用'],['数量金额','有效数量/当前货值','登记数量/货权数量','担保金额/最高债权额','单位与币种统一','启用'],['状态','平台资产状态','仓单/货权/质押状态','登记/变更/注销状态','状态机映射','启用']];
+    rows=a.map((x,i)=>tr([...x.slice(0,5),tag(x[5]),`<button class="btn link" onclick="openRegistrationModal('mapping',${i})">编辑</button>`],x.join(' ')));
+  }else if(tab==='登记规则'){
+    cols=['规则名称','适用产品','执行节点','必须条件','失败处理','状态','操作'];
+    const a=[['仓单融资中仓登前置','仓单质押融资','融资申请/审批','仓单和货权登记有效','阻断审批','启用'],['放款前中登网登记','仓单/在途/应收融资','放款条件核验','担保登记完成或满足机构规则','阻断放款','启用'],['结清后登记注销','全部担保融资','还款结清','完成中登网注销与中仓登解押更新','限制资产释放','启用'],['三方一致性监测','存续融资','贷后实时监测','数量、持有人、质权人、状态一致','生成风险预警','启用']];
+    rows=a.map((x,i)=>tr([...x.slice(0,5),tag(x[5]),`<button class="btn link" onclick="openRegistrationModal('rule',${i})">编辑</button>`],x.join(' ')));
+  }else if(tab==='同步日志'){
+    cols=['记录编号','平台','业务类型','关联对象','企业','登记编号','办理动作','结果','同步时间','操作人','操作'];
+    rows=DATA.registrationRecords.map((r,i)=>tr([`<span class="code">${r.id}</span>`,r.platform,r.business,`<span class="code">${r.object}</span>`,`<b>${r.enterprise}</b>`,`<span class="code">${r.regNo}</span>`,r.action,tag(r.status),r.sync,r.operator,`<button class="btn link" onclick="openRegistrationModal('record',${i})">详情</button>`],Object.values(r).join(' ')));
+  }else{
+    cols=['记录编号','平台','关联对象','企业','异常类型','异常描述','风险等级','状态','发现时间','操作'];
+    const a=[['DJYC2026073001','中仓登','WHD20260722031','北大荒粮食集团','数量不一致','登记数量12,000吨，平台有效库存11,674吨','高风险','待处置','2026-07-30 08:36'],['DJYC2026073002','中登网','ZD202607290038','吉林谷丰供应链有限公司','登记即将到期','融资未结清，登记15日内到期','中风险','待处理','2026-07-30 08:18'],['DJYC2026072903','中仓登/中登网','ZY20260719003','吉林谷丰供应链有限公司','质权人待核对','两平台质权人名称存在简称差异','中风险','核查中','2026-07-29 17:42']];
+    rows=a.map((x,i)=>tr([`<span class="code">${x[0]}</span>`,x[1],`<span class="code">${x[2]}</span>`,`<b>${x[3]}</b>`,x[4],x[5],tag(x[6]),tag(x[7]),x[8],`<button class="btn link" onclick="openRegistrationModal('exception',${i})">处置</button>`],x.join(' ')));
+  }
+  return head('登记平台管理','统一管理中仓登、中登网的合作接入、接口/人工办理、字段映射、登记规则、同步日志和异常。','<button class="btn" onclick="openRegistrationModal(\'syncAll\')">全量同步</button><button class="btn primary" onclick="openModal(\'registrationPlatformCreate\')">新增登记平台</button>')+`<div class="grid g4">${metric('已接入登记平台','2','中仓登 / 中登网','blue','▤')}${metric('今日登记查询','68','成功率 98.9%','green','✓')}${metric('待办理登记','9','放款前置 5 笔','orange','⌛')}${metric('登记异常','3','高风险 1 项','purple','!')}</div><div style="height:14px"></div><div class="card">${tabs('registrationPlatforms',['平台档案','接口配置','数据映射','登记规则','同步日志','异常管理'],'平台档案')}${toolbar('输入平台、登记编号、企业或业务对象')}${table(cols,rows,'registrationRows')}${pager(tab==='同步日志'?68:12)}</div>`;
+}
+
+function productConfig(){
+  const items=[['JRCP001','在途货物融资','中国银行黑龙江省分行','粮食贸易商','¥ 3,000万','90-180天','原仓单变更+中登网登记','已上线'],['JRCP002','仓单质押融资','农业银行黑龙江省分行','贸易商/仓储企业','¥ 5,000万','180天','中仓登有效+中登网登记','已上线'],['JRCP003','订单融资','浦发银行长春分行','粮食贸易商','¥ 2,000万','120天','中登网在先查询','已上线'],['JRCP004','应收账款融资','招商银行哈尔滨分行','贸易商/物流企业','¥ 1,500万','90-180天','中登网查询/登记按产品规则','测试中']];
+  const rows=items.map((x,i)=>tr([`<span class="code">${x[0]}</span>`,`<b>${x[1]}</b>`,x[2],x[3],`<span class="amount">${x[4]}</span>`,x[5],x[6],tag(x[7]),act('productConfig',i,'配置')],x.join(' ')));
+  return simplePage('金融产品配置','配置产品额度、期限、定价、数据要求及中仓登/中登网登记前置条件。',['产品总数','36','已上线 28 个'],['要求中仓登核验','8','仓单/存货类产品'],['要求中登网登记','22','担保融资产品'],['待发布产品','4','测试中 2 个'],'新增产品配置','productCreate',['产品编码','产品名称','金融机构','适用对象','最高额度','期限','外部登记要求','状态','操作'],rows,36);
+}
+function rulesConfig(){
+  const tab=getTab('rulesConfig','企业准入规则');
+  const rules={
+    '企业准入规则':[['粮食贸易主体准入','经营正常且完成可信空间主体认证','可信空间主体','自动判断','全部产品','启用'],['近12个月真实交易额','不低于 ¥ 3,000万','已验真交易数据','自动判断','订单/在途融资','启用'],['合同履约率','不低于 90%','多式联运/一粮一链','自动判断','全部产品','启用']],
+    '交易验真规则':DATA.verifyRules.map(x=>[x.name,x.condition,x.source,'自动判断',x.category,x.status]),
+    '信用评价规则':[['交易信用权重','真实交易与合同履约权重25%','信用模型','自动评分','全部企业','启用'],['风险记录扣分','红色预警每条扣8分','风险中心','自动评分','全部企业','启用']],
+    '授信审批规则':[['额度上限规则','建议额度不超过近12月真实交易额8%','交易与信用数据','自动测算','全部产品','启用'],['客户集中度限制','单一买方占比不超过60%','交易数据','自动判断','订单融资','启用']],
+    '融资审批规则':[['授信额度校验','申请金额不得超过可用额度','授信中心','自动拦截','全部产品','启用'],['货值覆盖校验','仓单融资覆盖率不低于130%','货值估值','自动拦截','仓单质押','启用']],
+    '外部登记规则':[['中仓登有效性前置','仓单融资须存在有效仓单及货权登记','中仓登/平台货权','自动拦截','仓单质押','启用'],['中登网放款前登记','担保融资放款前须完成登记或满足机构例外规则','中登网登记凭证','自动拦截','担保融资','启用'],['结清注销时限','结清后5个工作日内完成变更/注销','还款结清/登记平台','超时预警','全部担保融资','启用']],
+    '风险预警规则':[['库存减少预警','质押库存减少且无有效出库指令','仓储与货权数据','实时触发','仓单质押','启用'],['路线偏离预警','偏离计划路线超过30公里或60分钟','多式联运','实时触发','在途融资','启用']]
+  };
+  const rows=(rules[tab]||rules['企业准入规则']).map((x,i)=>tr([`<b>${x[0]}</b>`,x[1],x[2],x[3],x[4],tag(x[5]),act('businessRule',i,'编辑')],x.join(' ')));
+  return head('业务规则配置','统一配置企业准入、交易验真、信用评价、授信审批、融资审批和风险预警规则。','<button class="btn" onclick="toast(\'规则模拟运行已完成\')">模拟运行</button><button class="btn primary" onclick="openModal(\'businessRuleCreate\')">新增规则</button>')+`<div class="card">${tabs('rulesConfig',['企业准入规则','交易验真规则','信用评价规则','授信审批规则','融资审批规则','外部登记规则','风险预警规则'],'企业准入规则')}${toolbar('输入规则名称、数据来源或适用产品')}${table(['规则名称','规则条件','数据来源','执行方式','适用范围','状态','操作'],rows,'businessRuleRows')}${pager(68)}</div>`;
+}
+function pricingPledge(){
+  const tab=getTab('pricingPledge','融资利率');
+  const sets={
+    '融资利率':[['LL001','在途货物融资','中国银行黑龙江省分行','3.35%','0-0.25%','0-0.15%','0-0.30%','3.65%-4.05%','启用'],['LL002','仓单质押融资','农业银行黑龙江省分行','3.45%','0-0.20%','0-0.10%','0-0.35%','3.80%-4.10%','启用'],['LL003','订单融资','浦发银行长春分行','3.50%','0-0.30%','0-0.15%','0-0.30%','3.95%-4.25%','启用']],
+    '额度限制':[['ED001','单笔融资上限','在途货物融资','¥ 3,000万','不超过可用授信','全部信用等级','启用'],['ED002','企业总余额上限','全部产品','¥ 8,000万','按集团口径控制','A及以上','启用']],
+    '粮食品种质押率':[['ZY001','玉米 / 一等','70%','130%','115%','10%','启用'],['ZY002','玉米 / 二等','65%','135%','120%','12%','启用'],['ZY003','大豆 / 三等','60%','140%','125%','15%','启用'],['ZY004','水稻 / 二等','62%','138%','122%','12%','启用']],
+    '覆盖率预警':[['FGL001','正常线','≥140%','绿色','持续监测','启用'],['FGL002','预警线','125%-140%','黄色','提醒补充质押物','启用'],['FGL003','处置线','<125%','红色','冻结额度并启动处置','启用']],
+    '保证金配置':[['BZJ001','BBB级企业','仓单质押融资','15%','可通过补充质押物降低','启用'],['BZJ002','A级企业','在途货物融资','8%','货权和回款均受控','启用']]
+  };
+  const data=sets[tab]||sets['融资利率'];
+  const cols=tab==='融资利率'?['策略编号','产品名称','金融机构','基准利率','信用加点','期限加点','风险加点','综合参考利率','状态','操作']:tab==='额度限制'?['规则编号','限制类型','适用产品','额度上限','附加条件','适用等级','状态','操作']:tab==='粮食品种质押率'?['配置编号','粮食品种/等级','最高质押率','正常覆盖率','预警覆盖率','处置折价','状态','操作']:tab==='覆盖率预警'?['配置编号','区间名称','覆盖率区间','风险颜色','自动措施','状态','操作']:['配置编号','适用等级','适用产品','保证金比例','优惠条件','状态','操作'];
+  const rows=data.map((x,i)=>tr([...x.slice(0,-1).map((v,j)=>j===0?`<span class="code">${v}</span>`:v),tag(x[x.length-1]),act('pricing',i,'编辑')],x.join(' ')));
+  return head('定价与质押配置','统一配置融资利率、额度限制、粮食品种质押率、覆盖率预警线和保证金比例。','<button class="btn" onclick="toast(\'定价测算已完成\')">定价测算</button><button class="btn primary" onclick="openModal(\'pricingCreate\')">新增配置</button>')+`<div class="card">${tabs('pricingPledge',['融资利率','额度限制','粮食品种质押率','覆盖率预警','保证金配置'],'融资利率')}${toolbar('输入策略编号、产品或金融机构')}${table(cols,rows,'pricingRows')}${pager(34)}</div>`;
+}
+function agreements(){
+  const items=[['XY202601001','供应链金融框架合作协议','中国银行黑龙江省分行','框架合作协议','2026-01-15','2026-02-01','2027-01-31','6个','有效'],['XY202602003','仓单质押融资合作协议','农业银行黑龙江省分行','产品合作协议','2026-02-18','2026-03-01','2027-02-28','2个','有效'],['XY202603007','可信数据授权使用协议','浦发银行长春分行','数据使用协议','2026-03-10','2026-03-15','2027-03-14','4个','有效'],['XY202604012','仓储监管合作协议','锦州港粮食物流','监管合作协议','2026-04-22','2026-05-01','2027-04-30','3个','待续签'],['XY202607015','中仓登登记与核验合作协议','中仓登合作服务方','登记平台协议','2026-07-01','2026-07-15','2027-07-14','仓单/货权','有效'],['XY202607016','中登网查询登记操作授权书','合作金融机构联合','登记操作授权','2026-07-01','2026-07-15','2027-07-14','担保登记','有效']];
+  const rows=items.map((x,i)=>tr([`<span class="code">${x[0]}</span>`,`<b>${x[1]}</b>`,x[2],x[3],x[4],x[5],x[6],x[7],tag(x[8]),act('agreement',i,'管理')],x.join(' ')));
+  return simplePage('合作协议','管理金融合作、数据使用、仓储监管、中仓登登记核验及中登网查询登记授权等协议。',['有效协议','30','覆盖 20 家机构/平台'],['登记平台协议','2','中仓登/中登网相关'],['待签署','4','电子签章处理中'],['30日内到期','2','已发送续签提醒'],'新增合作协议','agreementCreate',['协议编号','协议名称','合作机构/平台','协议类型','签署日期','生效日期','到期日期','关联业务','状态','操作'],rows,30);
+}
+
+function simplePage(title,desc,m1,m2,m3,m4,button,modal,cols,rows,total){return head(title,desc,`<button class="btn" onclick="toast('清单已导出')">导出</button><button class="btn primary" onclick="openModal('${modal}')">${button}</button>`)+`<div class="grid g4">${metric(m1[0],m1[1],m1[2],'blue','▦')}${metric(m2[0],m2[1],m2[2],'green','✓')}${metric(m3[0],m3[1],m3[2],'orange','!')}${metric(m4[0],m4[1],m4[2],'purple','◇')}</div><div style="height:14px"></div><div class="card">${toolbar('输入编号、企业、机构或业务对象')}${table(cols,rows)}${pager(total)}</div>`}
+
+function detail(type,i){
+  let title='业务详情',body='<div class="notice">已加载业务基础信息、关联数据、操作记录和审计记录。</div>',foot='<button class="btn" onclick="closeDrawer()">关闭</button>';
+  if(type==='verify'){
+    const r=DATA.verify[i];title='交易验真详情 · '+r.id;
+    const dims=verifyDimensionResults(r);
+    const linked=[['可信主体数据','申请企业、交易对手、承运/仓储主体','已关联'],['交易合同数据','购销合同、运输合同及签章摘要','已关联'],['一粮一链数据','粮食批次、质量、入出库及货权事件',r.status==='待验真'?'待关联':'已关联'],['多式联运数据','运单、节点轨迹、港口/铁路事件',r.status==='待补充'?'部分缺失':'已关联'],['结算资金数据','发票、付款、应收及监管账户',r.status==='待验真'?'待授权':'已授权'],['中仓登登记数据','仓库、存货、货权、仓单及质押状态',r.status==='待验真'?'待查询':'已查询'],['中登网登记数据','在先担保查询、登记编号及担保财产描述',r.status==='已通过'?'无冲突':'待核验']];
+    body=`<div class="notice">验真编号 <b>${r.id}</b>。所有数据调用均记录授权范围、使用目的和审计日志。</div>${steps(['申请提交','数据关联','外部登记查询','自动核验','人工复核','报告生成'],verifyProcessIndex(r.status))}
+    <div class="drawer-tabs"><button class="drawer-tab on" onclick="switchDrawerTab(this,'vbase')">业务信息</button><button class="drawer-tab" onclick="switchDrawerTab(this,'vdata')">关联数据</button><button class="drawer-tab" onclick="switchDrawerTab(this,'vresult')">核验结果</button><button class="drawer-tab" onclick="switchDrawerTab(this,'vtask')">人工任务</button><button class="drawer-tab" onclick="switchDrawerTab(this,'vlog')">操作记录</button></div>
+    <div class="drawer-pane on" id="vbase"><div class="details">${details([['验真对象',r.object],['申请企业',r.applicant],['交易对手',r.counterparty],['业务金额',r.amount],['对象编号',r.ref],['当前状态',tag(r.status)],['可信评分',r.score],['人工任务',r.tasks+'项'],['申请时间',r.time]])}</div><h3 class="block-title">验真用途</h3><div class="notice">用于供应链融资申请的交易真实性、货物真实性和履约闭环核验，验真报告可被授权金融机构引用。</div></div>
+    <div class="drawer-pane" id="vdata"><div class="material-list">${linked.map((x,idx)=>`<div class="material-row"><div class="file-ico">${idx+1}</div><div class="file-main"><div class="file-name">${x[0]}</div><div class="file-meta">${x[1]}</div></div>${tag(x[2])}</div>`).join('')}</div></div>
+    <div class="drawer-pane" id="vresult"><div class="verify-result">${dims.map(x=>`<div class="result-item"><div class="result-name">${x[0]}</div><div class="result-desc">${x[1]}</div><div class="result-score">${x[2]}分</div><div>${tag(x[3])}</div></div>`).join('')}</div></div>
+    <div class="drawer-pane" id="vtask"><div class="quick">${DATA.verifyTasks.filter(x=>x.verify===r.id).map((x,ti)=>listCard(x.type,x.item,x.id+' · '+x.assignee,x.status,'✓')).join('')||'<div class="notice">当前无人工处理任务。自动核验发现异常后，系统可自动或人工创建复核任务。</div>'}</div></div>
+    <div class="drawer-pane" id="vlog"><div class="audit-list">${[['07-30 09:16','系统','完成主体与合同自动核验，命中规则 12 条'],['07-30 09:18','系统','发现物流主体名称差异，生成复核建议'],['07-30 09:22','李倩','领取物流核验任务'],['07-30 09:35','申请企业','补充上传铁路货票与港口进场记录']].map(x=>`<div class="audit-item"><div class="audit-time">${x[0]}</div><div class="audit-main"><b>${x[1]}</b>${x[2]}</div></div>`).join('')}</div></div>`;
+    foot='<button class="btn" onclick="closeDrawer()">关闭</button><button class="btn" onclick="openVerifyModal(\'link\','+i+')">关联数据</button><button class="btn" onclick="openRegistrationModal(\'queryZcd\','+i+')">查询中仓登</button><button class="btn" onclick="openRegistrationModal(\'queryZd\','+i+')">查询中登网</button>';
+    if(r.status==='待验真') foot+='<button class="btn primary" onclick="openVerifyModal(\'start\','+i+')">启动自动核验</button>';
+    else if(r.status==='验真中') foot+='<button class="btn" onclick="openVerifyModal(\'task\','+i+')">创建人工任务</button><button class="btn primary" onclick="openVerifyModal(\'review\','+i+')">提交复核</button>';
+    else if(r.status==='待补充') foot+='<button class="btn primary" onclick="openVerifyModal(\'supplement\','+i+')">补充材料并重检</button>';
+    else if(r.status==='已通过') foot+='<button class="btn primary" onclick="openVerifyModal(\'report\','+i+')">生成验真报告</button>';
+    else foot+='<button class="btn danger" onclick="openVerifyModal(\'task\','+i+')">创建风险复核</button><button class="btn primary" onclick="openVerifyModal(\'report\','+i+')">生成风险报告</button>';
+  } else if(type==='verifyTask'){
+    const r=DATA.verifyTasks[i];title='验真任务 · '+r.id;
+    body=`<div class="details">${details([['所属验真单',r.verify],['任务类型',r.type],['申请企业',r.enterprise],['处理人',r.assignee],['完成时限',r.deadline],['任务状态',tag(r.status)]])}</div><h3 class="block-title">待核验事项</h3><div class="notice warn">${r.item}</div><h3 class="block-title">处理要求</h3><div class="material-list">${[['核对原始业务凭证','查看合同、运单、仓单或资金流水原件'],['交叉验证数据来源','对照可信空间、一粮一链和多式联运事件'],['填写核验结论','明确通过、补充材料或存在风险']].map((x,idx)=>`<div class="material-row"><div class="file-ico">${idx+1}</div><div class="file-main"><div class="file-name">${x[0]}</div><div class="file-meta">${x[1]}</div></div></div>`).join('')}</div>`;
+    foot+='<button class="btn" onclick="openVerifyModal(\'supplementTask\','+i+')">要求补充材料</button><button class="btn primary" onclick="openVerifyModal(\'taskProcess\','+i+')">处理任务</button>';
+  } else if(type==='finance'){
+    const r=DATA.finance[i];title='融资业务详情 · '+r.id;body=`${steps(['融资申请','交易验真','中仓登核验','授信审批','资产冻结','中登网登记','合同放款','贷后监管'],statusStep(r.status))}<div class="details">${details([['申请企业',r.enterprise],['融资产品',r.product],['金融机构',r.institution],['申请金额',r.apply],['审批金额',r.approve],['融资期限',r.term],['当前状态',tag(r.status)],['申请时间',r.time],['还款方式','到期还本，按月付息']])}</div><h3 class="block-title">融资依据</h3><div class="quick">${listCard('交易验真报告','业务链路完整度 92%，可信评分 89。','BG202607290046','已通过','✓')}${listCard('企业信用与授信','信用等级 AA，可用授信 ¥ 2,740 万。','XY-SX-2026-001','额度充足','▣')}${listCard('货物与货权','关联 8,600 吨玉米，当前估值 ¥ 2,924 万。','WHD20260725018','覆盖率146%','◇')}${listCard('中仓登资产核验','仓单、货权及原仓单转在途状态。',r.zcd,'已核验','仓')}${listCard('中登网担保状态','融资前在先查询及放款前登记。',r.zd,r.registry,'登')}</div><div class="notice warn" style="margin-top:16px">建议将关联粮食批次设置为融资监管状态，并要求销售回款进入指定监管账户。</div>`;foot+='<button class="btn danger" onclick="toast(\'业务已退回补充\')">退回</button><button class="btn primary" onclick="toast(\'审批意见已提交\')">提交审批</button>';
+  } else if(type==='credit'){
+    const r=DATA.credit[i];title='企业信用档案 · '+r.name;body=`<div class="grid g2"><div class="card"><div class="cbody"><div class="mvalue">${r.score} 分</div><div class="mfoot">信用等级 <b>${r.grade}</b> · ${r.risk}</div>${progressBar(r.score)}</div></div><div class="card"><div class="cbody"><div class="mlabel">当前授信额度</div><div class="mvalue">${r.limit}</div><div class="mfoot">已用 54%，有效期至 2027-01-31</div></div></div></div><h3 class="block-title">企业基本信息</h3><div class="details">${details([['企业名称',r.name],['信用代码',r.code],['所在区域',r.region],['累计交易额',r.trade],['合同履约率',r.performance],['授信额度',r.limit],['近12月融资','8次'],['历史逾期','0次'],['数据完整度','94%']])}</div><h3 class="block-title">评分构成</h3>${[['主体信用',92],['交易信用',88],['物流信用',84],['结算信用',79],['数据信用',95],['风险表现',82]].map(x=>`<div class="score-row"><span>${x[0]}</span>${progressBar(x[1])}<b>${x[1]}</b></div>`).join('')}`;
+  } else if(type==='receipt'){
+    const r=DATA.receipts[i];title='电子仓单详情 · '+r.id;body=`<div class="notice">仓单数字摘要已写入可信数据空间，可被已授权金融机构核验。</div><div class="details">${details([['货主企业',r.owner],['仓储企业/仓库',r.warehouse],['粮食品种',r.grain],['库存数量',r.qty],['当前估值',r.value],['已质押金额',r.pledged],['仓单状态',tag(r.status)],['中仓登登记号',r.zcdNo],['中仓登登记状态',tag(r.zcdStatus)],['中仓登质押状态',tag(r.zcdPledge)],['最近盘点','2026-07-29'],['更新时间',r.update]])}</div><h3 class="block-title">仓单生命周期</h3>${steps(['仓单生成','中仓登登记','仓单验真','质押状态更新','中登网登记','动态监管'],4)}`;foot+='<button class="btn" onclick="openRegistrationModal(\'queryZcd\','+i+')">查询中仓登</button><button class="btn" onclick="openRegistrationModal(\'zcdRegister\','+i+')">登记/变更</button><button class="btn primary" onclick="openModal(\'pledgeCreate\')">发起质押</button>';
+  } else if(type==='alert'){
+    const r=DATA.alerts[i];title='风险预警处置 · '+r.type;body=`<div class="notice red"><b>${r.level}预警：</b>${r.desc}</div><div class="details">${details([['企业名称',r.enterprise],['关联对象',r.object],['预警等级',r.level],['发现时间',r.time],['当前状态',tag(r.status)],['责任人',r.owner],['融资余额','¥ 2,400万'],['质押物价值','¥ 3,760万'],['覆盖率','156.7%']])}</div><h3 class="block-title">建议处置措施</h3><div class="quick">${listCard('暂停仓单出库权限','同步仓储企业和可信空间使用控制策略。','系统建议','立即执行','1')}${listCard('发起现场盘点','核对实物库存、仓单数量和出入库记录。','4小时内','待执行','2')}</div>`;foot+='<button class="btn" onclick="toast(\'已标记误报\')">标记误报</button><button class="btn primary" onclick="openModal(\'disposalCreate\')">创建处置任务</button>';
+  } else if(type==='registrationPlatform'){
+    const r=DATA.registrationPlatforms[i];title='登记平台详情 · '+r.name;body=`<div class="notice">对接能力按合作协议和正式授权范围配置，支持接口与人工办理并存。</div><div class="details">${details([['平台编码',r.code],['平台名称',r.name],['平台类型',r.type],['运营/服务主体',r.operator],['对接模式',r.mode],['支持业务',r.business],['当前状态',tag(r.status)],['最近同步',r.lastSync],['调用成功率',r.rate]])}</div><h3 class="block-title">业务嵌入节点</h3><div class="quick">${listCard('融资前核验','查询基础资产或在先担保，识别重复融资。','交易验真/融资审批','已配置','1')}${listCard('融资中登记','更新质押状态、办理担保登记并作为放款条件。','质押监管/合同放款','已配置','2')}${listCard('融资后监管','监测登记变更、到期、冲突与注销状态。','贷后管理','已配置','3')}</div>`;foot+='<button class="btn" onclick="openRegistrationModal(\'platformTest\','+i+')">连接测试</button><button class="btn primary" onclick="openRegistrationModal(\'platformConfig\','+i+')">配置管理</button>';
+  } else if(type==='product'){
+    const p=PRODUCTS[i];title='金融产品详情 · '+p[0];body=`<div class="details">${details([['产品名称',p[0]],['金融机构',p[1]],['最高额度',p[2]],['参考利率/费率',p[3]],['融资期限',p[4]],['匹配度',p[5]],['还款方式','按月付息/到期还本'],['数据要求','主体、合同、物流、货权、回款'],['当前状态','可申请']])}</div><h3 class="block-title">产品适用说明</h3><div class="notice">${p[6]}</div>`;foot+='<button class="btn primary" onclick="openModal(\'financeCreate\')">立即申请</button>';
+  } else {const gd=buildGenericBusinessDetail(type,i);title=gd.title;body=gd.body;foot=gd.foot;}
+  document.getElementById('drawerTitle').textContent=title;document.getElementById('drawerBody').innerHTML=body;document.getElementById('drawerFoot').innerHTML=foot;document.getElementById('drawerMask').classList.add('show');
+}
+
+
+function switchDrawerTab(btn,id){
+  const root=btn.closest('.drawer');
+  root.querySelectorAll('.drawer-tab').forEach(x=>x.classList.remove('on'));
+  root.querySelectorAll('.drawer-pane').forEach(x=>x.classList.remove('on'));
+  btn.classList.add('on');const pane=root.querySelector('#'+id);if(pane)pane.classList.add('on');
+}
+function verifyDimensionResults(r){
+  if(r.status==='待验真') return [['主体核验','待调用主体认证、账户和关联关系数据',0,'待执行'],['合同核验','待校验合同签章、金额和唯一性',0,'待执行'],['货物核验','待关联粮食批次、库存和质检信息',0,'待执行'],['物流核验','待关联发运、中转、到达和签收事件',0,'待执行'],['资金核验','待核对发票、付款及回款账户',0,'待执行'],['仓储与仓单核验','待查询中仓登仓库、货权、仓单及质押状态',0,'待执行'],['担保状态核验','待查询中登网在先担保及财产描述冲突',0,'待执行']];
+  if(r.status==='待补充') return [['主体核验','交易主体、账户和资质一致',92,'通过'],['合同核验','合同金额、签章及编号唯一',88,'通过'],['货物核验','粮食批次和库存记录完整',83,'通过'],['物流核验','缺少铁路货票与港口进场记录',46,'待补充'],['资金核验','付款主体一致，待核对最终回款',72,'核验中'],['仓储与仓单核验','中仓登仓单有效，持有人一致',90,'通过'],['担保状态核验','中登网查询证明待补充上传',55,'待补充']];
+  if(r.status==='存在风险') return [['主体核验','主体和账户核验通过',90,'通过'],['合同核验','合同真实且未重复融资',86,'通过'],['货物核验','仓单库存与盘点差异326吨',42,'存在风险'],['物流核验','运输节点完整',82,'通过'],['资金核验','质押关系存在重复关联',48,'存在风险'],['仓储与仓单核验','中仓登登记数量与平台库存不一致',38,'存在风险'],['担保状态核验','中登网存在相似担保财产描述',45,'待复核']];
+  if(r.status==='已通过') return [['主体核验','主体身份、资质和账户一致',96,'通过'],['合同核验','签章有效、金额匹配、合同唯一',94,'通过'],['货物核验','批次、数量、质量和货权真实',91,'通过'],['物流核验','发运、中转、到达和签收闭环',89,'通过'],['资金核验','发票、应收和回款账户匹配',90,'通过'],['仓储与仓单核验','中仓登登记有效且状态一致',93,'通过'],['担保状态核验','中登网未发现冲突在先登记',92,'通过']];
+  return [['主体核验','主体认证和账户一致性已核验',94,'通过'],['合同核验','合同金额匹配，电子签章待人工确认',78,'待复核'],['货物核验','粮食批次、数量和质检信息完整',88,'通过'],['物流核验','收货主体名称存在差异',65,'待复核'],['资金核验','发票和付款记录正在匹配',70,'核验中'],['仓储与仓单核验','中仓登仓单及货权信息已查询',86,'通过'],['担保状态核验','中登网在先担保查询处理中',68,'核验中']];
+}
+function setVerifyModal(title,body,foot,wide=true){
+  const modal=document.querySelector('#modalMask .modal');modal.classList.toggle('wide',wide);
+  document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=body;document.getElementById('modalFoot').innerHTML=foot;document.getElementById('modalMask').classList.add('show');
+}
+function openVerifyModal(type,i=0){
+  activeVerifyIndex=Number.isFinite(+i)?+i:0;
+  const r=DATA.verify[activeVerifyIndex]||DATA.verify[0];
+  if(type==='create'){verifyWizardStep=0;verifyWizardData={object:'粮食购销合同',ref:'HT-BF-2026-0718',applicant:'黑龙江北丰粮贸有限公司',counterparty:'广东华南饲料集团',amount:'2860',purpose:'融资申请验真',financing:'RZ202607300012'};renderVerifyWizard();return;}
+  if(type==='verifyAuth'){
+    setVerifyModal('验真数据授权记录',`<div class="notice">查看验真业务中的数据授权主体、使用范围、期限及调用审计。</div><div class="material-list">${[['SQ20260730018','黑龙江北丰粮贸有限公司','中国银行黑龙江省分行','融资交易验真','主体、合同、粮食批次、物流','2026-10-30','有效'],['SQ20260730017','吉林谷丰供应链有限公司','浦发银行长春分行','订单融资验真','主体、合同、物流、资金','2026-11-30','有效'],['SQ20260729041','北大荒粮食集团','农业银行黑龙江省分行','仓单质押验真','仓单、库存、货权、质检','2027-01-31','部分暂停']].map(x=>`<div class="material-row"><div class="file-ico">授</div><div class="file-main"><div class="file-name">${x[0]} · ${x[1]}</div><div class="file-meta">使用方：${x[2]}｜目的：${x[3]}｜范围：${x[4]}｜到期：${x[5]}</div></div>${tag(x[6])}</div>`).join('')}</div>`,`<button class="btn" onclick="closeModal()">关闭</button><button class="btn primary" onclick="openVerifyModal('authCreate')">新增授权</button>`);return;
+  }
+  if(type==='authCreate'){
+    setVerifyModal('新增验真数据授权',`<div class="notice">数据使用将受数字合约约束，平台记录每次调用及用途。</div><div class="form"><div class="fi"><label class="fl">授权企业 <em>*</em></label><select class="formc"><option>黑龙江北丰粮贸有限公司</option><option>吉林谷丰供应链有限公司</option></select></div><div class="fi"><label class="fl">数据使用方 <em>*</em></label><select class="formc"><option>中国银行黑龙江省分行</option><option>浦发银行长春分行</option></select></div><div class="fi"><label class="fl">使用目的</label><select class="formc"><option>融资交易验真</option><option>授信评估</option><option>贷后监管</option></select></div><div class="fi"><label class="fl">授权期限</label><select class="formc"><option>90天</option><option>融资存续期</option><option>自定义</option></select></div><div class="fi full"><label class="fl">授权数据范围</label><div class="checks"><label><input type="checkbox" checked>主体认证</label><label><input type="checkbox" checked>交易合同</label><label><input type="checkbox" checked>粮食批次</label><label><input type="checkbox" checked>物流事件</label><label><input type="checkbox">仓单货权</label><label><input type="checkbox">资金结算</label></div></div><div class="fi full"><label class="fl">使用控制</label><div class="checks"><label><input type="checkbox" checked>仅在线核验</label><label><input type="checkbox" checked>禁止二次转授权</label><label><input type="checkbox" checked>到期自动撤销</label><label><input type="checkbox">允许报告引用</label></div></div></div>`,`<button class="btn" onclick="closeModal()">取消</button><button class="btn primary" onclick="completeVerifyAction('授权已生效')">确认授权</button>`);return;
+  }
+  if(type==='batchStart'){
+    setVerifyModal('批量启动自动核验',`<div class="notice">将对选中的待验真业务执行数据关联检查及五维自动规则核验。</div><div class="check-list">${DATA.verify.filter(x=>x.status==='待验真').map(x=>`<div class="check-row"><input type="checkbox" checked><div class="check-title">${x.id}</div><div class="check-desc">${x.applicant} · ${x.object} · ${x.ref}</div>${tag('待启动')}</div>`).join('')||'<div class="notice">当前没有待启动的验真业务。</div>'}</div><div class="form" style="margin-top:14px"><div class="fi"><label class="fl">执行方式</label><select class="formc"><option>立即执行</option><option>排队执行</option></select></div><div class="fi"><label class="fl">异常处理策略</label><select class="formc"><option>自动生成人工复核任务</option><option>仅标记异常</option></select></div></div>`,`<button class="btn" onclick="closeModal()">取消</button><button class="btn primary" onclick="batchStartVerify()">确认启动</button>`);return;
+  }
+  if(type==='batchAssign'){
+    setVerifyModal('批量分派验真任务',`<div class="notice">按核验维度、工作量和处理时限将待办任务分派给审核人员。</div><div class="form"><div class="fi"><label class="fl">任务范围</label><select class="formc"><option>当前筛选结果</option><option>全部待分派任务</option></select></div><div class="fi"><label class="fl">处理人</label><select class="formc"><option>李倩 / 物流核验</option><option>王磊 / 合同核验</option><option>张浩 / 货物核验</option></select></div><div class="fi"><label class="fl">优先级</label><select class="formc"><option>普通</option><option>紧急</option></select></div><div class="fi"><label class="fl">完成时限</label><input class="formc" value="今日 18:00"></div><div class="fi full"><label class="fl">分派说明</label><textarea class="formc area">请核对原始凭证及可信数据来源，完成后回写验真结论。</textarea></div></div>`,`<button class="btn" onclick="closeModal()">取消</button><button class="btn primary" onclick="completeVerifyAction('任务已批量分派')">确认分派</button>`);return;
+  }
+  if(type==='start'){
+    const dims=verifyDimensionResults({status:'待验真'});
+    setVerifyModal('启动自动核验 · '+r.id,`<div class="notice">系统将调用已授权数据并执行 32 条验真规则；异常项将自动形成待复核任务。</div><div class="verify-summary">${[['关联数据源','5','类'],['自动核验规则','32','条'],['预计自动完成','27','条'],['需人工复核','按异常生成',''],['执行时限','约3分钟','']].map(x=>`<div class="mini-kpi"><span>${x[0]}</span><b>${x[1]}</b><small>${x[2]}</small></div>`).join('')}</div><h3 class="block-title">核验范围</h3><div class="check-list">${dims.map((x,idx)=>`<div class="check-row"><input type="checkbox" checked><div class="check-title">${x[0]}</div><div class="check-desc">${x[1]}</div>${tag('待执行')}</div>`).join('')}</div><div class="form" style="margin-top:14px"><div class="fi"><label class="fl">异常处理</label><select class="formc"><option>自动创建人工任务</option><option>统一转人工复核</option></select></div><div class="fi"><label class="fl">任务完成时限</label><select class="formc"><option>4小时</option><option>当日完成</option></select></div></div>`,`<button class="btn" onclick="closeModal()">取消</button><button class="btn" onclick="openVerifyModal('link',${activeVerifyIndex})">检查关联数据</button><button class="btn primary" onclick="startVerify(${activeVerifyIndex})">确认启动</button>`);return;
+  }
+  if(type==='link'){
+    const sources=[['可信数据空间','主体身份、企业资质、账户及授权合约','12项数据','已连接'],['合同与订单中心','购销合同、运输合同、订单及电子签章','8项数据','已连接'],['一粮一链','粮食批次、质量、入出库和货权事件','16项数据',r.status==='待验真'?'待确认':'已连接'],['多式联运','运单、承运主体、节点轨迹和签收事件','21项数据',r.status==='待补充'?'部分缺失':'已连接'],['仓储与货权','仓单、库存、质押和出库记录','9项数据','已连接'],['结算数据','发票、付款、应收及监管账户','7项数据',r.status==='待验真'?'待授权':'已连接'],['中仓登','仓库、存货、货权、仓单及质押状态','4项数据',r.status==='待验真'?'待查询':'已连接'],['中登网','在先担保、登记编号、担保财产描述','3项数据',r.status==='已通过'?'已连接':'待查询']];
+    setVerifyModal('关联可信数据 · '+r.id,`<div class="notice">系统根据业务对象编号自动检索关联数据，也可通过编号手工补充关联。</div><div class="source-grid">${sources.map((x,idx)=>`<label class="source-card ${x[3]==='已连接'?'selected':''}"><div class="source-top"><div class="source-name">${x[0]}</div><input type="checkbox" ${x[3]==='已连接'?'checked':''}></div><div class="source-desc">${x[1]}</div><div class="source-meta">${x[2]} · ${x[3]}</div></label>`).join('')}</div><h3 class="block-title">手工补充关联</h3><div class="form"><div class="fi"><label class="fl">数据类型</label><select class="formc"><option>铁路货票</option><option>港口进场记录</option><option>付款流水</option><option>质检报告</option></select></div><div class="fi"><label class="fl">业务编号</label><input class="formc" placeholder="请输入业务编号"></div><div class="fi full"><button class="btn" onclick="toast('已检索到3条可关联数据')">检索数据</button></div></div>`,`<button class="btn" onclick="closeModal()">取消</button><button class="btn primary" onclick="completeVerifyAction('关联数据已保存')">保存关联</button>`);return;
+  }
+  if(type==='supplement'||type==='supplementTask'){
+    const task=type==='supplementTask'?DATA.verifyTasks[activeVerifyIndex]:null;
+    const title=type==='supplementTask'?'发起材料补充通知':'补充验真材料 · '+r.id;
+    setVerifyModal(title,`<div class="notice warn">${task?task.item:'请补齐系统未能自动获取或人工复核要求补充的业务凭证。'}</div><div class="form"><div class="fi"><label class="fl">补充材料类型</label><select class="formc"><option>铁路货票</option><option>港口进场记录</option><option>合同签章页</option><option>付款流水</option><option>现场盘点证明</option></select></div><div class="fi"><label class="fl">提交/完成时限</label><input class="formc" value="2026-07-30 18:00"></div><div class="fi full"><label class="fl">补充原因及要求</label><textarea class="formc area">请上传原始凭证，并确保凭证编号、主体和业务对象一致。</textarea></div><div class="fi full"><label class="fl">材料上传</label><div class="upload-box" onclick="toast('已选择文件：铁路货票.pdf')"><b>点击选择或拖拽上传</b>支持 PDF、JPG、PNG、OFD，单个文件不超过20MB</div></div></div><h3 class="block-title">已上传材料</h3><div class="material-list"><div class="material-row"><div class="file-ico">PDF</div><div class="file-main"><div class="file-name">运输合同签章页.pdf</div><div class="file-meta">2.3MB · 2026-07-30 09:35 上传</div></div>${tag('已校验')}</div></div>`,`<button class="btn" onclick="closeModal()">取消</button><button class="btn" onclick="completeVerifyAction('${task?'补充材料通知已发送':'材料已暂存'}')">暂存</button><button class="btn primary" onclick="submitSupplement(${type==='supplementTask'?-1:activeVerifyIndex})">${task?'发送补充通知':'提交并重新核验'}</button>`);return;
+  }
+  if(type==='task'){
+    setVerifyModal('创建人工复核任务 · '+r.id,`<div class="notice">自动核验无法确认或命中风险规则时，可创建人工复核任务并回写验真单。</div><div class="form"><div class="fi"><label class="fl">核验维度</label><select class="formc"><option>合同核验</option><option>货物核验</option><option>物流核验</option><option>资金核验</option><option>主体核验</option></select></div><div class="fi"><label class="fl">任务优先级</label><select class="formc"><option>普通</option><option>紧急</option></select></div><div class="fi"><label class="fl">处理人</label><select class="formc"><option>李倩 / 物流核验</option><option>王磊 / 合同核验</option><option>张浩 / 货物核验</option><option>陈峰 / 资金核验</option></select></div><div class="fi"><label class="fl">完成时限</label><input class="formc" value="今日 18:00"></div><div class="fi full"><label class="fl">待核验事项 <em>*</em></label><textarea class="formc area">请核对异常数据与原始凭证，明确是否影响交易真实性。</textarea></div><div class="fi full"><label class="fl">关联证据</label><div class="checks"><label><input type="checkbox" checked>异常规则命中记录</label><label><input type="checkbox" checked>原始业务凭证</label><label><input type="checkbox" checked>可信数据调用结果</label></div></div></div>`,`<button class="btn" onclick="closeModal()">取消</button><button class="btn primary" onclick="createVerifyTask(${activeVerifyIndex})">创建任务</button>`);return;
+  }
+  if(type==='taskProcess'){
+    const t=DATA.verifyTasks[activeVerifyIndex];
+    setVerifyModal('处理验真任务 · '+t.id,`<div class="notice warn"><b>${t.type}：</b>${t.item}</div><div class="details">${details([['所属验真单',t.verify],['申请企业',t.enterprise],['当前处理人',t.assignee],['完成时限',t.deadline],['任务状态',tag(t.status)],['关联证据','4项']])}</div><h3 class="block-title">核验结论</h3><div class="form"><div class="fi"><label class="fl">处理结论</label><select class="formc" id="taskConclusion"><option>核验通过</option><option>需补充材料</option><option>存在风险</option></select></div><div class="fi"><label class="fl">风险等级</label><select class="formc"><option>无风险</option><option>低风险</option><option>中风险</option><option>高风险</option></select></div><div class="fi full"><label class="fl">核验意见</label><textarea class="formc area">经核对原始凭证和可信数据，填写具体核验依据及结论。</textarea></div><div class="fi full"><label class="fl">上传复核证据</label><div class="upload-box" onclick="toast('复核证据已添加')"><b>上传复核截图或证明材料</b>材料将随任务结果回写验真单</div></div></div>`,`<button class="btn" onclick="openVerifyModal('supplementTask',${activeVerifyIndex})">要求补充材料</button><button class="btn primary" onclick="completeVerifyTask(${activeVerifyIndex})">完成任务</button>`);return;
+  }
+  if(type==='review'){
+    const dims=verifyDimensionResults(r);
+    setVerifyModal('提交验真复核 · '+r.id,`<div class="notice">汇总自动核验与人工任务结果，形成最终验真结论和可信评分。</div><div class="verify-result">${dims.map(x=>`<div class="result-item"><div class="result-name">${x[0]}</div><div class="result-desc">${x[1]}</div><div class="result-score">${x[2]}分</div><div>${tag(x[3])}</div></div>`).join('')}</div><h3 class="block-title">最终结论</h3><div class="form"><div class="fi"><label class="fl">验真结论</label><select class="formc" id="reviewConclusion"><option>基本可信</option><option>可信</option><option>待补充核验</option><option>存在风险</option><option>不可信</option></select></div><div class="fi"><label class="fl">可信评分</label><input class="formc" id="reviewScore" value="86"></div><div class="fi full"><label class="fl">复核意见</label><textarea class="formc area">主体、合同和货物数据完整，物流异常已人工复核，不影响交易真实性。</textarea></div><div class="fi full"><label class="fl">后续动作</label><div class="checks"><label><input type="checkbox" checked>生成验真报告</label><label><input type="checkbox" checked>回写融资申请</label><label><input type="checkbox">加入风险观察名单</label></div></div></div>`,`<button class="btn" onclick="closeModal()">取消</button><button class="btn primary" onclick="submitVerifyReview(${activeVerifyIndex})">提交复核</button>`);return;
+  }
+  if(type==='report'){
+    setVerifyModal('生成验真报告 · '+r.id,`<div class="notice">报告将包含核验依据、数据来源、规则命中、人工复核、异常事项和最终结论，并加盖平台电子签章。</div><div class="form"><div class="fi"><label class="fl">报告模板</label><select class="formc"><option>供应链融资交易验真报告</option><option>仓单质押专项验真报告</option><option>应收账款专项验真报告</option></select></div><div class="fi"><label class="fl">报告有效期</label><select class="formc"><option>30天</option><option>60天</option><option>90天</option></select></div><div class="fi"><label class="fl">报告结论</label><select class="formc"><option>${r.status==='存在风险'?'存在风险':'可信'}</option><option>基本可信</option></select></div><div class="fi"><label class="fl">电子签章</label><select class="formc"><option>供应链金融可信服务平台电子章</option></select></div><div class="fi full"><label class="fl">报告包含内容</label><div class="checks"><label><input type="checkbox" checked>主体核验</label><label><input type="checkbox" checked>合同核验</label><label><input type="checkbox" checked>货物核验</label><label><input type="checkbox" checked>物流核验</label><label><input type="checkbox" checked>资金核验</label><label><input type="checkbox" checked>中仓登核验</label><label><input type="checkbox" checked>中登网查询</label><label><input type="checkbox" checked>审计日志</label></div></div><div class="fi full"><label class="fl">共享设置</label><div class="checks"><label><input type="checkbox" checked>允许关联融资申请引用</label><label><input type="checkbox">生成后授权金融机构查看</label></div></div></div>`,`<button class="btn" onclick="closeModal()">取消</button><button class="btn" onclick="toast('报告预览已生成')">预览报告</button><button class="btn primary" onclick="generateVerifyReport(${activeVerifyIndex})">生成并签章</button>`);return;
+  }
+}
+function renderVerifyWizard(){
+  const titles=['选择业务对象','关联可信数据','配置核验方案','确认并提交'];
+  const nav=`<div class="wizard-nav">${titles.map((x,i)=>`<div class="wizard-step ${i<verifyWizardStep?'done':i===verifyWizardStep?'active':''}"><div class="wn">${i<verifyWizardStep?'✓':i+1}</div><div class="wt">${x}</div></div>`).join('')}</div>`;
+  let content='';
+  if(verifyWizardStep===0) content=`<div class="notice">选择需要验真的真实业务对象。系统将通过对象编号自动关联上下游交易和物流数据。</div><div class="form"><div class="fi"><label class="fl">验真场景 <em>*</em></label><select class="formc" id="vwPurpose"><option>融资申请验真</option><option>授信审查验真</option><option>贷后专项核验</option><option>交易对手核验</option></select></div><div class="fi"><label class="fl">验真对象类型 <em>*</em></label><select class="formc" id="vwObject"><option>粮食购销合同</option><option>多式联运订单</option><option>电子仓单</option><option>应收账款</option><option>运输合同</option></select></div><div class="fi"><label class="fl">业务对象编号 <em>*</em></label><input class="formc" id="vwRef" value="${verifyWizardData.ref}"></div><div class="fi"><label class="fl">关联融资申请</label><input class="formc" id="vwFinancing" value="${verifyWizardData.financing}"></div><div class="fi"><label class="fl">申请企业 <em>*</em></label><input class="formc" id="vwApplicant" value="${verifyWizardData.applicant}"></div><div class="fi"><label class="fl">交易对手 <em>*</em></label><input class="formc" id="vwCounterparty" value="${verifyWizardData.counterparty}"></div><div class="fi"><label class="fl">业务金额（万元）</label><input class="formc" id="vwAmount" value="${verifyWizardData.amount}"></div><div class="fi"><label class="fl">期望完成时间</label><input class="formc" value="2026-07-30 18:00"></div><div class="fi full"><label class="fl">验真说明</label><textarea class="formc area">用于融资申请前验证交易、货物和物流真实性。</textarea></div></div>`;
+  if(verifyWizardStep===1) content=`<div class="notice">系统已根据业务对象编号发现 8 类关联数据。选择本次核验允许调用的数据范围。</div><div class="source-grid">${[['可信主体','企业身份、资质、账户、关联关系','已匹配 8 项'],['交易合同','购销合同、运输合同、电子签章','已匹配 6 项'],['一粮一链','粮食批次、质量、入库、货权','已匹配 12 项'],['多式联运','运单、承运人、轨迹、中转、签收','已匹配 18 项'],['仓单库存','仓单、库存、盘点、质押状态','已匹配 5 项'],['结算资金','发票、付款、应收、监管账户','已匹配 7 项'],['中仓登','仓库、存货、货权、仓单及质押状态','待查询 4 项'],['中登网','在先担保、登记编号及财产描述','待查询 3 项']].map((x,i)=>`<label class="source-card selected"><div class="source-top"><div class="source-name">${x[0]}</div><input type="checkbox" checked></div><div class="source-desc">${x[1]}</div><div class="source-meta">${x[2]}</div></label>`).join('')}</div><h3 class="block-title">数据授权与控制</h3><div class="form"><div class="fi"><label class="fl">数据使用方</label><select class="formc"><option>供应链金融可信服务平台</option><option>中国银行黑龙江省分行</option></select></div><div class="fi"><label class="fl">授权期限</label><select class="formc"><option>本次验真有效</option><option>融资审批期间</option></select></div><div class="fi full"><div class="checks"><label><input type="checkbox" checked>仅限本次验真使用</label><label><input type="checkbox" checked>禁止下载原始数据</label><label><input type="checkbox" checked>记录全部调用审计</label></div></div></div>`;
+  if(verifyWizardStep===2) content=`<div class="notice">选择核验维度、异常处理策略及人工任务分派方式。</div><div class="check-list">${[['主体核验','企业身份、经营状态、资质、账户和关联关系','8条规则'],['合同核验','合同签章、金额、数量、唯一性及有效状态','7条规则'],['货物核验','粮食批次、数量、质量、库存和货权','6条规则'],['物流核验','发运、中转、到达、签收及轨迹一致性','7条规则'],['资金核验','发票、付款、应收、回款及资金回流','4条规则'],['仓储与仓单核验','中仓登仓库、货权、仓单、质押状态一致性','6条规则'],['担保状态核验','中登网在先担保及担保财产冲突','5条规则']].map((x,i)=>`<div class="check-row"><input type="checkbox" checked><div class="check-title">${x[0]}</div><div class="check-desc">${x[1]}</div><span class="tag tblue">${x[2]}</span></div>`).join('')}</div><div class="form" style="margin-top:14px"><div class="fi"><label class="fl">异常处理策略</label><select class="formc"><option>自动生成人工复核任务</option><option>统一提交风控复核</option></select></div><div class="fi"><label class="fl">默认任务时限</label><select class="formc"><option>4小时</option><option>当日完成</option><option>24小时</option></select></div><div class="fi"><label class="fl">任务分派方式</label><select class="formc"><option>按核验领域自动分派</option><option>提交后人工分派</option></select></div><div class="fi"><label class="fl">报告模板</label><select class="formc"><option>供应链融资交易验真报告</option><option>交易可信简版报告</option></select></div></div>`;
+  if(verifyWizardStep===3) content=`<div class="notice">提交后生成验真编号，系统先执行关联数据完整性检查，再进入自动核验。</div><div class="details">${details([['验真场景',verifyWizardData.purpose||'融资申请验真'],['验真对象',verifyWizardData.object||'粮食购销合同'],['对象编号',verifyWizardData.ref],['申请企业',verifyWizardData.applicant],['交易对手',verifyWizardData.counterparty],['业务金额','¥ '+verifyWizardData.amount+'万'],['关联数据源','8类 / 63项'],['核验规则','7个维度 / 43条'],['异常策略','自动生成人工复核任务']])}</div><h3 class="block-title">提交确认</h3><div class="notice warn"><label><input type="checkbox" checked> 已确认数据授权范围及使用目的，提交后允许系统调用授权数据完成验真。</label></div>`;
+  const foot=`<button class="btn" onclick="${verifyWizardStep===0?'closeModal()':'verifyWizardPrev()'}">${verifyWizardStep===0?'取消':'上一步'}</button>${verifyWizardStep<3?'<button class="btn primary" onclick="verifyWizardNext()">下一步</button>':'<button class="btn" onclick="saveVerifyDraft()">保存草稿</button><button class="btn primary" onclick="submitVerifyApplication()">提交并启动关联检查</button>'}`;
+  setVerifyModal('新建交易验真',nav+content,foot,true);
+}
+function saveVerifyWizardStep(){
+  const val=id=>{const e=document.getElementById(id);return e?e.value:null};
+  if(verifyWizardStep===0){verifyWizardData.purpose=val('vwPurpose')||verifyWizardData.purpose;verifyWizardData.object=val('vwObject')||verifyWizardData.object;verifyWizardData.ref=val('vwRef')||verifyWizardData.ref;verifyWizardData.financing=val('vwFinancing')||verifyWizardData.financing;verifyWizardData.applicant=val('vwApplicant')||verifyWizardData.applicant;verifyWizardData.counterparty=val('vwCounterparty')||verifyWizardData.counterparty;verifyWizardData.amount=val('vwAmount')||verifyWizardData.amount;}
+}
+function verifyWizardNext(){saveVerifyWizardStep();verifyWizardStep=Math.min(3,verifyWizardStep+1);renderVerifyWizard()}
+function verifyWizardPrev(){saveVerifyWizardStep();verifyWizardStep=Math.max(0,verifyWizardStep-1);renderVerifyWizard()}
+function saveVerifyDraft(){closeModal();toast('验真申请草稿已保存')}
+function submitVerifyApplication(){
+  const id='YZ20260730'+String(19+DATA.verify.length).padStart(4,'0');
+  DATA.verify.unshift({id,object:verifyWizardData.object||'粮食购销合同',applicant:verifyWizardData.applicant,counterparty:verifyWizardData.counterparty,amount:'¥ '+Number(verifyWizardData.amount||0).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2})+'万',ref:verifyWizardData.ref,status:'待验真',score:'—',time:'2026-07-30 10:17',tasks:0});
+  closeModal();render();toast('验真申请已提交，正在检查关联数据');
+}
+function startVerify(i){const r=DATA.verify[i];r.status='验真中';r.score='76';r.tasks=Math.max(r.tasks,2);closeModal();render();toast('自动核验已启动，异常项将生成人工任务')}
+function batchStartVerify(){DATA.verify.filter(x=>x.status==='待验真').forEach(x=>{x.status='验真中';x.score='待计算'});closeModal();render();toast('已批量启动自动核验')}
+function submitSupplement(i){if(i>=0&&DATA.verify[i]){DATA.verify[i].status='验真中';DATA.verify[i].tasks=Math.max(DATA.verify[i].tasks,1)}closeModal();render();toast(i>=0?'补充材料已提交，自动核验已重新启动':'补充材料通知已发送')}
+function createVerifyTask(i){const r=DATA.verify[i];DATA.verifyTasks.unshift({id:'RW20260730'+String(62+DATA.verifyTasks.length).padStart(4,'0'),verify:r.id,type:'人工复核',item:'人工创建的专项复核任务',enterprise:r.applicant,assignee:'李倩',deadline:'今日 18:00',status:'待复核'});r.tasks+=1;r.status='验真中';closeModal();render();toast('人工复核任务已创建')}
+function completeVerifyTask(i){const t=DATA.verifyTasks[i];if(t)t.status='已完成';const r=t?DATA.verify.find(x=>x.id===t.verify):null;if(r)r.tasks=Math.max(0,r.tasks-1);closeModal();render();toast('任务已完成，结论已回写验真单')}
+function submitVerifyReview(i){const r=DATA.verify[i];const c=document.getElementById('reviewConclusion')?.value||'基本可信';const s=document.getElementById('reviewScore')?.value||'86';r.status=(c==='可信'||c==='基本可信')?'已通过':c==='待补充核验'?'待补充':'存在风险';r.score=s;r.tasks=0;closeModal();render();toast('验真复核已提交，可生成验真报告')}
+function generateVerifyReport(i){const r=DATA.verify[i];const exists=DATA.reports.some(x=>x.verify===r.id);if(!exists)DATA.reports.unshift({id:'BG'+r.id.slice(2),verify:r.id,object:r.object,enterprise:r.applicant,amount:r.amount,conclusion:r.status==='存在风险'?'存在风险':'可信',score:r.score==='—'?'90':r.score,integrity:'94%',risk:r.status==='存在风险'?'2项':'0项',time:'2026-07-30 10:17'});closeModal();render();toast('验真报告已生成并完成电子签章')}
+function completeVerifyAction(msg){closeModal();render();toast(msg)}
+
+const forms={
+  auth:['可信数据授权','授权金融机构在限定目的、范围和期限内使用主体、合同、粮食批次、联运订单、仓单和结算数据。',['数据使用方','中国银行黑龙江省分行','使用目的','融资审批与贷后管理','授权期限','融资存续期']],
+  verifyCreate:['新建验真申请','选择需要验真的业务对象，系统自动关联可信空间、一粮一链和多式联运数据。',['验真对象类型','粮食购销合同','业务对象编号','HT-BF-2026-0718','申请企业','黑龙江北丰粮贸有限公司']],
+  financeCreate:['新建融资申请','关联真实合同、订单、在途货物、仓单或应收账款，并授权金融机构使用相关数据。',['融资产品','在途货物融资','金融机构','中国银行黑龙江省分行','申请金额（万元）','2000','融资期限','90天','关联合同','HT-BF-2026-0718','关联业务对象','LD20260726009']],
+  creditApplyCreate:['新建授信申请','提交授信额度、期限、用途并授权经营、交易、物流和结算数据。',['申请企业','吉林谷丰供应链有限公司','申请额度（万元）','4500','授信期限','12个月','授信类型','循环授信']],
+  pledgeCreate:['发起质押','关联融资业务和电子仓单，完成货物核验、估值、质押登记和货权冻结。',['融资编号','RZ202607280022','电子仓单','WHD20260722031','质押物价值（万元）','3760','质押金额（万元）','2400','质权人','农业银行黑龙江省分行']],
+  disposalCreate:['风险处置任务','配置处置措施、责任人、完成时间和通知对象。',['处置措施','冻结相关货权并现场盘点','责任人','王磊 / 风控经理','计划完成时间','2026-07-30 18:00','通知对象','融资企业+金融机构+仓储企业']],
+  assign:['任务分派','选择任务、处理人和要求完成时间。',['任务类型','业务审批/核验任务','处理人','李倩','完成时限','今日 18:00']],
+  reportShare:['验真报告授权共享','授权指定金融机构在限定期限和用途内查看验真报告。',['报告编号','BG202607290046','使用方','中国银行黑龙江省分行','使用目的','融资审批','授权期限','30天']],
+  limitAdjust:['授信额度调整','支持提额、降额、冻结、解冻、续期和终止。',['企业名称','辽宁港联物流有限公司','调整类型','解除部分冻结','调整金额（万元）','200','生效日期','2026-07-30']],
+  contractCreate:['生成融资合同','根据审批方案和产品模板生成融资合同及数据授权合约。',['融资编号','RZ202607290038','合同模板','订单融资标准合同','合同金额（万元）','1200','签署方式','电子签章']],
+  repaymentCreate:['登记还款','登记实际还款金额、资金流水和还款凭证。',['融资编号','RZ202607280022','还款本金（万元）','300','还款利息（万元）','6.8','资金流水号','PAY20260730018']],
+  ownershipCreate:['发起货权确认','由所有权人、控制方、保管方和金融机构进行多方确认。',['粮食批次','PL20260719006','所有权人','吉林谷丰供应链有限公司','当前控制方','长春兴隆保税库','确认类型','融资前货权确认']],
+  monitorPlan:['配置贷后监测计划','设置监测维度、频率、预警阈值和责任人。',['融资编号','RZ202607280022','监测频率','实时+每日汇总','责任人','王磊','覆盖率预警线','125%']],
+  institutionCreate:['新增金融机构','提交机构资质、服务区域、合作产品和联系人信息。',['机构名称','建设银行吉林省分行','机构类型','银行','服务区域','吉林省','联系人','李经理']],
+  productCreate:['新增金融产品','配置适用企业、额度、期限、利率、担保方式和所需数据。',['产品名称','采购贷款','金融机构','建设银行吉林省分行','最高额度（万元）','2000','期限','180天']],
+  agreementCreate:['新增合作协议','创建合作协议并发起电子签署。',['协议名称','供应链金融合作协议','合作机构','建设银行吉林省分行','协议类型','框架合作协议','有效期','12个月']],
+  abnormalCreate:['人工上报异常','登记人工发现的疑似虚假交易、重复融资、资金回流或货权异常。',['异常类型','疑似重复融资','关联企业','北大荒粮食集团','关联对象','WHD20260722031','风险等级','高风险']],
+  verifyRuleCreate:['新增验真规则','配置核验条件、数据来源、命中等级及自动处置方式。',['规则名称','仓单重复质押检查','核验分类','货物核验','数据来源','一粮一链+可信空间','风险等级','高风险']],
+  creditRecalc:['重新计算信用评分','选择企业和评分版本，重新读取经营、交易、物流、结算及风险数据。',['企业范围','全部存续授信企业','评分模型','企业信用模型 V2.3','数据截止时间','2026-07-30 10:20','生效方式','复核后生效']],
+  creditRuleCreate:['新增信用与授信规则','配置评价指标、权重、授信系数、适用等级和生效版本。',['规则类型','信用评价指标','规则名称','物流履约稳定性','指标权重','15%','适用范围','全部融资产品']],
+  receiptCreate:['新建电子仓单','关联入库批次、仓储合同、质检报告和货权确认，生成可信电子仓单。',['货主企业','吉林谷丰供应链有限公司','仓储企业','长春兴隆保税库','粮食批次','PL20260719006','入库数量','8,600吨']],
+  valuationCreate:['发起货物估值','选择粮食批次或仓单，设置市场价格来源和品质折价参数。',['估值对象','WHD20260722031','估值用途','仓单质押融资','价格来源','全国粮食交易中心参考价','估值基准日','2026-07-30']],
+  ownershipAbnormalCreate:['人工上报货权异常','登记仓单、库存、质押、出库或货权变更异常。',['异常类型','库存异常减少','关联对象','WHD20260722031','企业','北大荒粮食集团','风险等级','高风险']],
+  postReportCreate:['生成贷后检查报告','选择融资业务和检查类型，自动汇聚监测数据并生成检查任务。',['融资编号','RZ202607280022','检查类型','定期检查','检查主题','资产、库存与货权检查','检查人','王磊']],
+  reminderCreate:['批量发送提醒','选择提醒对象、通知渠道、模板和升级策略。',['提醒范围','7日内到期融资','通知渠道','站内信+短信+邮件','提醒模板','融资到期提醒','未处理升级','24小时后升级']],
+  businessRuleCreate:['新增业务规则','配置规则条件、执行方式、数据来源、适用产品和生效时间。',['规则分类','融资审批规则','规则名称','融资金额不得超过可用授信','执行方式','自动拦截','适用产品','全部融资产品']],
+  registrationPlatformCreate:['新增登记平台','配置平台档案、对接模式、支持业务、授权信息和办理规则。',['平台名称','其他仓单登记平台','平台类型','仓单/货权登记','对接模式','人工办理+凭证回填','当前状态','测试中']],
+  pricingCreate:['新增定价与质押配置','配置基准利率、风险加点、额度上限、质押率或覆盖率预警。',['配置类型','粮食品种质押率','适用品种','玉米二等','最高质押率','65%','正常覆盖率','140%']]
+};
+
+const ACTION_WORKFLOWS={
+ report:{name:'验真报告授权',steps:['报告生成','电子签章','授权申请','机构确认','授权生效'],next:'提交授权',fields:[['使用机构','中国银行黑龙江省分行'],['使用目的','融资审批'],['授权期限','30天'],['下载权限','仅在线查看']]},
+ abnormal:{name:'异常交易处置',steps:['异常识别','风险研判','任务分派','处置执行','复核关闭'],next:'提交处置',fields:[['处置结论','确认风险'],['处置措施','暂停关联融资并人工核查'],['责任人','王磊'],['完成时限','今日18:00']]},
+ rule:{name:'验真规则维护',steps:['规则编辑','模拟校验','影响评估','复核发布','运行监测'],next:'发布规则',fields:[['规则状态','启用'],['执行方式','自动校验'],['命中措施','生成人工复核任务'],['生效时间','立即生效']]},
+ credit:{name:'企业信用更新',steps:['数据同步','指标计算','异常复核','评分确认','结果生效'],next:'确认更新',fields:[['评分版本','企业信用模型 V2.3'],['数据范围','近12个月'],['更新原因','周期性重评'],['生效方式','审核后生效']]},
+ creditApply:{name:'授信申请处理',steps:['申请提交','材料校验','信用评估','授信审批','额度生效'],next:'提交处理',fields:[['处理动作','撤回申请'],['撤回原因','融资计划调整'],['材料状态','已齐全'],['通知方式','站内信+短信']]},
+ creditApprove:{name:'授信审批',steps:['准入核验','信用评估','额度测算','风险复核','审批生效'],next:'通过并流转',fields:[['建议额度','¥ 4,200万'],['授信期限','12个月'],['额度类型','循环额度'],['附加条件','回款进入监管账户']]},
+ limit:{name:'授信额度调整',steps:['调整申请','额度校验','风险评估','审批确认','额度生效'],next:'确认调整',fields:[['调整类型','提额'],['调整金额','¥ 500万'],['生效日期','2026-07-30'],['调整原因','真实交易规模增长']]},
+ creditRule:{name:'信用授信规则维护',steps:['规则编辑','模型模拟','结果对比','审批发布','版本生效'],next:'发布新版本',fields:[['规则版本','V2.4'],['适用范围','全部企业'],['生效时间','2026-08-01'],['历史数据重算','否']]},
+ finance:{name:'融资业务办理',steps:['融资申请','交易验真','授信校验','风险审批','合同放款','贷后监管'],next:'提交下一节点',fields:[['审批结论','通过'],['审批金额','¥ 2,000万'],['融资期限','90天'],['放款条件','货权冻结+监管账户']]},
+ contract:{name:'合同与放款办理',steps:['合同生成','条款确认','电子签署','条件核验','放款审批','放款完成'],next:'确认并流转',fields:[['办理节点','合同签署'],['签署方式','电子签章'],['放款方式','一次性放款'],['监管账户','已确认']]},
+ repayment:{name:'还款与结清办理',steps:['还款计划','资金入账','本金利息核销','解押处理','业务结清'],next:'确认入账',fields:[['还款类型','正常还款'],['还款本金','¥ 300万'],['还款利息','¥ 6.8万'],['额度恢复','还款后自动恢复']]},
+ ownership:{name:'货权确认与变更',steps:['申请发起','凭证核验','多方确认','货权变更','可信留痕'],next:'提交确认',fields:[['办理类型','货权确认'],['当前所有权人','吉林谷丰供应链有限公司'],['当前控制方','长春兴隆保税库'],['确认方式','多方电子签章']]},
+ receipt:{name:'电子仓单办理',steps:['入库确认','仓单生成','仓单验真','流转/质押','注销归档'],next:'提交办理',fields:[['办理类型','仓单核验'],['盘点方式','线上数据+现场抽查'],['是否允许拆分','允许'],['办理结果','核验通过']]},
+ pledge:{name:'质押监管办理',steps:['质押申请','货物估值','质押登记','货权冻结','动态监管','解押完成'],next:'确认办理',fields:[['办理节点','质押登记'],['质押金额','¥ 2,400万'],['质押率','63.8%'],['冻结范围','对应仓单全部货权']]},
+ valuation:{name:'货物重新估值',steps:['数据采集','价格匹配','品质折价','估值复核','结果生效'],next:'确认估值',fields:[['市场参考价','¥ 3,133/吨'],['品质折价','1.8%'],['处置折价','8%'],['估值有效期','7天']]},
+ ownershipAbnormal:{name:'货权异常处置',steps:['异常发现','限制操作','现场核验','责任认定','处置关闭'],next:'提交处置',fields:[['临时措施','冻结仓单与出库权限'],['核验方式','现场盘点'],['责任人','王磊'],['处置时限','4小时']]},
+ post:{name:'贷后监测处理',steps:['数据监测','偏差识别','风险研判','整改跟踪','结果归档'],next:'提交检查结果',fields:[['监测结论','正常'],['异常项','0项'],['下次检查','2026-08-06'],['责任人','李倩']]},
+ alert:{name:'风险预警处置',steps:['预警生成','风险研判','处置分派','执行反馈','复核关闭'],next:'创建处置任务',fields:[['风险结论','确认预警'],['处置措施','冻结货权并现场盘点'],['责任人','王磊'],['完成时限','今日18:00']]},
+ disposal:{name:'处置任务跟进',steps:['任务创建','措施执行','证据上传','效果复核','任务关闭'],next:'提交反馈',fields:[['执行进度','60%'],['执行结果','现场盘点中'],['后续措施','补充质押物'],['预计完成','今日18:00']]},
+ postReport:{name:'贷后报告复核',steps:['数据汇聚','报告生成','人工复核','整改确认','归档共享'],next:'提交复核',fields:[['检查结论','重点关注'],['整改要求','3日内补充库存盘点报告'],['复核人','王磊'],['报告状态','复核后归档']]},
+ reminder:{name:'到期提醒处理',steps:['到期识别','提醒发送','回执确认','催收升级','风险转办'],next:'发送提醒',fields:[['提醒渠道','站内信+短信+邮件'],['提醒模板','融资到期提醒'],['下次提醒','24小时后'],['逾期升级','转风险处置']]},
+ institution:{name:'金融机构管理',steps:['入驻申请','资质审核','协议签署','产品接入','运营评价'],next:'提交审核',fields:[['管理动作','资质复核'],['合作状态','正常合作'],['服务区域','东北三省'],['复核有效期','12个月']]},
+ productConfig:{name:'金融产品配置',steps:['产品设计','规则配置','联调测试','机构审核','发布上线'],next:'保存并发布',fields:[['产品状态','已上线'],['最高额度','¥ 3,000万'],['参考利率','3.65%起'],['适用企业','粮食贸易商']]},
+ businessRule:{name:'业务规则维护',steps:['规则编辑','模拟运行','影响评估','审批发布','监测优化'],next:'发布规则',fields:[['执行方式','自动拦截'],['适用范围','全部融资产品'],['生效时间','立即生效'],['回滚版本','保留上一版本']]},
+ pricing:{name:'定价与质押配置',steps:['参数配置','历史回测','风险校验','审批发布','定期重评'],next:'发布配置',fields:[['配置类型','融资利率'],['基准值','3.65%'],['风险加点','0.30%'],['生效日期','2026-08-01']]},
+ registrationPlatform:{name:'登记平台接入管理',steps:['平台建档','授权配置','数据映射','联调测试','规则发布','运行监测'],next:'保存配置',fields:[['对接模式','接口+人工办理'],['认证方式','数字证书/机构授权'],['状态回调','启用'],['异常处理','自动重试+人工复核']]},
+ agreement:{name:'合作协议管理',steps:['协议起草','法务审核','双方确认','电子签署','履约/续签'],next:'提交签署',fields:[['办理类型','协议续签'],['有效期限','12个月'],['签署方式','电子签章'],['到期提醒','提前30天']]}
+};
+const CREATE_META={
+ auth:{steps:['选择数据','设置范围','确认用途','数字合约','授权生效'],materials:['主体认证信息','交易合同与订单','粮食批次/物流事件','仓单/回款数据']},
+ financeCreate:{steps:['选择产品','关联业务','数据授权','融资测算','提交申请'],materials:['交易验真报告','授信额度证明','合同/订单','货物或应收资产凭证']},
+ creditApplyCreate:{steps:['填写申请','授权数据','信用评估','提交审批','额度生效'],materials:['企业资质','近12月交易数据','结算与回款记录','历史融资记录']},
+ pledgeCreate:{steps:['关联融资','核验仓单','货物估值','质押登记','货权冻结'],materials:['电子仓单','质检报告','库存盘点记录','货权确认凭证']},
+ disposalCreate:{steps:['选择预警','制定措施','分派任务','执行反馈','复核关闭'],materials:['风险证据','关联融资资料','现场核验材料','处置审批意见']},
+ assign:{steps:['选择任务','设置人员','配置时限','确认通知','任务生效'],materials:['任务清单','人员权限','处理要求']},
+ reportShare:{steps:['选择报告','指定机构','设置权限','数字授权','使用审计'],materials:['验真报告','使用方资质','数据授权协议']},
+ limitAdjust:{steps:['调整申请','额度校验','风险评估','审批确认','额度生效'],materials:['授信协议','额度使用明细','最新信用评分']},
+ contractCreate:{steps:['选择融资','生成合同','确认条款','电子签署','放款准备'],materials:['融资审批单','放款条件清单','数据授权合约','担保/质押凭证']},
+ repaymentCreate:{steps:['选择融资','核对计划','登记流水','核销本息','更新余额'],materials:['银行回单','还款计划','利息计算单']},
+ ownershipCreate:{steps:['选择批次','核验凭证','多方确认','写入货权链','结果生效'],materials:['购销合同','入库凭证','仓单/运单','货权声明']},
+ monitorPlan:{steps:['选择融资','配置指标','设置阈值','分派责任','计划启用'],materials:['融资合同','监管资产清单','风险策略']},
+ institutionCreate:{steps:['机构填报','资质核验','合作评审','协议签署','机构启用'],materials:['金融许可证','营业执照','授权委托书','合作方案']},
+ productCreate:{steps:['产品设计','业务规则','数据要求','联调测试','审核发布'],materials:['产品说明书','审批规则','定价方案','所需数据清单']},
+ agreementCreate:{steps:['协议起草','条款审核','双方确认','电子签署','协议生效'],materials:['协议正文','机构授权文件','审批意见']},
+ abnormalCreate:{steps:['异常登记','证据关联','风险分级','任务分派','处置跟踪'],materials:['异常证据','关联交易/融资','数据审计记录']},
+ verifyRuleCreate:{steps:['规则设计','数据映射','模拟校验','审批发布','命中监测'],materials:['规则说明','数据字段映射','测试样本']},
+ creditRecalc:{steps:['选择范围','数据同步','模型计算','异常复核','结果生效'],materials:['评分模型版本','数据质量报告','变更说明']},
+ creditRuleCreate:{steps:['指标配置','权重校验','历史回测','审批发布','版本管理'],materials:['指标定义','回测报告','模型审批单']},
+ receiptCreate:{steps:['入库确认','货权核验','仓单生成','可信签章','仓单生效'],materials:['入库单','质检报告','仓储合同','货权确认书']},
+ valuationCreate:{steps:['选择资产','市场定价','品质折价','人工复核','估值生效'],materials:['仓单/批次','质检报告','市场价格证明']},
+ ownershipAbnormalCreate:{steps:['异常登记','限制操作','风险研判','处置分派','跟踪关闭'],materials:['异常证据','货权链记录','库存/出库记录']},
+ postReportCreate:{steps:['选择融资','生成任务','汇聚数据','检查复核','报告归档'],materials:['贷后监测数据','现场检查资料','风险处置记录']},
+ reminderCreate:{steps:['选择对象','配置渠道','设置模板','发送提醒','回执跟踪'],materials:['到期清单','联系人信息','提醒模板']},
+ businessRuleCreate:{steps:['规则设计','模拟运行','影响评估','审批发布','运行监测'],materials:['规则说明','测试结果','影响评估报告']},
+ registrationPlatformCreate:{steps:['平台建档','合作授权','接口/人工配置','数据映射','规则发布'],materials:['平台合作协议','机构授权文件','接口/办理说明','数据字段映射']},
+ pricingCreate:{steps:['参数配置','历史回测','风险校验','审批发布','定期重评'],materials:['市场价格数据','历史损失率','定价审批单']}
+};
+function workflowFieldHtml(fields){return `<div class="form">${fields.map((x,i)=>`<div class="fi"><label class="fl required">${x[0]}</label>${i%3===1?`<select class="formc"><option>${x[1]}</option><option>待确认</option><option>其他</option></select>`:`<input class="formc" value="${x[1]}">`}</div>`).join('')}<div class="fi full"><label class="fl">办理意见 / 补充说明</label><textarea class="formc area" placeholder="请填写办理依据、风险判断及下一步要求"></textarea></div></div>`}
+function workflowMaterials(items){return `<div class="material-list">${items.map((x,i)=>`<div class="material-row"><div class="file-ico">${i+1}</div><div class="file-main"><div class="file-name">${x}</div><div class="file-meta">支持从可信数据空间关联或上传补充材料</div></div>${tag(i<2?'已关联':'待确认')}</div>`).join('')}</div>`}
+function recordSummary(type,i){
+ let r=null;if(['report'].includes(type))r=DATA.reports[i];else if(['abnormal'].includes(type))r=DATA.abnormal[i];else if(['rule'].includes(type))r=DATA.verifyRules[i];else if(['credit'].includes(type))r=DATA.credit[i];else if(['creditApply','creditApprove'].includes(type))r=DATA.creditApply[i];else if(type==='limit')r=DATA.creditLimits[i];else if(['finance','contract','repayment','post'].includes(type))r=DATA.finance[i]||DATA.finance[0];else if(['receipt','valuation'].includes(type))r=DATA.receipts[i];else if(type==='ownership')r=DATA.ownership[i];else if(type==='pledge')r=DATA.pledge[i];else if(['alert','disposal'].includes(type))r=DATA.alerts[i]||DATA.alerts[0];else if(type==='institution')r=DATA.institutions[i];else if(type==='registrationPlatform')r=DATA.registrationPlatforms[i];
+ const vals=r?Object.entries(r).slice(0,9).map(([k,v])=>[({id:'业务编号',name:'名称',enterprise:'企业',applicant:'申请企业',object:'业务对象',status:'当前状态',amount:'业务金额',owner:'所有权人',type:'业务类型',time:'时间',product:'产品',institution:'金融机构',agreement:'协议编号',batch:'粮食批次',receipt:'电子仓单'}[k]||k),String(v)]):[['业务页面',names[current]||'金融增值服务'],['记录序号',String(i+1)],['当前状态','处理中'],['数据来源','可信空间 / 多式联运 / 一粮一链']];
+ return vals;
+}
+function openBusinessAction(type,i,label){
+ const c=ACTION_WORKFLOWS[type]||{name:(names[current]||'业务')+'办理',steps:['申请','校验','办理','复核','完成'],next:'确认提交',fields:[['办理动作',label],['责任人','当前用户'],['完成时限','今日18:00'],['通知对象','相关参与方']]};
+ const isApprove=/审批|审核|复核/.test(label+c.name);const mats=['业务申请及基础资料','可信数据授权记录','关联交易/物流/货权数据','历史审批与操作记录'];
+ document.querySelector('#modalMask .modal').classList.add('xwide');
+ document.getElementById('modalTitle').textContent=c.name+' · '+label;
+ document.getElementById('modalBody').innerHTML=`<div class="notice">本操作将形成可审计的业务记录，并按流程自动推送至下一责任人。</div>${steps(c.steps,Math.min(3,c.steps.length-1))}<div class="workflow-layout"><div><h3 class="block-title">业务摘要</h3><div class="details">${details(recordSummary(type,i))}</div><h3 class="block-title">办理信息</h3>${workflowFieldHtml(c.fields)}${isApprove?`<h3 class="block-title">审批结论</h3><div class="decision-box"><label class="decision"><input type="radio" name="decision" checked>通过并流转</label><label class="decision"><input type="radio" name="decision">退回补充</label><label class="decision"><input type="radio" name="decision">驳回/终止</label></div>`:''}<h3 class="block-title">关联材料</h3>${workflowMaterials(mats)}</div><div class="workflow-side"><h4>流转规则</h4><ul>${c.steps.map((x,j)=>`<li>${j+1}. ${x}</li>`).join('')}</ul><h4 style="margin-top:15px">提交后动作</h4><div class="flow-note"><span class="flow-num">1</span><div>写入操作记录和审计日志</div></div><div class="flow-note"><span class="flow-num">2</span><div>更新业务状态及待办任务</div></div><div class="flow-note"><span class="flow-num">3</span><div>通知企业、金融机构或监管责任人</div></div></div></div>`;
+ document.getElementById('modalFoot').innerHTML=`<button class="btn" onclick="closeModal()">取消</button><button class="btn" onclick="toast('办理草稿已保存')">保存草稿</button>${isApprove?`<button class="btn danger" onclick="completeBusinessAction('${type}',${i},'退回补充')">退回补充</button>`:''}<button class="btn primary" onclick="completeBusinessAction('${type}',${i},'${c.next}')">${c.next}</button>`;
+ document.getElementById('modalMask').classList.add('show');
+}
+function completeBusinessAction(type,i,msg){
+ const maps={registrationPlatform:DATA.registrationPlatforms,creditApply:DATA.creditApply,creditApprove:DATA.creditApply,limit:DATA.creditLimits,finance:DATA.finance,receipt:DATA.receipts,ownership:DATA.ownership,pledge:DATA.pledge,alert:DATA.alerts,disposal:DATA.alerts,institution:DATA.institutions,abnormal:DATA.abnormal};const arr=maps[type];if(arr&&arr[i]&&'status'in arr[i])arr[i].status=msg.includes('退回')?'待补充':msg.includes('关闭')?'已关闭':msg.includes('提醒')?'已通知':'处理中';closeModal();render();toast(msg+'，业务已流转至下一节点')
+}
+function openCreateWorkflow(type){
+ const f=forms[type]||formByType(type),meta=CREATE_META[type]||{steps:['信息填写','数据校验','提交审核','业务办理','完成'],materials:['业务基础资料','关联可信数据','审批依据']};
+ document.querySelector('#modalMask .modal').classList.add('xwide');document.getElementById('modalTitle').textContent=f[0];
+ const fields=[];for(let i=0;i<(f[2]||[]).length;i+=2)fields.push([f[2][i],f[2][i+1]]);
+ document.getElementById('modalBody').innerHTML=`<div class="notice">${f[1]}</div>${steps(meta.steps,1)}<div class="workflow-layout"><div><h3 class="block-title">申请/配置信息</h3>${workflowFieldHtml(fields)}<h3 class="block-title">关联材料与可信数据</h3>${workflowMaterials(meta.materials)}<div class="notice warn" style="margin-top:12px"><label><input type="checkbox" checked> 已确认数据使用目的、授权范围和业务真实性，提交后生成业务编号与待办任务。</label></div></div><div class="workflow-side"><h4>完整业务流程</h4><ul>${meta.steps.map((x,j)=>`<li>${j+1}. ${x}</li>`).join('')}</ul><h4 style="margin-top:15px">提交校验</h4><div class="flow-note"><span class="flow-num">✓</span><div>必填信息完整性校验</div></div><div class="flow-note"><span class="flow-num">✓</span><div>关联对象真实性和唯一性校验</div></div><div class="flow-note"><span class="flow-num">✓</span><div>数据授权与操作权限校验</div></div></div></div>`;
+ document.getElementById('modalFoot').innerHTML=`<button class="btn" onclick="closeModal()">取消</button><button class="btn" onclick="toast('草稿已保存，可在待办与进度中继续办理')">保存草稿</button><button class="btn primary" onclick="submitWorkflow('${type}','${f[0]}')">确认提交</button>`;document.getElementById('modalMask').classList.add('show');
+}
+function submitWorkflow(type,title){closeModal();render();toast(title+'已提交，已生成业务编号和下一节点待办')}
+function buildGenericBusinessDetail(type,i){
+ const c=ACTION_WORKFLOWS[type]||{name:names[current]||'业务详情',steps:['申请','校验','办理','复核','完成']};const rid='g'+type+i;
+ return {title:c.name+'详情',body:`<div class="notice">页面汇总业务信息、流程状态、关联可信数据、材料及审计记录。</div>${steps(c.steps,Math.min(3,c.steps.length-1))}<div class="drawer-tabs"><button class="drawer-tab on" onclick="switchDrawerTab(this,'${rid}base')">基础信息</button><button class="drawer-tab" onclick="switchDrawerTab(this,'${rid}flow')">流程进度</button><button class="drawer-tab" onclick="switchDrawerTab(this,'${rid}data')">关联数据</button><button class="drawer-tab" onclick="switchDrawerTab(this,'${rid}log')">操作记录</button></div><div class="drawer-pane on" id="${rid}base"><div class="details">${details(recordSummary(type,i))}</div><h3 class="block-title">业务说明</h3><div class="notice">该业务已关联主体、合同、粮食批次、物流事件、货权或结算数据，并保留完整数据使用审计。</div></div><div class="drawer-pane" id="${rid}flow"><div class="quick">${c.steps.map((x,j)=>listCard(x,j<3?'节点已处理并留存操作凭证':'等待上一节点完成后自动流转','节点 '+(j+1),j<3?'已完成':'待处理',String(j+1))).join('')}</div></div><div class="drawer-pane" id="${rid}data">${workflowMaterials(['主体与资质数据','合同/订单及电子签章','粮食批次与物流事件','货权/仓单/回款凭证'])}</div><div class="drawer-pane" id="${rid}log"><div class="audit-list">${[['10:02','系统','完成关联数据完整性检查'],['10:08','当前用户','提交业务办理意见'],['10:12','系统','生成下一节点待办并发送通知']].map(x=>`<div class="audit-item"><div class="audit-time">${x[0]}</div><div class="audit-main"><b>${x[1]}</b>${x[2]}</div></div>`).join('')}</div></div>`,foot:`<button class="btn" onclick="closeDrawer()">关闭</button><button class="btn" onclick="toast('业务资料已导出')">导出资料</button><button class="btn primary" onclick="closeDrawer();openBusinessAction('${type}',${i},'办理')">继续办理</button>`};
+}
+function openRegistrationModal(action,i=0){
+  const rec=DATA.registrationRecords[i]||DATA.registrationRecords[0];
+  const platform=DATA.registrationPlatforms[i]||DATA.registrationPlatforms[0];
+  const meta={
+    queryZcd:['查询中仓登','查询仓库、存货、货权、仓单及质押状态，自动与平台数据进行一致性比对。',['查询对象','WHD20260722031'],['查询维度','仓单+货权+质押状态'],['查询用途','融资审批/交易验真'],['结果处理','异常自动生成人工复核任务']],
+    queryZd:['查询中登网','按融资主体、担保财产描述及关联资产查询在先担保，识别登记冲突。',['查询主体','黑龙江北丰粮贸有限公司'],['担保财产描述','8,600吨玉米及关联运输/仓单资产'],['查询用途','融资前查重'],['查询结果','无冲突后允许继续审批']],
+    zcdRegister:['中仓登仓单登记','提交仓单、货权、仓库及存货数据；接口不可用时生成办理数据包并回填凭证。',['仓单编号','WHD20260725018'],['登记类型','电子仓单登记'],['登记数量','8,600吨'],['办理方式','合作接口/人工回填']],
+    zcdOwnership:['中仓登货权登记','登记或更新存货人、实际控制方、仓储方及货权状态。',['粮食批次','PL20260725003'],['登记货主','黑龙江北丰粮贸有限公司'],['当前控制方','沈阳中谷物流有限公司'],['登记动作','仓内转在途变更']],
+    zcdPledge:['中仓登质押状态更新','将审批通过的质押关系同步至仓单登记状态并保存登记凭证。',['质押编号','ZY20260725002'],['仓单编号','WHD20260725018'],['质权人','中国银行黑龙江省分行'],['质押金额','¥ 2,000万']],
+    zdRegister:['办理中登网担保登记','生成担保登记办理信息，完成后回填登记编号与证明并核验一致性。',['融资编号','RZ202607300012'],['登记类型','存货/在途资产担保登记'],['担保权人','中国银行黑龙江省分行'],['登记金额','¥ 2,000万']],
+    cancel:['解押与登记注销','贷款结清后依次完成中登网变更/注销、中仓登解除质押和平台资产释放。',['融资编号','RZ202607270017'],['中登网登记号','ZD202607270017'],['中仓登仓单号','ZCD-HLJ-20260716007'],['办理类型','全部解押并注销']],
+    consistency:['登记一致性核验','交叉比对平台、中仓登和中登网的数量、持有人、质权人及状态。',['核验范围','存续融资全部资产'],['比对维度','数量/主体/质权人/状态'],['异常阈值','数量差异>0或状态冲突'],['处置方式','生成预警并限制放款/出库']],
+    syncAll:['全量同步登记状态','同步中仓登仓单/货权/质押状态和中登网登记/变更/注销状态。',['同步范围','全部存续融资'],['同步方式','增量优先+异常全量'],['失败重试','3次'],['同步后动作','执行一致性核验']],
+    syncZcd:['同步中仓登状态','批量刷新仓单、货权、质押和注销状态。',['同步对象','全部有效电子仓单'],['最近同步','2026-07-30 09:18'],['异常处理','自动进入登记异常'],['通知对象','货权管理员']],
+    batchQuery:['批量外部登记查询','对选中授信或融资业务执行中仓登资产核验及中登网在先担保查询。',['查询范围','当前列表选中业务'],['查询平台','中仓登+中登网'],['结果有效期','当日'],['异常处理','阻断并转人工复核']],
+    platformConfig:['登记平台配置','维护合作模式、环境、认证、回调/回填及状态映射。',['平台名称',platform.name],['对接模式',platform.mode],['支持业务',platform.business],['当前状态',platform.status]],
+    platformTest:['登记平台连接/办理校验','验证账号授权、证书、接口或人工办理流程是否可用。',['平台名称',platform.name],['测试类型','认证+查询+回调'],['测试环境','测试/生产只读'],['预期结果','全部通过']],
+    record:['登记办理记录','查看登记请求、返回结果、凭证、操作人和审计日志。',['记录编号',rec.id],['登记平台',rec.platform],['关联对象',rec.object],['登记编号',rec.regNo]],
+    mapping:['数据映射配置','维护平台字段与外部登记字段的映射、单位转换和状态机。',['映射对象','主体/资产/数量/状态'],['版本','V1.3'],['生效方式','测试通过后发布'],['回滚版本','V1.2']],
+    rule:['登记规则配置','配置产品和流程节点的查询、登记、变更、注销与阻断规则。',['规则范围','融资全生命周期'],['执行方式','自动校验'],['失败处理','阻断或人工复核'],['生效时间','立即生效']],
+    exception:['登记异常处置','核对登记凭证和平台数据，形成重试、变更、人工核验或风险处置结论。',['异常类型','状态/数量/主体不一致'],['风险等级','高风险'],['临时措施','限制放款或出库'],['责任人','王磊']]
+  };
+  const m=meta[action]||meta.record;
+  document.querySelector('#modalMask .modal').classList.add('xwide');
+  document.getElementById('modalTitle').textContent=m[0];
+  const fields=m.slice(2).map(x=>`<div class="fi"><label class="fl">${x[0]}</label><input class="formc" value="${x[1]}"></div>`).join('');
+  document.getElementById('modalBody').innerHTML=`<div class="notice">${m[1]}</div>${steps(['业务选择','数据校验','外部办理/查询','结果核验','状态回写','审计归档'],2)}<div class="workflow-layout"><div><h3 class="block-title">办理信息</h3><div class="form">${fields}<div class="fi full"><label class="fl">查询/登记证明</label><div class="upload-box" onclick="toast('已选择登记查询证明.pdf')"><b>上传或关联登记凭证</b>支持接口返回、PDF/OFD证明或人工办理回填</div></div><div class="fi full"><label class="fl">办理意见</label><textarea class="formc area">系统将记录查询条件、登记结果、操作人员及完整审计日志。</textarea></div></div><h3 class="block-title">关键校验</h3>${workflowMaterials(['融资资产唯一标识与粮食批次关系','中仓登仓单/货权/质押状态','中登网在先查询/登记证明','平台资产占用与冻结状态'])}</div><div class="workflow-side"><h4>业务控制</h4><ul><li>查询或登记失败时不得静默放行</li><li>登记状态不一致自动生成风险预警</li><li>放款前必须满足产品配置的登记条件</li><li>结清后完成解押、注销和资产释放</li></ul><h4 style="margin-top:15px">办理模式</h4><div class="flow-note"><span class="flow-num">A</span><div>正式接口：自动提交并回调状态</div></div><div class="flow-note"><span class="flow-num">B</span><div>人工模式：生成数据包、回填编号和凭证</div></div></div></div>`;
+  document.getElementById('modalFoot').innerHTML=`<button class="btn" onclick="closeModal()">取消</button><button class="btn" onclick="toast('办理草稿和查询条件已保存')">保存草稿</button><button class="btn primary" onclick="closeModal();render();toast('${m[0]}已提交，结果将回写业务状态')">确认办理</button>`;
+  document.getElementById('modalMask').classList.add('show');
+}
+
+function openModal(type){
+  if(type==='verifyCreate'){openVerifyModal('create');return;}
+  if(type==='help'){
+    document.querySelector('#modalMask .modal').classList.add('wide');
+    document.getElementById('modalTitle').textContent='页面操作说明';
+    document.getElementById('modalBody').innerHTML=`<div class="notice">本原型覆盖31个二级页面，所有核心业务均按照“申请/创建—数据校验—审批办理—结果生效—审计留痕”组织。</div><div class="quick">${listCard('详情抽屉','查看业务基础信息、流程进度、关联可信数据和操作记录。','适用于全部列表业务','可查看','1')}${listCard('办理弹窗','填写办理信息、审批结论、关联材料并流转到下一节点。','支持通过、退回、驳回和保存草稿','可操作','2')}${listCard('创建弹窗','按完整流程填写申请或配置，并生成业务编号和待办任务。','数据授权和材料完整性同步校验','可提交','3')}</div>`;
+    document.getElementById('modalFoot').innerHTML='<button class="btn primary" onclick="closeModal()">知道了</button>';
+    document.getElementById('modalMask').classList.add('show');return;
+  }
+  openCreateWorkflow(type);
+}
+
+function formByType(type){const title=(names[current]||'业务操作');if(type==='help')return ['功能说明','本原型按7个一级菜单、31个融合后的二级页面组织，验真任务已合并进交易验真，其他页面以页签承载完整业务流程。',[]];return [title,'请填写业务信息。提交后将形成待办任务并记录操作审计。',['业务名称',title,'业务状态','启用','责任人','当前用户']]}
+function submit(t){closeModal();toast(t+'已提交')}
+function closeModal(){document.getElementById('modalMask').classList.remove('show');document.querySelector('#modalMask .modal').classList.remove('wide','xwide')}
+function closeDrawer(){document.getElementById('drawerMask').classList.remove('show')}
+function maskClose(e,t){if(e.target===e.currentTarget)(t==='modal'?closeModal():closeDrawer())}
+function toast(s){let t=document.getElementById('toast');t.textContent=s;t.classList.add('show');clearTimeout(window.tt);window.tt=setTimeout(()=>t.classList.remove('show'),1800)}
+function refresh(){render();toast('页面数据已刷新')}
+function render(){
+  const pages={dashboard,todo_progress:todoProgress,verify_center:verifyCenter,verify_report:verifyReport,abnormal_rules:abnormalRules,enterprise_credit:enterpriseCredit,credit_apply:creditApply,credit_approve:creditApprove,credit_limit:creditLimit,credit_rules:creditRules,finance_products:financeProducts,finance_apply:financeApply,finance_approve:financeApprove,contract_disburse:contractDisburse,repayment_settlement:repaymentSettlement,finance_ledger:financeLedger,ownership_records:ownershipRecords,warehouse_receipt:warehouseReceipt,pledge_supervision:pledgeSupervision,valuation,ownership_abnormal:ownershipAbnormal,post_monitor:postMonitor,risk_center:riskCenter,post_report:postReport,maturity_reminder:maturityReminder,institutions_page:institutionsPage,product_config:productConfig,registration_platforms:registrationPlatforms,rules_config:rulesConfig,pricing_pledge:pricingPledge,agreements};
+  document.getElementById('content').innerHTML=(pages[current]||dashboard)();
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeDrawer()}});
+function initApplication(){
+  try{
+    buildMenu();
+    render();
+  }catch(err){
+    console.error('页面初始化失败：',err);
+    const menu=document.getElementById('menu');
+    const content=document.getElementById('content');
+    if(menu) menu.innerHTML='<div style="padding:14px;color:#6f7890;font-size:13px">金融增值服务</div>';
+    if(content) content.innerHTML='<div class="card" style="padding:24px"><h2 style="margin:0 0 10px">页面加载失败</h2><p style="color:#6f7890;line-height:1.8">请使用最新版 Chrome 或 Edge 打开本地 HTML 文件。错误信息：'+String(err.message||err)+'</p></div>';
+  }
+}
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',initApplication,{once:true});
+}else{
+  initApplication();
+}
+
+</script>
+</body>
+</html>

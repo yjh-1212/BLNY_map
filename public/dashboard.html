@@ -252,10 +252,6 @@
             text-align: right;
         }
 
-        .empty-app {
-            height: calc(100vh - var(--topbar-height));
-        }
-
         .dashboard {
             height: calc(100vh - var(--topbar-height));
             padding: 12px;
@@ -696,7 +692,6 @@
             .platform-tab.primary { grid-column: 1 / -1; grid-row: 1; height: 52px; margin-inline: 0; }
             .platform-tab.primary strong { font-size: 16px; }
             .topbar-meta { display: none; }
-            .empty-app { min-height: calc(100vh - 128px); }
             .dashboard { height: auto; grid-template-columns: 1fr; }
             .side-panel { overflow: visible; }
             .map-shell { min-height: 720px; order: -1; }
@@ -790,7 +785,9 @@
         </div>
     </header>
 
-    <main id="empty-dashboard" class="empty-app hidden" aria-label="待建设功能"></main>
+    <main id="elements-dashboard" class="intermodal-frame-app hidden" aria-label="供应链金融与交易可信服务">
+        <iframe id="elements-frame" class="intermodal-frame" data-src="供应链增值.html" title="供应链金融与交易可信服务"></iframe>
+    </main>
 
     <main id="overview-dashboard" class="dashboard">
         <aside class="side-panel producer-panel" aria-label="主产区数据">
@@ -1343,7 +1340,7 @@
             const passportView = document.getElementById('passport-dashboard');
             const intermodalView = document.getElementById('intermodal-dashboard');
             const trustedView = document.getElementById('trusted-dashboard');
-            const emptyView = document.getElementById('empty-dashboard');
+            const elementsView = document.getElementById('elements-dashboard');
             const modeTabs = Array.from(document.querySelectorAll('.mode-tab'));
 
             function switchView(view) {
@@ -1351,14 +1348,14 @@
                 const isPassport = view === 'passport';
                 const isIntermodal = view === 'intermodal';
                 const isTrusted = view === 'trusted';
-                const isEmpty = view === 'elements';
+                const isElements = view === 'elements';
                 overview.classList.toggle('hidden', !isOverview);
                 passportView.classList.toggle('hidden', !isPassport);
                 intermodalView.classList.toggle('hidden', !isIntermodal);
                 trustedView.classList.toggle('hidden', !isTrusted);
-                emptyView.classList.toggle('hidden', !isEmpty);
-                if (isPassport || isIntermodal || isTrusted) {
-                    const frameId = isPassport ? 'passport-frame' : isIntermodal ? 'intermodal-frame' : 'trusted-frame';
+                elementsView.classList.toggle('hidden', !isElements);
+                if (isPassport || isIntermodal || isTrusted || isElements) {
+                    const frameId = isPassport ? 'passport-frame' : isIntermodal ? 'intermodal-frame' : isElements ? 'elements-frame' : 'trusted-frame';
                     const frame = document.getElementById(frameId);
                     if (frame && !frame.src && frame.dataset.src) frame.src = frame.dataset.src;
                 }
