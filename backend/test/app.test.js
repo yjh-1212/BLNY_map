@@ -38,6 +38,23 @@ test("GET /api/v1/modules returns every migrated module", async () => {
   assert.ok(body.items.every((item) => item.route.startsWith("/modules/")));
 });
 
+test("same-origin deployment requests are allowed by CORS", async () => {
+  const response = await fetch(`${baseUrl}/api/v1/modules`, {
+    headers: { Origin: baseUrl },
+  });
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("access-control-allow-origin"), baseUrl);
+});
+
+test("unknown cross-origin requests are rejected by CORS", async () => {
+  const response = await fetch(`${baseUrl}/api/v1/modules`, {
+    headers: { Origin: "https://untrusted.example" },
+  });
+  const body = await response.json();
+  assert.equal(response.status, 403);
+  assert.equal(body.error, "Forbidden");
+});
+
 test("database admin lists initialized SQLite tables", async () => {
   const response = await fetch(`${baseUrl}/api/v1/admin/database/tables`);
   const body = await response.json();

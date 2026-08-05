@@ -20,6 +20,9 @@ export const config = Object.freeze({
   databasePath:
     process.env.DATABASE_PATH ||
     fileURLToPath(new URL("../data/beiliang-nanyun.db", import.meta.url)),
+  frontendDistPath: fileURLToPath(
+    new URL("../../frontend/dist", import.meta.url),
+  ),
   databaseAdminEnabled: parseBoolean(
     process.env.ENABLE_DATABASE_ADMIN,
     process.env.NODE_ENV !== "production",

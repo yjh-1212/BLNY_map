@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import cors from "cors";
 import express from "express";
 import { config } from "./config.js";
@@ -24,14 +25,19 @@ export function createApp(options = {}) {
     next();
   });
   app.use(
-    cors({
-      origin(origin, callback) {
-        if (!origin || config.allowedOrigins.includes(origin)) {
-          callback(null, true);
-          return;
-        }
-        callback(new Error("Origin is not allowed by CORS"));
-      },
+    cors((request, callback) => {
+      const origin = request.get("origin");
+      let sameOrigin = false;
+      try {
+        sameOrigin = Boolean(origin) && new URL(origin).host === request.get("host");
+      } catch {
+        sameOrigin = false;
+      }
+      if (!origin || sameOrigin || config.allowedOrigins.includes(origin)) {
+        callback(null, { origin: Boolean(origin) });
+        return;
+      }
+      callback(new Error("Origin is not allowed by CORS"));
     }),
   );
   app.use(express.json({ limit: "1mb" }));
@@ -62,6 +68,17 @@ export function createApp(options = {}) {
   );
   app.use('/api/v1/business',createBusinessRouter({database}));
   app.use('/api/v1/workflow',createWorkflowRouter({database}));
+
+  if (existsSync(config.frontendDistPath)) {
+    app.use(express.static(config.frontendDistPath));
+    app.get(/^(?!\/api(?:\/|$)).*/, (_request, response, next) => {
+      response.sendFile(
+        "index.html",
+        { root: config.frontendDistPath },
+        (error) => (error ? next(error) : undefined),
+      );
+    });
+  }
 
   app.use((request, response) => {
     response.status(404).json({
