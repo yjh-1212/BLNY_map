@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>本地数据库管理</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      color: #17233d;
+      background: #f2f5fa;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 980px; min-height: 100vh; background: #f2f5fa; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .topbar {
+      height: 64px; padding: 0 24px; display: flex; align-items: center; justify-content: space-between;
+      color: #fff; background: linear-gradient(115deg, #0b3c78, #1462aa); box-shadow: 0 3px 14px #0a376e33;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark { width: 34px; height: 34px; border: 2px solid #79d3ff; border-radius: 9px; display: grid; place-items: center; font-weight: 700; }
+    .brand h1 { margin: 0; font-size: 19px; letter-spacing: 1px; }
+    .brand small { display: block; margin-top: 2px; color: #cbeaff; font-size: 11px; letter-spacing: 1.4px; }
+    .back-link { padding: 8px 14px; border: 1px solid #ffffff55; border-radius: 7px; color: #fff; text-decoration: none; background: #ffffff12; }
+    .layout { height: calc(100vh - 64px); display: grid; grid-template-columns: 230px minmax(0, 1fr); }
+    .sidebar { padding: 20px 14px; overflow: auto; color: #dfeeff; background: #102b4e; }
+    .sidebar-title { margin: 0 8px 12px; font-size: 12px; color: #91acd0; letter-spacing: 1px; }
+    .table-nav { display: grid; gap: 8px; }
+    .table-nav button { width: 100%; padding: 12px; border: 0; border-radius: 8px; color: #dbeaff; text-align: left; background: transparent; }
+    .table-nav button:hover { background: #ffffff12; }
+    .table-nav button.active { color: #fff; background: #1673c9; box-shadow: inset 3px 0 #68d8ff; }
+    .table-nav strong { display: block; font-size: 14px; }
+    .table-nav span { display: block; margin-top: 4px; color: #9eb9db; font-size: 11px; }
+    .table-nav button.active span { color: #d5edff; }
+    .main { min-width: 0; padding: 20px; overflow: hidden; display: flex; flex-direction: column; gap: 14px; }
+    .notice { padding: 10px 14px; border: 1px solid #c9e3f7; border-radius: 8px; color: #285d83; background: #eff9ff; font-size: 13px; }
+    .toolbar { display: flex; align-items: center; gap: 10px; }
+    .toolbar h2 { margin: 0 auto 0 0; font-size: 20px; }
+    .search { width: 280px; padding: 9px 12px; border: 1px solid #cbd7e5; border-radius: 7px; outline: none; background: #fff; }
+    .search:focus { border-color: #2681cf; box-shadow: 0 0 0 3px #2681cf18; }
+    .btn { padding: 9px 14px; border: 1px solid #c5d2e2; border-radius: 7px; color: #29405e; background: #fff; }
+    .btn:hover { border-color: #6aa4d7; color: #1265ad; }
+    .btn.primary { border-color: #146fbd; color: #fff; background: #146fbd; }
+    .btn.danger { border-color: #e2a4a4; color: #bb3030; background: #fff7f7; }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+    .card { min-height: 0; flex: 1; overflow: hidden; display: flex; flex-direction: column; border: 1px solid #d8e1ec; border-radius: 10px; background: #fff; box-shadow: 0 4px 18px #273c5c0d; }
+    .table-wrap { min-height: 0; flex: 1; overflow: auto; }
+    table { width: max-content; min-width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { position: sticky; top: 0; z-index: 1; padding: 11px 12px; border-bottom: 1px solid #d6e0ec; color: #49627e; text-align: left; white-space: nowrap; background: #f5f8fc; }
+    td { max-width: 320px; padding: 10px 12px; border-bottom: 1px solid #edf1f6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    tbody tr:hover { background: #f6fbff; }
+    .actions { display: flex; gap: 8px; }
+    .actions button { padding: 4px 9px; border: 0; border-radius: 5px; color: #146fbd; background: #eaf5ff; }
+    .actions button.delete { color: #bd3333; background: #fff0f0; }
+    .empty { padding: 60px 20px; color: #7a8da5; text-align: center; }
+    .pager { min-height: 48px; padding: 8px 12px; display: flex; align-items: center; justify-content: flex-end; gap: 10px; border-top: 1px solid #e1e8f0; color: #647892; font-size: 13px; }
+    dialog { width: min(680px, 80vw); max-height: 85vh; padding: 0; border: 0; border-radius: 12px; box-shadow: 0 24px 70px #0b1f3c66; }
+    dialog::backdrop { background: #10233e77; backdrop-filter: blur(2px); }
+    .dialog-head { padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e1e8f0; }
+    .dialog-head h3 { margin: 0; }
+    .dialog-head button { border: 0; font-size: 22px; color: #6d8097; background: transparent; }
+    .form-grid { max-height: 58vh; padding: 20px 22px; overflow: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .field { display: grid; gap: 6px; }
+    .field label { color: #536a84; font-size: 12px; }
+    .field input { width: 100%; padding: 9px 10px; border: 1px solid #cad6e4; border-radius: 6px; outline: none; }
+    .field input:focus { border-color: #2681cf; }
+    .dialog-actions { padding: 14px 22px; display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #e1e8f0; background: #f8fafc; }
+    .toast { position: fixed; right: 24px; bottom: 24px; z-index: 20; max-width: 420px; padding: 12px 16px; border-radius: 8px; color: #fff; background: #1d7a55; box-shadow: 0 8px 28px #17263c44; transform: translateY(80px); opacity: 0; transition: .22s; }
+    .toast.error { background: #b73b3b; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark">DB</div><div><h1>本地数据库管理</h1><small>BEILIANG NANYUN · SQLITE</small></div></div>
+    <a class="back-link" href="/modules/overview" target="_top">返回综合驾驶舱</a>
+  </header>
+  <div class="layout">
+    <aside class="sidebar"><p class="sidebar-title">数据表</p><nav id="table-nav" class="table-nav"></nav></aside>
+    <main class="main">
+      <div class="notice">此页面只在本地开发环境启用。修改会直接写入 SQLite 数据库，请谨慎删除记录。</div>
+      <div class="toolbar">
+        <h2 id="table-title">正在加载…</h2>
+        <input id="search" class="search" type="search" placeholder="输入关键词搜索" autocomplete="off">
+        <button id="refresh" class="btn">刷新</button>
+        <button id="add" class="btn primary">新增记录</button>
+      </div>
+      <section class="card">
+        <div class="table-wrap"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table><div id="empty" class="empty" hidden>暂无数据</div></div>
+        <div class="pager"><span id="page-info"></span><button id="previous" class="btn">上一页</button><button id="next" class="btn">下一页</button></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="editor">
+    <form id="editor-form" method="dialog">
+      <div class="dialog-head"><h3 id="editor-title">新增记录</h3><button id="close-dialog" type="button" aria-label="关闭">×</button></div>
+      <div id="form-grid" class="form-grid"></div>
+      <div class="dialog-actions"><button id="cancel" class="btn" type="button">取消</button><button class="btn primary" type="submit">保存</button></div>
+    </form>
+  </dialog>
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const API_ROOT = "/api/v1/admin/database";
+    const pageSize = 50;
+    const state = { tables: [], active: null, rows: [], offset: 0, total: 0, editing: null, search: "" };
+    const elements = Object.fromEntries([
+      "table-nav", "table-title", "search", "refresh", "add", "thead", "tbody", "empty",
+      "page-info", "previous", "next", "editor", "editor-form", "editor-title", "form-grid",
+      "close-dialog", "cancel", "toast"
+    ].map(id => [id, document.getElementById(id)]));
+    const labels = {
+      id: "ID", title: "名称", short_title: "简称", description: "说明", route: "路由", enabled: "启用",
+      name: "机构名称", organization_type: "机构类型", unified_social_credit_code: "统一社会信用代码",
+      contact_name: "联系人", contact_phone: "联系电话", status: "状态", batch_no: "批次编号",
+      variety: "粮食品种", origin: "始发地", weight_tons: "重量（吨）", quality_grade: "质量等级",
+      owner_organization_id: "货主机构ID", order_no: "订单编号", grain_batch_id: "粮食批次ID",
+      destination: "目的地", transport_mode: "运输方式", planned_departure: "计划发运时间",
+      created_at: "创建时间", updated_at: "更新时间"
+    };
+
+    async function api(path, options = {}) {
+      const response = await fetch(`${API_ROOT}${path}`, {
+        ...options,
+        headers: { "Content-Type": "application/json", ...(options.headers || {}) }
+      });
+      if (response.status === 204) return null;
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(body.message || `请求失败（${response.status}）`);
+      return body;
+    }
+
+    function showToast(message, isError = false) {
+      elements.toast.textContent = message;
+      elements.toast.className = `toast${isError ? " error" : ""} show`;
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => elements.toast.classList.remove("show"), 2600);
+    }
+
+    function renderNavigation() {
+      elements["table-nav"].replaceChildren(...state.tables.map(table => {
+        const button = document.createElement("button");
+        button.classList.toggle("active", table.name === state.active?.name);
+        const strong = document.createElement("strong");
+        strong.textContent = table.label;
+        const span = document.createElement("span");
+        span.textContent = `${table.name} · ${table.total} 条`;
+        button.append(strong, span);
+        button.addEventListener("click", () => selectTable(table.name));
+        return button;
+      }));
+    }
+
+    function makeCell(value) {
+      const cell = document.createElement("td");
+      cell.textContent = value === null || value === undefined ? "—" : String(value);
+      cell.title = cell.textContent;
+      return cell;
+    }
+
+    function renderRows() {
+      const columns = state.active.columns;
+      const headerRow = document.createElement("tr");
+      for (const column of columns) {
+        const th = document.createElement("th");
+        th.textContent = labels[column.name] || column.name;
+        headerRow.appendChild(th);
+      }
+      if (!state.active.readOnly) {
+        const th = document.createElement("th");
+        th.textContent = "操作";
+        headerRow.appendChild(th);
+      }
+      elements.thead.replaceChildren(headerRow);
+
+      const rows = state.rows.map(row => {
+        const tr = document.createElement("tr");
+        for (const column of columns) tr.appendChild(makeCell(row[column.name]));
+        if (!state.active.readOnly) {
+          const cell = document.createElement("td");
+          cell.className = "actions";
+          const edit = document.createElement("button");
+          edit.textContent = "编辑";
+          edit.addEventListener("click", () => openEditor(row));
+          const remove = document.createElement("button");
+          remove.className = "delete";
+          remove.textContent = "删除";
+          remove.addEventListener("click", () => deleteRow(row));
+          cell.append(edit, remove);
+          tr.appendChild(cell);
+        }
+        return tr;
+      });
+      elements.tbody.replaceChildren(...rows);
+      elements.empty.hidden = rows.length > 0;
+      elements["page-info"].textContent = `共 ${state.total} 条 · 第 ${Math.floor(state.offset / pageSize) + 1} 页`;
+      elements.previous.disabled = state.offset === 0;
+      elements.next.disabled = state.offset + pageSize >= state.total;
+    }
+
+    async function loadTables(preferredTable) {
+      const body = await api("/tables");
+      state.tables = body.items;
+      const selected = preferredTable || state.active?.name || "organizations";
+      state.active = state.tables.find(table => table.name === selected) || state.tables[0];
+      renderNavigation();
+      await loadRows();
+    }
+
+    async function selectTable(name) {
+      state.active = state.tables.find(table => table.name === name);
+      state.offset = 0;
+      state.search = "";
+      elements.search.value = "";
+      renderNavigation();
+      await loadRows();
+    }
+
+    async function loadRows() {
+      if (!state.active) return;
+      elements["table-title"].textContent = state.active.label;
+      elements.add.hidden = state.active.readOnly;
+      try {
+        const query = new URLSearchParams({ limit: pageSize, offset: state.offset, search: state.search });
+        const body = await api(`/tables/${encodeURIComponent(state.active.name)}?${query}`);
+        state.rows = body.items;
+        state.total = body.total;
+        const table = state.tables.find(item => item.name === state.active.name);
+        if (table) table.total = body.total;
+        renderNavigation();
+        renderRows();
+      } catch (error) {
+        showToast(error.message, true);
+      }
+    }
+
+    function openEditor(row = null) {
+      state.editing = row;
+      elements["editor-title"].textContent = row ? "编辑记录" : "新增记录";
+      const fields = state.active.columns.filter(column => column.editable).map(column => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "field";
+        const label = document.createElement("label");
+        label.htmlFor = `field-${column.name}`;
+        label.textContent = `${labels[column.name] || column.name}${column.notNull && column.defaultValue === null ? " *" : ""}`;
+        const input = document.createElement("input");
+        input.id = `field-${column.name}`;
+        input.name = column.name;
+        input.value = row?.[column.name] ?? "";
+        input.type = /INT|REAL|NUM|FLOA|DOUB/i.test(column.type) ? "number" : "text";
+        if (/REAL|NUM|FLOA|DOUB/i.test(column.type)) input.step = "any";
+        input.required = column.notNull && column.defaultValue === null;
+        wrapper.append(label, input);
+        return wrapper;
+      });
+      elements["form-grid"].replaceChildren(...fields);
+      elements.editor.showModal();
+    }
+
+    async function saveRow(event) {
+      event.preventDefault();
+      const values = Object.fromEntries(new FormData(elements["editor-form"]));
+      const id = state.editing?.id;
+      try {
+        await api(`/tables/${encodeURIComponent(state.active.name)}${id === undefined ? "" : `/${encodeURIComponent(id)}`}`, {
+          method: id === undefined ? "POST" : "PATCH",
+          body: JSON.stringify(values)
+        });
+        elements.editor.close();
+        showToast(id === undefined ? "记录已新增" : "记录已更新");
+        await loadTables(state.active.name);
+      } catch (error) {
+        showToast(error.message, true);
+      }
+    }
+
+    async function deleteRow(row) {
+      if (!confirm(`确定删除 ID 为 ${row.id} 的记录吗？此操作无法撤销。`)) return;
+      try {
+        await api(`/tables/${encodeURIComponent(state.active.name)}/${encodeURIComponent(row.id)}`, { method: "DELETE" });
+        showToast("记录已删除");
+        await loadTables(state.active.name);
+      } catch (error) {
+        showToast(error.message, true);
+      }
+    }
+
+    let searchTimer;
+    elements.search.addEventListener("input", () => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        state.search = elements.search.value.trim();
+        state.offset = 0;
+        loadRows();
+      }, 280);
+    });
+    elements.refresh.addEventListener("click", () => loadTables(state.active?.name));
+    elements.add.addEventListener("click", () => openEditor());
+    elements.previous.addEventListener("click", () => { state.offset = Math.max(0, state.offset - pageSize); loadRows(); });
+    elements.next.addEventListener("click", () => { state.offset += pageSize; loadRows(); });
+    elements["editor-form"].addEventListener("submit", saveRow);
+    elements["close-dialog"].addEventListener("click", () => elements.editor.close());
+    elements.cancel.addEventListener("click", () => elements.editor.close());
+
+    loadTables().catch(error => {
+      elements["table-title"].textContent = "数据库管理不可用";
+      showToast(error.message, true);
+    });
+  </script>
+</body>
+</html>

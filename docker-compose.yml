@@ -1,0 +1,28 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8080
+      FRONTEND_ORIGIN: http://localhost:8081
+      DATABASE_PATH: /app/data/beiliang-nanyun.db
+      ENABLE_DATABASE_ADMIN: "false"
+    ports:
+      - "8080:8080"
+    volumes:
+      - backend-data:/app/data
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "8081:80"
+    restart: unless-stopped
+
+volumes:
+  backend-data:

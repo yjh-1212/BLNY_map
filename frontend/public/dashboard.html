@@ -219,6 +219,25 @@
             gap: 10px;
         }
 
+        .global-role-select {
+            height: 36px;
+            min-width: 132px;
+            padding: 0 30px 0 11px;
+            border: 1px solid rgba(65, 117, 141, 0.18);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.78);
+            color: #385367;
+            font-size: 11px;
+            font-weight: 750;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .global-role-select:focus {
+            border-color: #2d8fa6;
+            box-shadow: 0 0 0 3px rgba(45, 143, 166, 0.1);
+        }
+
         .status-dot {
             width: 8px;
             height: 8px;
@@ -777,6 +796,14 @@
             </button>
         </nav>
         <div class="topbar-meta">
+            <select class="global-role-select" id="global-role-select" aria-label="切换当前角色">
+                <option value="platform">平台管理员</option>
+                <option value="trader">贸易商业务负责人</option>
+                <option value="fleet">公路货运调度员</option>
+                <option value="railway">铁路调度员</option>
+                <option value="port">港口协同员</option>
+                <option value="shipping">船商调度员</option>
+            </select>
             <span class="status-dot" aria-hidden="true"></span>
             <div class="meta-copy">
                 <strong id="topbar-date">--</strong>
@@ -1371,6 +1398,18 @@
 
             modeTabs.forEach(tab => tab.addEventListener('click', () => switchView(tab.dataset.view)));
             switchView('overview');
+
+            const roleSelect = document.getElementById('global-role-select');
+            const savedRole = localStorage.getItem('blny:role');
+            if (roleSelect && Array.from(roleSelect.options).some(option => option.value === savedRole)) roleSelect.value = savedRole;
+            roleSelect?.addEventListener('change', event => {
+                const role = event.target.value;
+                localStorage.setItem('blny:role', role);
+                ['trusted-frame', 'intermodal-frame'].forEach(id => {
+                    const frame = document.getElementById(id);
+                    if (frame?.contentWindow) frame.contentWindow.postMessage({ type: 'blny:setRole', role }, window.location.origin);
+                });
+            });
 
             const topbarDate = document.getElementById('topbar-date');
             const topbarWeek = document.getElementById('topbar-week');

@@ -1,3 +1,11 @@
 *.log
 .env
 node_modules/
+backend/node_modules/
+frontend/node_modules/
+frontend/dist/
+backend/data/*.db
+backend/data/*.db-wal
+backend/data/*.db-shm
+.idea/
+.vscode/

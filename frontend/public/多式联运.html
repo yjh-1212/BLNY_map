@@ -40,8 +40,10 @@
     @media(max-width:900px){.app{display:block}.sidebar{position:fixed;left:0;top:0;bottom:0;width:270px;transform:translateX(-105%);transition:.25s}.sidebar.open{transform:none}.drawer-mask{display:block;position:fixed;inset:0;z-index:25;background:rgba(7,23,46,.45);opacity:0;pointer-events:none}.drawer-mask.show{opacity:1;pointer-events:auto}.mobile{display:inline-flex}.order-selector{display:none}.content{padding:16px}.half{grid-template-columns:1fr}.flow{grid-template-columns:repeat(3,1fr)}.engine-tags{display:none}}
     @media(max-width:620px){.kpis,.metric-strip,.resource-cards{grid-template-columns:1fr}.quick-workbench{grid-template-columns:1fr 1fr}.overview-task{grid-template-columns:38px 1fr auto}.task-deadline{display:none}.order-item{grid-template-columns:1fr}.flow{grid-template-columns:repeat(2,1fr)}.page-head{display:block}.actions{justify-content:flex-start;margin-top:10px}.form{grid-template-columns:1fr}.field.full{grid-column:auto}.map-box{height:360px}.topbar{padding:0 12px}.content{padding:13px}.solution-intro{align-items:flex-start}.solution-map{height:370px}.scheme-metrics{grid-template-columns:1fr}.decision-footer{align-items:flex-start}.decision-footer .actions{margin-left:0}.decision-footer{flex-wrap:wrap}.match-stage-strip{grid-template-columns:1fr 1fr}.match-task{grid-template-columns:34px 1fr}.match-task .btn{grid-column:1/-1}.match-source-actions{flex-wrap:wrap}}
   </style>
+  <link rel="stylesheet" href="/unified-shell.css">
+  <link rel="stylesheet" href="/business-ui.css">
 </head>
-<body>
+<body data-unified-module="intermodal">
   <div class="drawer-mask" id="mask"></div>
   <div class="app">
     <aside class="sidebar" id="sidebar">
@@ -508,7 +510,7 @@
       [tag('待确认','blue'),'铁路班列L8606装车窗口','需在30分钟内确认','运力调度员',btn('去确认','goto:resource-match','small secondary')],
       [tag('提示','purple'),'方案A海运报价剩余26小时','到期后需重新询价','方案经理',btn('查看方案','goto:solution-center','small ghost')]
     ])}`,false)}
-    function navigate(id){if(!specialRenderers[id])id='demo';currentView=id;chartInstances.forEach(c=>{try{c.dispose()}catch(e){}});chartInstances=[];mapInstance=null;$('#view').innerHTML=specialRenderers[id]();$('#crumb').textContent=$(`[data-view="${id}"]`)?.textContent.trim()||'全流程业务演示';$$('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===id));const active=$(`[data-view="${id}"]`);if(active?.classList.contains('nav-item'))active.closest('.nav-block').querySelector('.nav-group').classList.add('open');bindView();setTimeout(()=>afterRender(id),30);$('#sidebar').classList.remove('open');$('#mask').classList.remove('show')}
+    function navigate(id){if(!specialRenderers[id])id='demo';currentView=id;chartInstances.forEach(c=>{try{c.dispose()}catch(e){}});chartInstances=[];mapInstance=null;const businessHandled=window.blnyBusinessUI?.canHandleRoute?.(id);if(!businessHandled){$('#view').classList.remove('biz-host');$('#view').innerHTML=specialRenderers[id]()}$('#crumb').textContent=$(`[data-view="${id}"]`)?.textContent.trim()||pageData[id]?.[0]||'全流程业务演示';$$('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===id));const active=$(`[data-view="${id}"]`);if(active?.classList.contains('nav-item'))active.closest('.nav-block')?.querySelector('.nav-group')?.classList.add('open');if(!businessHandled){bindView();setTimeout(()=>afterRender(id),30)}$('#sidebar').classList.remove('open');$('#mask').classList.remove('show');window.dispatchEvent(new CustomEvent('blny:viewchange',{detail:id}))}
     function bindView(){
       $$('#view [data-action]').forEach(x=>x.addEventListener('click',()=>action(x.dataset.action)));
       $$('.flow-step[data-step]').forEach(x=>x.addEventListener('click',()=>{state.step=Number(x.dataset.step);toast(`已定位至“${demoSteps[state.step].name}”`);navigate('demo')}));
@@ -600,5 +602,7 @@
     }
     $$('.nav-group').forEach(x=>x.addEventListener('click',()=>x.classList.toggle('open')));$$('[data-view]').forEach(x=>x.addEventListener('click',()=>navigate(x.dataset.view)));$('#modalClose').addEventListener('click',closeModal);$('#modalCancel').addEventListener('click',closeModal);$('#modalConfirm').addEventListener('click',()=>{const fn=pendingModal;if(typeof fn==='function')fn();else{closeModal();toast('操作已提交')}});$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#modal').classList.contains('show'))closeModal()});$('#mobileBtn').addEventListener('click',()=>{$('#sidebar').classList.add('open');$('#mask').classList.add('show')});$('#mask').addEventListener('click',()=>{$('#sidebar').classList.remove('open');$('#mask').classList.remove('show')});window.addEventListener('resize',()=>{chartInstances.forEach(c=>c.resize())});navigate('demo');
   </script>
+  <script src="/unified-shell.js"></script>
+  <script src="/business-ui.js"></script>
 </body>
 </html>
