@@ -105,7 +105,7 @@
   }
   function renderSidebar(){
     if(!sidebar)return;
-    sidebar.innerHTML=`<div class="blny-sidebar-head"><div class="blny-sidebar-mark">${currentModule==='trusted'?'数':'运'}</div><div><b>${currentModule==='trusted'?'可信数据空间':'多式联运'}</b><span>${roles[role].org}</span></div></div><nav class="blny-menu" aria-label="业务菜单">${getMenu().map(g=>`<div class="blny-menu-group"><div class="blny-menu-title">${g.title}</div>${g.items.map(x=>`<button class="blny-menu-item ${x.module===currentModule&&x.route===currentRoute?'active':''}" data-shell-module="${x.module}" data-shell-route="${x.route}"><i class="blny-menu-icon">${x.icon}</i><span>${x.title}</span>${x.module!==currentModule?'<i class="blny-menu-link">›</i>':''}</button>`).join('')}</div>`).join('')}</nav><div class="blny-side-foot"><span class="blny-online"><i></i>系统运行正常</span><span>演示环境</span></div>`;
+    sidebar.innerHTML=`<div class="blny-sidebar-head"><div class="blny-sidebar-mark">${currentModule==='trusted'?'数':'运'}</div><div><b>${currentModule==='trusted'?'可信数据空间':'多式联运'}</b><span>${roles[role].org}</span></div></div><nav class="blny-menu" aria-label="业务菜单">${getMenu().map(g=>`<div class="blny-menu-group"><div class="blny-menu-title">${g.title}</div>${g.items.map(x=>`<button class="blny-menu-item ${x.module===currentModule&&x.route===currentRoute?'active':''}" data-shell-module="${x.module}" data-shell-route="${x.route}"><i class="blny-menu-icon">${x.icon}</i><span>${x.title}</span>${x.module!==currentModule?'<i class="blny-menu-link">›</i>':''}</button>`).join('')}</div>`).join('')}</nav><div class="blny-side-foot"><span class="blny-online"><i></i>系统运行正常</span><span>可信连接</span></div>`;
   }
   function renderContext(){
     const info=roles[role];

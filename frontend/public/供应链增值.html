@@ -337,7 +337,7 @@ function creditRules(){
     const items=[['真实交易规模授信系数','近12个月真实交易额','履约率≥92%','8%','A及以上','启用'],['可核验存货净值系数','中仓登有效登记货值扣除有效担保余额','登记状态一致','15%','BBB及以上','启用'],['风险预警扣减规则','近6个月预警记录','每条红色预警扣减20%','-20%','全部等级','启用'],['客户集中度限制','单一买方交易占比','不得高于60%','-15%','全部等级','启用']];
     body=`${table(['规则名称','计算口径','规则条件','授信系数','适用等级','状态','操作'],items.map((x,i)=>tr([`<b>${x[0]}</b>`,...x.slice(1,5),tag(x[5]),act('creditRule',i,'编辑')],x.join(' '))),'creditRuleRows')}${pager(24)}`;
   }
-  return head('信用与授信规则','统一配置信用模型、授信测算和资产登记信用规则，支持版本、生效时间和模拟测算。','<button class="btn" onclick="toast(\'规则模拟测算已完成\')">模拟测算</button><button class="btn primary" onclick="openModal(\'creditRuleCreate\')">新增规则</button>')+`<div class="card">${tabs('creditRules',['信用评价模型','授信额度规则','资产登记规则','风险扣减规则','等级映射'],'信用评价模型')}${toolbar('输入指标或规则名称')}${body}</div>`;
+  return head('信用与授信规则','统一配置信用模型、授信测算和资产登记信用规则，支持版本、生效时间和规则试算。','<button class="btn" onclick="toast(\'规则试算已完成\')">规则试算</button><button class="btn primary" onclick="openModal(\'creditRuleCreate\')">新增规则</button>')+`<div class="card">${tabs('creditRules',['信用评价模型','授信额度规则','资产登记规则','风险扣减规则','等级映射'],'信用评价模型')}${toolbar('输入指标或规则名称')}${body}</div>`;
 }
 
 function financeProducts(){return head('金融产品','展示订单融资、在途融资、仓单质押、应收账款融资等产品，并明确中仓登与中登网登记条件。','<button class="btn" onclick="toast(\'匹配结果已刷新\')">重新匹配</button><button class="btn primary" onclick="openModal(\'productCreate\')">新增金融产品</button>')+`<div class="notice">产品匹配基于已授权的企业信用、真实交易、粮食批次、运输执行、仓单及回款数据。最终额度和利率以金融机构审批结果为准。</div>${toolbar('搜索产品名称或金融机构')}<div class="grid g2">${PRODUCTS.map((p,i)=>`<div class="card product"><div style="display:flex;justify-content:space-between"><div><div class="pname">${p[0]}</div><div class="pbank">${p[1]}</div></div>${tag(i<3?'智能推荐':'可申请')}</div><div class="pamt">${p[2]} <small>可申请额度</small></div><div class="pinfo"><div><label>参考利率/费率</label><b>${p[3]}</b></div><div><label>融资期限</label><b>${p[4]}</b></div><div><label>匹配度</label><b>${p[5]}</b></div></div><div class="qdesc">${p[6]}</div><div class="notice" style="margin:10px 0 0;padding:9px 11px"><b>登记要求：</b>${i===1?'中仓登仓单有效 + 中登网担保登记':i===0?'原仓单状态变更 + 中登网担保登记':i===3?'中登网应收账款相关登记/查询':'按产品规则执行中登网查询'}</div><div class="pfoot"><span style="font-size:12px;color:var(--green);font-weight:800">数据完整度 ${92-i*2}%</span><span><button class="btn link" onclick="detail('product',${i})">产品详情</button><button class="btn small primary" onclick="openModal('financeCreate')">立即申请</button></span></div></div>`).join('')}</div>`}
@@ -518,7 +518,7 @@ function rulesConfig(){
     '风险预警规则':[['库存减少预警','质押库存减少且无有效出库指令','仓储与货权数据','实时触发','仓单质押','启用'],['路线偏离预警','偏离计划路线超过30公里或60分钟','多式联运','实时触发','在途融资','启用']]
   };
   const rows=(rules[tab]||rules['企业准入规则']).map((x,i)=>tr([`<b>${x[0]}</b>`,x[1],x[2],x[3],x[4],tag(x[5]),act('businessRule',i,'编辑')],x.join(' ')));
-  return head('业务规则配置','统一配置企业准入、交易验真、信用评价、授信审批、融资审批和风险预警规则。','<button class="btn" onclick="toast(\'规则模拟运行已完成\')">模拟运行</button><button class="btn primary" onclick="openModal(\'businessRuleCreate\')">新增规则</button>')+`<div class="card">${tabs('rulesConfig',['企业准入规则','交易验真规则','信用评价规则','授信审批规则','融资审批规则','外部登记规则','风险预警规则'],'企业准入规则')}${toolbar('输入规则名称、数据来源或适用产品')}${table(['规则名称','规则条件','数据来源','执行方式','适用范围','状态','操作'],rows,'businessRuleRows')}${pager(68)}</div>`;
+  return head('业务规则配置','统一配置企业准入、交易验真、信用评价、授信审批、融资审批和风险预警规则。','<button class="btn" onclick="toast(\'规则试运行已完成\')">规则试运行</button><button class="btn primary" onclick="openModal(\'businessRuleCreate\')">新增规则</button>')+`<div class="card">${tabs('rulesConfig',['企业准入规则','交易验真规则','信用评价规则','授信审批规则','融资审批规则','外部登记规则','风险预警规则'],'企业准入规则')}${toolbar('输入规则名称、数据来源或适用产品')}${table(['规则名称','规则条件','数据来源','执行方式','适用范围','状态','操作'],rows,'businessRuleRows')}${pager(68)}</div>`;
 }
 function pricingPledge(){
   const tab=getTab('pricingPledge','融资利率');
@@ -709,12 +709,12 @@ const forms={
 const ACTION_WORKFLOWS={
  report:{name:'验真报告授权',steps:['报告生成','电子签章','授权申请','机构确认','授权生效'],next:'提交授权',fields:[['使用机构','中国银行黑龙江省分行'],['使用目的','融资审批'],['授权期限','30天'],['下载权限','仅在线查看']]},
  abnormal:{name:'异常交易处置',steps:['异常识别','风险研判','任务分派','处置执行','复核关闭'],next:'提交处置',fields:[['处置结论','确认风险'],['处置措施','暂停关联融资并人工核查'],['责任人','王磊'],['完成时限','今日18:00']]},
- rule:{name:'验真规则维护',steps:['规则编辑','模拟校验','影响评估','复核发布','运行监测'],next:'发布规则',fields:[['规则状态','启用'],['执行方式','自动校验'],['命中措施','生成人工复核任务'],['生效时间','立即生效']]},
+ rule:{name:'验真规则维护',steps:['规则编辑','校验验证','影响评估','复核发布','运行监测'],next:'发布规则',fields:[['规则状态','启用'],['执行方式','自动校验'],['命中措施','生成人工复核任务'],['生效时间','立即生效']]},
  credit:{name:'企业信用更新',steps:['数据同步','指标计算','异常复核','评分确认','结果生效'],next:'确认更新',fields:[['评分版本','企业信用模型 V2.3'],['数据范围','近12个月'],['更新原因','周期性重评'],['生效方式','审核后生效']]},
  creditApply:{name:'授信申请处理',steps:['申请提交','材料校验','信用评估','授信审批','额度生效'],next:'提交处理',fields:[['处理动作','撤回申请'],['撤回原因','融资计划调整'],['材料状态','已齐全'],['通知方式','站内信+短信']]},
  creditApprove:{name:'授信审批',steps:['准入核验','信用评估','额度测算','风险复核','审批生效'],next:'通过并流转',fields:[['建议额度','¥ 4,200万'],['授信期限','12个月'],['额度类型','循环额度'],['附加条件','回款进入监管账户']]},
  limit:{name:'授信额度调整',steps:['调整申请','额度校验','风险评估','审批确认','额度生效'],next:'确认调整',fields:[['调整类型','提额'],['调整金额','¥ 500万'],['生效日期','2026-07-30'],['调整原因','真实交易规模增长']]},
- creditRule:{name:'信用授信规则维护',steps:['规则编辑','模型模拟','结果对比','审批发布','版本生效'],next:'发布新版本',fields:[['规则版本','V2.4'],['适用范围','全部企业'],['生效时间','2026-08-01'],['历史数据重算','否']]},
+ creditRule:{name:'信用授信规则维护',steps:['规则编辑','模型试算','结果对比','审批发布','版本生效'],next:'发布新版本',fields:[['规则版本','V2.4'],['适用范围','全部企业'],['生效时间','2026-08-01'],['历史数据重算','否']]},
  finance:{name:'融资业务办理',steps:['融资申请','交易验真','授信校验','风险审批','合同放款','贷后监管'],next:'提交下一节点',fields:[['审批结论','通过'],['审批金额','¥ 2,000万'],['融资期限','90天'],['放款条件','货权冻结+监管账户']]},
  contract:{name:'合同与放款办理',steps:['合同生成','条款确认','电子签署','条件核验','放款审批','放款完成'],next:'确认并流转',fields:[['办理节点','合同签署'],['签署方式','电子签章'],['放款方式','一次性放款'],['监管账户','已确认']]},
  repayment:{name:'还款与结清办理',steps:['还款计划','资金入账','本金利息核销','解押处理','业务结清'],next:'确认入账',fields:[['还款类型','正常还款'],['还款本金','¥ 300万'],['还款利息','¥ 6.8万'],['额度恢复','还款后自动恢复']]},
@@ -730,7 +730,7 @@ const ACTION_WORKFLOWS={
  reminder:{name:'到期提醒处理',steps:['到期识别','提醒发送','回执确认','催收升级','风险转办'],next:'发送提醒',fields:[['提醒渠道','站内信+短信+邮件'],['提醒模板','融资到期提醒'],['下次提醒','24小时后'],['逾期升级','转风险处置']]},
  institution:{name:'金融机构管理',steps:['入驻申请','资质审核','协议签署','产品接入','运营评价'],next:'提交审核',fields:[['管理动作','资质复核'],['合作状态','正常合作'],['服务区域','东北三省'],['复核有效期','12个月']]},
  productConfig:{name:'金融产品配置',steps:['产品设计','规则配置','联调测试','机构审核','发布上线'],next:'保存并发布',fields:[['产品状态','已上线'],['最高额度','¥ 3,000万'],['参考利率','3.65%起'],['适用企业','粮食贸易商']]},
- businessRule:{name:'业务规则维护',steps:['规则编辑','模拟运行','影响评估','审批发布','监测优化'],next:'发布规则',fields:[['执行方式','自动拦截'],['适用范围','全部融资产品'],['生效时间','立即生效'],['回滚版本','保留上一版本']]},
+ businessRule:{name:'业务规则维护',steps:['规则编辑','规则试运行','影响评估','审批发布','监测优化'],next:'发布规则',fields:[['执行方式','自动拦截'],['适用范围','全部融资产品'],['生效时间','立即生效'],['回滚版本','保留上一版本']]},
  pricing:{name:'定价与质押配置',steps:['参数配置','历史回测','风险校验','审批发布','定期重评'],next:'发布配置',fields:[['配置类型','融资利率'],['基准值','3.65%'],['风险加点','0.30%'],['生效日期','2026-08-01']]},
  registrationPlatform:{name:'登记平台接入管理',steps:['平台建档','授权配置','数据映射','联调测试','规则发布','运行监测'],next:'保存配置',fields:[['对接模式','接口+人工办理'],['认证方式','数字证书/机构授权'],['状态回调','启用'],['异常处理','自动重试+人工复核']]},
  agreement:{name:'合作协议管理',steps:['协议起草','法务审核','双方确认','电子签署','履约/续签'],next:'提交签署',fields:[['办理类型','协议续签'],['有效期限','12个月'],['签署方式','电子签章'],['到期提醒','提前30天']]}
@@ -752,7 +752,7 @@ const CREATE_META={
  productCreate:{steps:['产品设计','业务规则','数据要求','联调测试','审核发布'],materials:['产品说明书','审批规则','定价方案','所需数据清单']},
  agreementCreate:{steps:['协议起草','条款审核','双方确认','电子签署','协议生效'],materials:['协议正文','机构授权文件','审批意见']},
  abnormalCreate:{steps:['异常登记','证据关联','风险分级','任务分派','处置跟踪'],materials:['异常证据','关联交易/融资','数据审计记录']},
- verifyRuleCreate:{steps:['规则设计','数据映射','模拟校验','审批发布','命中监测'],materials:['规则说明','数据字段映射','测试样本']},
+ verifyRuleCreate:{steps:['规则设计','数据映射','校验验证','审批发布','命中监测'],materials:['规则说明','数据字段映射','测试样本']},
  creditRecalc:{steps:['选择范围','数据同步','模型计算','异常复核','结果生效'],materials:['评分模型版本','数据质量报告','变更说明']},
  creditRuleCreate:{steps:['指标配置','权重校验','历史回测','审批发布','版本管理'],materials:['指标定义','回测报告','模型审批单']},
  receiptCreate:{steps:['入库确认','货权核验','仓单生成','可信签章','仓单生效'],materials:['入库单','质检报告','仓储合同','货权确认书']},
@@ -760,7 +760,7 @@ const CREATE_META={
  ownershipAbnormalCreate:{steps:['异常登记','限制操作','风险研判','处置分派','跟踪关闭'],materials:['异常证据','货权链记录','库存/出库记录']},
  postReportCreate:{steps:['选择融资','生成任务','汇聚数据','检查复核','报告归档'],materials:['贷后监测数据','现场检查资料','风险处置记录']},
  reminderCreate:{steps:['选择对象','配置渠道','设置模板','发送提醒','回执跟踪'],materials:['到期清单','联系人信息','提醒模板']},
- businessRuleCreate:{steps:['规则设计','模拟运行','影响评估','审批发布','运行监测'],materials:['规则说明','测试结果','影响评估报告']},
+ businessRuleCreate:{steps:['规则设计','规则试运行','影响评估','审批发布','运行监测'],materials:['规则说明','测试结果','影响评估报告']},
  registrationPlatformCreate:{steps:['平台建档','合作授权','接口/人工配置','数据映射','规则发布'],materials:['平台合作协议','机构授权文件','接口/办理说明','数据字段映射']},
  pricingCreate:{steps:['参数配置','历史回测','风险校验','审批发布','定期重评'],materials:['市场价格数据','历史损失率','定价审批单']}
 };
@@ -831,14 +831,14 @@ function openModal(type){
   if(type==='help'){
     document.querySelector('#modalMask .modal').classList.add('wide');
     document.getElementById('modalTitle').textContent='页面操作说明';
-    document.getElementById('modalBody').innerHTML=`<div class="notice">本原型覆盖31个二级页面，所有核心业务均按照“申请/创建—数据校验—审批办理—结果生效—审计留痕”组织。</div><div class="quick">${listCard('详情抽屉','查看业务基础信息、流程进度、关联可信数据和操作记录。','适用于全部列表业务','可查看','1')}${listCard('办理弹窗','填写办理信息、审批结论、关联材料并流转到下一节点。','支持通过、退回、驳回和保存草稿','可操作','2')}${listCard('创建弹窗','按完整流程填写申请或配置，并生成业务编号和待办任务。','数据授权和材料完整性同步校验','可提交','3')}</div>`;
+    document.getElementById('modalBody').innerHTML=`<div class="notice">本系统覆盖31个二级页面，所有核心业务均按照“申请/创建—数据校验—审批办理—结果生效—审计留痕”组织。</div><div class="quick">${listCard('详情抽屉','查看业务基础信息、流程进度、关联可信数据和操作记录。','适用于全部列表业务','可查看','1')}${listCard('办理弹窗','填写办理信息、审批结论、关联材料并流转到下一节点。','支持通过、退回、驳回和保存草稿','可操作','2')}${listCard('创建弹窗','按完整流程填写申请或配置，并生成业务编号和待办任务。','数据授权和材料完整性同步校验','可提交','3')}</div>`;
     document.getElementById('modalFoot').innerHTML='<button class="btn primary" onclick="closeModal()">知道了</button>';
     document.getElementById('modalMask').classList.add('show');return;
   }
   openCreateWorkflow(type);
 }
 
-function formByType(type){const title=(names[current]||'业务操作');if(type==='help')return ['功能说明','本原型按7个一级菜单、31个融合后的二级页面组织，验真任务已合并进交易验真，其他页面以页签承载完整业务流程。',[]];return [title,'请填写业务信息。提交后将形成待办任务并记录操作审计。',['业务名称',title,'业务状态','启用','责任人','当前用户']]}
+function formByType(type){const title=(names[current]||'业务操作');if(type==='help')return ['功能说明','本系统按7个一级菜单、31个融合后的二级页面组织，验真任务已合并进交易验真，其他页面以页签承载完整业务流程。',[]];return [title,'请填写业务信息。提交后将形成待办任务并记录操作审计。',['业务名称',title,'业务状态','启用','责任人','当前用户']]}
 function submit(t){closeModal();toast(t+'已提交')}
 function closeModal(){document.getElementById('modalMask').classList.remove('show');document.querySelector('#modalMask .modal').classList.remove('wide','xwide')}
 function closeDrawer(){document.getElementById('drawerMask').classList.remove('show')}
