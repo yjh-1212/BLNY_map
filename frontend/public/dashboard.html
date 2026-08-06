@@ -155,6 +155,10 @@
             transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
         }
 
+        .platform-tab[hidden] {
+            display: none !important;
+        }
+
         .platform-tab svg {
             width: 15px;
             height: 15px;
@@ -764,7 +768,7 @@
             </div>
         </div>
         <nav class="platform-nav" role="tablist" aria-label="北粮南运平台导航">
-            <button type="button" class="platform-tab mode-tab" data-view="trusted" role="tab" aria-selected="false">
+            <button type="button" class="platform-tab mode-tab" data-view="trusted" role="tab" aria-selected="false" hidden>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M12 3l7 2.8v5.4c0 4.4-3 8-7 9.8-4-1.8-7-5.4-7-9.8V5.8L12 3z"/>
                     <path d="M9.2 12l2 2 3.6-4"/>
@@ -788,7 +792,7 @@
                     <path d="M14 9.5a3.6 3.6 0 0 0-5 0l-2.6 2.6a3.6 3.6 0 1 0 5 5l1.2-1.1"/>
                 </svg>一粮一链
             </button>
-            <button type="button" class="platform-tab mode-tab" data-view="elements" role="tab" aria-selected="false">
+            <button type="button" class="platform-tab mode-tab" data-view="elements" role="tab" aria-selected="false" hidden>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M3.5 17.5l5.5-5.5 3.5 3.5 7-8"/>
                     <path d="M15.5 7.5h4v4"/>
