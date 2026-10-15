@@ -89,41 +89,52 @@
             min-width: 0;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
         }
 
         .brand-mark {
-            width: 46px;
-            height: 46px;
+            width: 48px;
+            height: 48px;
             flex: none;
             display: grid;
             place-items: center;
-            border-radius: 13px;
-            color: #fff;
-            background: linear-gradient(140deg, #116c51 8%, #1676a8 88%);
-            box-shadow: 0 7px 16px rgba(18, 105, 128, 0.24), inset 0 1px 0 rgba(255,255,255,0.28);
+            border-radius: 14px;
+            background:
+                radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.95), rgba(255, 244, 244, 0.88) 55%, rgba(255, 232, 232, 0.92)),
+                linear-gradient(145deg, #fff7f7, #ffe8e8);
+            border: 1px solid rgba(220, 40, 48, 0.14);
+            box-shadow:
+                0 8px 18px rgba(176, 24, 36, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
         }
 
-        .brand-mark svg { width: 26px; height: 26px; }
+        .brand-mark img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            display: block;
+            filter: drop-shadow(0 1px 1px rgba(140, 10, 20, 0.18));
+        }
 
         .brand-copy { min-width: 0; }
 
         .brand-copy strong {
             display: block;
-            color: #14333e;
-            font-size: 17px;
+            color: #152f3a;
+            font-size: 19px;
             font-weight: 800;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.12em;
+            line-height: 1.15;
             white-space: nowrap;
         }
 
         .brand-copy span {
             display: block;
-            margin-top: 3px;
-            color: #7d939b;
-            font-size: 8px;
+            margin-top: 5px;
+            color: #8a9aa3;
+            font-size: 9px;
             font-weight: 600;
-            letter-spacing: 0.26em;
+            letter-spacing: 0.08em;
             white-space: nowrap;
         }
 
@@ -695,8 +706,10 @@
 
         @media (max-width: 1260px) {
             .topbar { padding-inline: 14px; gap: 12px; }
-            .brand-copy strong { font-size: 14px; }
+            .brand-copy strong { font-size: 17px; letter-spacing: 0.14em; }
             .brand-copy span { display: none; }
+            .brand-mark { width: 44px; height: 44px; border-radius: 12px; }
+            .brand-mark img { width: 28px; height: 28px; }
             .platform-tab { padding-inline: 11px; font-size: 12px; }
             .platform-tab.primary { padding-inline: 16px; }
             .platform-tab.primary strong { font-size: 15px; }
@@ -752,19 +765,11 @@
     <header class="topbar">
         <div class="brand">
             <div class="brand-mark" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 22V8"/>
-                    <path d="M12 8c0-3-2.2-5-5-5 0 3 2.2 5 5 5z"/>
-                    <path d="M12 8c0-3 2.2-5 5-5 0 3-2.2 5-5 5z"/>
-                    <path d="M12 14c0-3-2.2-5-5-5 0 3 2.2 5 5 5z"/>
-                    <path d="M12 14c0-3 2.2-5 5-5 0 3-2.2 5-5 5z"/>
-                    <path d="M12 20c0-3-2.2-5-5-5 0 3 2.2 5 5 5z"/>
-                    <path d="M12 20c0-3 2.2-5 5-5 0 3-2.2 5-5 5z"/>
-                </svg>
+                <img src="/china-shulian-logo.png" alt="">
             </div>
             <div class="brand-copy">
-                <strong>北粮南运数字化通道</strong>
-                <span>NORTH–SOUTH GRAIN CORRIDOR</span>
+                <strong>中国数联</strong>
+                <span>China Unidata</span>
             </div>
         </div>
         <nav class="platform-nav" role="tablist" aria-label="北粮南运平台导航">
